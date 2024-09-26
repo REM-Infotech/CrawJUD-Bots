@@ -1,0 +1,1 @@
+## Classe responsável por construir o bot
