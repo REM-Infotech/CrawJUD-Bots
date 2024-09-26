@@ -1,0 +1,431 @@
+# """ Imports do Projeto """
+# from Scripts.Tools.PrintLogs import printtext as prt
+# from Scripts.Tools.MakeTemplate import MakeXlsx
+# from Scripts.Tools.ChromeDriver import ChromeDriverCrawJUD
+# from Scripts.Tools.StartStop_Notify import SetStatus
+
+
+
+# """ Elaw Utils """
+# from Scripts.CrawJUD.interator import Interact
+# from Scripts.common.exceptions import ItemNaoEcontrado
+# from Scripts.common.selenium_excepts import webdriver_exepts
+# from Scripts.common.selenium_excepts import exeption_message
+# from Scripts.Tools.dicionarios import cities_Amazonas
+
+# from openpyxl.worksheet.worksheet import Worksheet
+# from contextlib import suppress
+# from datetime import datetime
+# from termcolor import colored
+# from typing import Type
+# from clear import clear
+# from time import sleep
+# from tqdm import tqdm
+# from PyPDF2 import *
+# import platform
+# import re
+# import json
+# import os
+# import openpyxl
+# import pytz
+# import pathlib
+# import shutil
+# import random
+
+
+# # Selenium Imports
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver import Keys
+# from selenium.webdriver.remote.webelement import WebElement
+# from selenium.webdriver.remote.webdriver import WebDriver
+# from selenium.webdriver.support import expected_conditions as EC
+# from selenium.webdriver.support.wait import WebDriverWait
+# from selenium.webdriver.common.action_chains import ActionChains
+# from selenium.common.exceptions import (TimeoutException, NoSuchElementException)
+# class PROJUDICrawlerExtractInfoPdf:
+
+#     def initialize_crawler(self, arguments_bot: dict, status: str):
+
+#         self.pid = pid = arguments_bot["pid"]
+        
+        
+#         for root, dirs, files in os.walk(f"Temp/{pid}"):
+#             for file in files:
+#                 if ".xlsx" in file : 
+#                     input_file = os.path.join("Temp", pid, file)
+#                     break
+            
+#         output_dir_path = os.path.join(pathlib.Path(input_file).parent.resolve())
+        
+        
+#         self.path = ''
+#         self.nomearquivo = self.namefile = ''
+#         self.nomearquivo_sucess = ''
+#         self.arguments_bot = arguments_bot
+#         self.input_file = input_file
+#         self.output_dir_path = output_dir_path
+#         self.prt = prt(self.pid)
+        
+#         if platform.system() == "Windows":
+#             self.input_file = self.input_file.split("\\")[-1]
+            
+#         elif platform.system() == "Linux":
+#             self.input_file = self.input_file.split("/")[-1]
+            
+        
+#         args = ChromeDriverCrawJUD().DriverLaunch(pid, out_dir=output_dir_path)
+        
+#         try:
+#             if args == 500:
+#                 self.prt.print_log('error', 'Erro ao inicializar Robô')
+#                 status = [self.arguments_bot['user'], pid, self.arguments_bot['bot'], 'Falha ao iniciar', self.namefile]
+#                 SetStatus().botstop(status)
+#                 return args
+                
+#             else:
+                
+#                 self.prt.print_log('log', 'Robô inicializado!')
+#                 self.driver: Type[WebDriver] = args[0]
+#                 self.wait: Type[WebDriverWait] = args[1]
+#                 status = [self.arguments_bot['user'], pid, self.arguments_bot['bot'], 'Em Execução', self.input_file]
+#                 SetStatus().botstart(status)
+                
+#                 input_filename = self.input_file
+#                 wb = openpyxl.load_workbook(filename=input_filename)
+#                 ws: Type[Worksheet] = wb.active
+                
+#                 self.rows = rows = str(ws.max_row)
+#                 info_row = SetStatus().send_total_rows(rows, pid)
+                
+#                 return 200
+            
+#         finally:
+            
+#             if args == 500:
+#                 pass
+#             else:
+#                 self.login()
+            
+#     def login(self):
+        
+        
+        
+#         try:
+#             login_projudi_am = json.load(open(os.path.join(os.getcwd(), 'Temp', self.pid, f'login_projudi_am_{self.pid}.json')))['login']['PROJUDI']
+#             self.prt.print_log('log', 'Usuário e senha obtidos!')
+#             Get_Login = ChromeDriverCrawJUD().LoginProjudi(self.driver, self.wait, [login_projudi_am['username'], login_projudi_am['password']])
+                
+#         except:
+#             Get_Login = False
+        
+#         if Get_Login is True:
+            
+#             self.prt.print_log('log', 'Login efetuado com sucesso!')
+#             self.read_xlsx()
+
+#         elif Get_Login is False:
+            
+#             self.driver.quit()
+#             self.prt.print_log('error', 'Erro ao realizar login')
+#             status = [self.arguments_bot['user'], self.pid, self.arguments_bot['bot'], 'Falha ao iniciar', self.input_file]
+#             SetStatus().botstop(status)
+    
+#     def read_xlsx(self):
+        
+#         try:
+        
+#             self.namefile = f"PID {self.pid} {datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%d-%m-%y')}.xlsx"
+#             self.path = f"{self.output_dir_path}/{self.namefile}"
+                
+#             MakeXlsx().make_output("projudi_extract_info_doc", self.path, None)
+            
+            
+#         except:
+            
+#             self.prt.print_log('error', 'Erro ao gerar planilha de output')
+#             status = [self.arguments_bot['user'], self.pid, self.arguments_bot['bot'], 'Falha ao iniciar', self.input_file]
+#             SetStatus().botstop(status)
+#             return
+
+#         # iterate from each process on input
+#         try:
+#             #input_filename = os.path.join(os.getcwd(),'inputsearch', 'processos_esaj.xlsx')
+#             input_filename = self.input_file
+#             wb = openpyxl.load_workbook(filename=input_filename)
+#             ws: Type[Worksheet] = wb.active
+            
+#             for i in range(2, ws.max_row+1):
+                
+#                 self.row = i-1
+#                 cell_obj = ws.cell(row=i, column=1)
+#                 self.prt = prt(self.pid, self.row-1)
+                
+#                 if cell_obj.value is not None and cell_obj.value != '':
+                    
+#                     try:
+#                         numero = cell_obj.value.replace(' ','')
+#                         data_filter = ws.cell(row=i, column=2).value
+                        
+#                         if isinstance(data_filter, datetime):
+                            
+#                             data_filter = data_filter.strftime("%d/%m/%Y")
+                        
+#                         nome_doc = ws.cell(row=i, column=3).value
+#                         self.row = row = i-1
+                        
+#                         processo_data = [numero, data_filter, nome_doc]
+                        
+#                         try:
+#                             self.get_processo(processo_data, row)
+#                         except:
+#                             pass 
+                        
+#                     except Exception as e:
+#                         self.prt.print_log(self.pid, "error", f'Erro na planilha: {e}', self.rows)   
+                        
+                    
+#                 if i == ws.max_row:
+#                     self.driver.quit()
+#                     self.prt.print_log(self.pid, 'log', 'Fim da execução', self.rows)
+#                     status = [self.arguments_bot['user'], self.pid, self.arguments_bot['bot'], 'Finalizado', self.namefile]
+#                     SetStatus().botstop(status)
+#                     self.driver.delete_all_cookies()
+#                     self.driver.quit()
+                    
+#         except Exception as e:
+#             print(e)
+#             return
+
+#     def get_processo(self, driver, processo_data, wait, row):
+
+#         self.driver.get("https://projudi.tjam.jus.br/projudi/processo/buscaProcessosQualquerInstancia.do?actionType=pesquisar")
+#         sleep(3)
+#         #self.driver.get_screenshot_as_file("screenshot.png")
+        
+#         msg = f"Buscando processo nº{processo_data[0]}"
+#         self.prt.print_log(self.pid, "log", msg, self.row)
+        
+        
+#         try:
+#             input_proc_1grau = self.driver.find_element(By.CSS_SELECTOR, '#numeroProcesso')
+#         except:
+            
+
+#             # loop until session works
+#             self.get_processo(driver,processo_data, row, wait)
+
+#         input_proc_1grau.send_keys(processo_data[0])
+
+#         consultar = self.driver.find_element(By.CSS_SELECTOR, '#pesquisar')
+#         consultar.click()
+#         # sleep(60)
+#         try:
+#             sleep(1)
+#             marotagem = self.driver.find_element(By.CLASS_NAME, 'link')
+#             marotagem.click()
+            
+#             msg = "Processo encontrado!"
+#             self.prt.print_log(self.pid, "log", msg, self.row)
+            
+#         except Exception as e:
+#             pass
+        
+
+#         try:
+#             self.allowacessforinfoproc(driver, wait, processo_data, row)
+#             self.driver.get('https://projudi.tjam.jus.br/projudi/usuario/postLogon.do?actionType=iniciar&noCache=CE24627N1673979877506')
+            
+            
+#         except Exception as e:
+
+#             self.get_moves(driver, wait, processo_data, row)
+#             self.driver.get('https://projudi.tjam.jus.br/projudi/usuario/postLogon.do?actionType=iniciar&noCache=CE24627N1673979877506')
+        
+#     def get_moves(self, processo_data, row):
+        
+#         try:
+            
+#             msg = f'Buscando movimentação "{processo_data[2]}"'
+#             self.prt.print_log(self.pid, "log", msg, self.row)
+            
+#             page_size = self.driver.find_element(By.CSS_SELECTOR, 'select[name="pagerConfigPageSize"]')
+#             page_size.click()
+#             sleep(1.5)
+#             select_1000_items = page_size.find_element(By.CSS_SELECTOR, 'option[value="1000"]')
+#             select_1000_items.click()
+#             sleep(1.5)
+
+#             data_mov = processo_data[1]
+
+#             if isinstance(data_mov, datetime):
+#                 data_mov = data_mov.strftime("%d/%m/%Y")
+            
+#             move_name = processo_data[2].replace(", ",",").split(",")
+            
+#             if len(move_name) < 2 :
+#                 move_name = [processo_data[2]]
+            
+#             table_moves = self.driver.find_element(By.CLASS_NAME, 'resultTable')
+#             all_moves_from_this_page = table_moves.find_elements(By.XPATH, './/tr[contains(@class, "odd") or contains(@class, "even")][not(@style="display:none;")]')
+#             try:
+#                 for movedesc in move_name:
+#                     for move in all_moves_from_this_page:
+                        
+#                         try:
+                            
+#                             itensmove = move.find_elements(By.TAG_NAME, 'td')
+                            
+#                             move_data = itensmove[2].text.split(" ")[0]
+                    
+#                             if isinstance(move_data, datetime):
+#                                 move_data = move_data.strftime("%d/%m/%Y")
+                                
+#                             move_description = itensmove[3].text
+#                         except:
+#                             continue
+                        
+#                         try:
+#                             if '\n' in move_description:
+#                                 move_description = move_description.split("\n")[0]
+                            
+#                             # if data_mov == move_data:
+#                             if str(move_description).lower() == str(movedesc).lower():
+                                
+#                                 movimentado_por = str(itensmove[4].text)
+                                
+#                                 if "\n" in movimentado_por:
+                                    
+#                                     split_dado = movimentado_por.split("\n")
+#                                     movimentado_por = split_dado[0]
+#                                     tipo_movimentador = split_dado[1].replace(" ", "")
+                                    
+#                                 if "  " in movimentado_por:
+                                    
+#                                     movimentado_por = movimentado_por.replace("  ", "")
+                                
+#                                 msg = f'Movimentação encontrada!'
+#                                 self.prt.print_log(self.pid, "log", msg, self.row)
+#                                 expand = move.find_element(By.CSS_SELECTOR, 'a[href="javascript://nop/"]')
+#                                 expandattrib = expand.get_attribute('class')
+#                                 sleep(0.5)
+#                                 expand.click()
+#                                 sleep(1)
+#                                 match = re.search(r'\d+', expandattrib)
+#                                 if match:
+#                                     number = str(int(match.group()))
+#                                 divdocs = self.driver.find_element(By.CSS_SELECTOR, f'div[id="divArquivosMovimentacaoProcessomovimentacoes{number}"]')
+                                
+#                                 tabledocs = divdocs.find_element(By.TAG_NAME, 'table')
+                                
+#                                 data_sentenca = move.find_elements(By.TAG_NAME, 'td')[2].text.split(" ")[0]
+
+#                                 rowsdoc = tabledocs.find_elements(By.TAG_NAME, 'tr')
+                                
+#                                 for docs in rowsdoc:
+                                    
+#                                     nomedoc = docs.find_elements(By.TAG_NAME, 'td')[0].text
+                                    
+#                                     if "Petição Inicial" in nomedoc:
+#                                         # if "Petição Inicial" in nomedoc:
+                                        
+#                                         doc = docs.find_elements(By.TAG_NAME, 'td')[4]
+#                                         link_doc = doc.find_element(By.TAG_NAME, 'a')
+#                                         name_pdf = link_doc.text
+#                                         url = link_doc.get_attribute("href")
+#                                         self.driver.get(url)
+                                        
+#                                         sleep(1)
+#                                         nomearquivo = f"{processo_data[0]} - {processo_data[2]} - {self.pid}.pdf"
+                                        
+#                                         if platform.system() == "Windows":
+#                                             path_pdf = f"{self.output_dir_path}\\{nomearquivo}"
+                                        
+#                                         elif platform.system() == "Linux":
+#                                             path_pdf = f"{self.output_dir_path}/{nomearquivo}"
+                                        
+#                                         old_pdf = f"{self.output_dir_path}/{name_pdf}"                                    
+#                                         shutil.move(old_pdf, path_pdf)
+#                                         sleep(1.5)
+#                                         self.openfile(processo_data, path_pdf)
+                                            
+                                        
+#                                         numero_randomizado = random.randint(3, 10)
+#                                         sleep(int(numero_randomizado))
+#                                         data = [processo_data[0], move_description, data_sentenca, self.desc_sentença, movimentado_por, tipo_movimentador]
+#                                         self.append_sucess(data)
+#                                         self.prt.print_log(self.pid, 'log', 'Informação extraida com sucesso!', self.row)
+#                                         break
+                                        
+#                             else:
+#                                 continue            
+#                         except Exception as e:
+#                             print(e)
+#                             continue
+            
+#             except Exception as e:
+#                 print(e)   
+                            
+#         except Exception as e:
+#             print(e)
+
+#     def append_sucess(self, data):
+        
+#         output_filename = self.path
+#         wb = openpyxl.load_workbook(filename=output_filename)
+#         sheet = wb.active
+#         sheet.append(data)
+#         wb.save(output_filename)
+        
+        
+#         self.message = "Informações salvas na planilha com sucesso"
+#         self.prt.print_log(self.pid, "log", message, self.row)
+        
+#     def openfile(self, processo_data, path_pdf):
+        
+#         self.message = "Extraindo dados de documento..."
+#         self.prt.print_log(self.pid, "log", message, self.row)
+        
+#         read = PdfReader(path_pdf)
+#         num_pages = len(read.pages)
+
+#         #Read PDF
+#         pagescontent = ""
+#         for page in read.pages:
+#             try:
+#                 text = page.extract_text()
+#                 remove_n_space = text.replace("\n", " ")
+#                 pagescontent = pagescontent + remove_n_space
+#             except:
+#                 pass
+
+        
+#         self.desc_sentença = pagescontent
+#         self.message = "Dados extraidos com sucesso!"
+#         self.prt.print_log(self.pid, "log", message, self.row)
+        
+#         return 
+        
+#     def allowacessforinfoproc(self, processo_data, row):
+
+#         allowacess = self.driver.find_element(By. CSS_SELECTOR, '#habilitacaoProvisoriaButton')
+#         allowacess.click()
+#         sleep(1)
+
+#         confirmterms = self.driver.find_element(By.CSS_SELECTOR, '#termoAceito')
+#         confirmterms.click()
+#         sleep(1)
+
+#         save = self.driver.find_element(By. CSS_SELECTOR, '#saveButton')
+#         save.click()
+
+#         self.get_moves(processo_data, row)
+
+    
+
+
+        
+
+        
+
+        
+        

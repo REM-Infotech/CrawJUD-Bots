@@ -1,0 +1,27 @@
+flask_socketio
+flask 
+flask-mysqldb 
+flask_mail 
+selenium
+webdriver-manager
+google-cloud-storage
+google-auth
+openpyxl
+PyPDF2
+tqdm
+clear
+psutil
+bcrypt
+python-socketio
+Flask-SQLAlchemy
+pywinauto
+Pillow
+python-docx
+pymupdf
+pandas
+termcolor
+
+## Instalar isso aqui se o servidor for linux: 
+# apt install python3-dev libmysqlclient-dev pkg-config tightvncserver && tightvncserver :99 -geometry 1920x1080
+
+
