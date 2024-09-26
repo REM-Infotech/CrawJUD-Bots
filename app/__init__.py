@@ -3,7 +3,6 @@ from flask_mail import Mail
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from app import default_config
-from configs import csp
 
 import os
 import pathlib

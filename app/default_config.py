@@ -31,7 +31,7 @@ database_uri = f"mysql://{login_db}:{passwd_db}@{host_db}/{database_name}"
 if debug is True:
     database_uri = "sqlite:///project.db"
 
-QLALCHEMY_DATABASE_URI = database_uri
+SQLALCHEMY_DATABASE_URI = database_uri
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 ## FLASK CONFIG   
