@@ -1,9 +1,9 @@
 """ Imports do Projeto """
-from Scripts.CrawJUD import CrawJUD
-from Scripts.CrawJUD.search import SeachBot
-from Scripts.Tools.PrintLogs import printtext as prt
-from Scripts.common.selenium_excepts import webdriver_exepts
-from Scripts.common.selenium_excepts import exeption_message
+from bot.head import CrawJUD
+from bot.head.search import SeachBot
+from bot.head.Tools.PrintLogs import printtext as prt
+from bot.head.common.selenium_excepts import webdriver_exepts
+from bot.head.common.selenium_excepts import exeption_message
 
 from typing import Type
 import time
@@ -16,7 +16,7 @@ from datetime import datetime
 import openpyxl
 
 """Selenium Imports"""
-from Scripts.Tools.PrintLogs import printtext as prt
+from bot.head.Tools.PrintLogs import printtext as prt
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC

@@ -13,12 +13,12 @@ from PyPDF2 import *
 
 """ Imports do Projeto """
 from datetime import datetime
-from Scripts.CrawJUD import CrawJUD
-from Scripts.CrawJUD.search import SeachBot
-from Scripts.Tools.PrintLogs import printtext as prt
-from Scripts.common.exceptions import ErroDeExecucao
-from Scripts.common.selenium_excepts import webdriver_exepts
-from Scripts.common.selenium_excepts import exeption_message
+from bot.head import CrawJUD
+from bot.head.search import SeachBot
+from bot.head.Tools.PrintLogs import printtext as prt
+from bot.head.common.exceptions import ErroDeExecucao
+from bot.head.common.selenium_excepts import webdriver_exepts
+from bot.head.common.selenium_excepts import exeption_message
 from selenium.webdriver.common.print_page_options import PrintOptions
 
 # Selenium Imports

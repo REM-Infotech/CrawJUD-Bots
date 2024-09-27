@@ -1,16 +1,16 @@
 from time import sleep
 from typing import Type
 from contextlib import suppress
-from Scripts.common.exceptions import ErroDeExecucao
+from bot.head.common.exceptions import ErroDeExecucao
 
-from Scripts.Tools.PrintLogs import printtext as prt
+from bot.head.Tools.PrintLogs import printtext as prt
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import  NoSuchElementException, TimeoutException
-from Scripts.CrawJUD.interator import Interact
+from bot.head.interator import Interact
 
 class SeachBot:
     

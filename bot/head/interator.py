@@ -1,5 +1,5 @@
-from Scripts.common.exceptions import ItemNaoEcontrado
-from Scripts.Tools.PrintLogs import printtext as prt
+from bot.head.common.exceptions import ItemNaoEcontrado
+from bot.head.Tools.PrintLogs import printtext as prt
 
 from time import sleep
 from typing import Type

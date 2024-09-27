@@ -1,13 +1,12 @@
 """ Inicia """
-from Scripts.Tools.MakeTemplate import MakeXlsx
-from Scripts.Tools.PrintLogs import printtext as prt
-from Scripts.CrawJUD.interator import Interact
+from bot.head.Tools.MakeTemplate import MakeXlsx
+from bot.head.Tools.PrintLogs import printtext as prt
+from bot.head.interator import Interact
 from openpyxl.worksheet.worksheet import Worksheet
-from Scripts.Tools.dicionarios import cities_Amazonas
-from Scripts.CrawJUD.auth import AuthBot
-from Scripts.CrawJUD.nome_colunas import nomes_colunas
-from Scripts.Tools.StartStop_Notify import SetStatus
-from openai import OpenAI
+from bot.head.Tools.dicionarios import cities_Amazonas
+from bot.head.auth import AuthBot
+from bot.head.nome_colunas import nomes_colunas
+from bot.head.Tools.StartStop_Notify import SetStatus
 
 import os
 import time
@@ -35,7 +34,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.core.driver_cache import DriverCacheManager
 
-from Scripts.common.exceptions import ErroDeExecucao
+from bot.head.common.exceptions import ErroDeExecucao
 
 list_args = list_args = ['--ignore-ssl-errors=yes', '--ignore-certificate-errors', 
                          "--display=:10", "--window-size=1600,900", "--no-sandbox", "--disable-blink-features=AutomationControlled", 
@@ -241,10 +240,6 @@ class CrawJUD:
     def format_String(self, string: str) -> str:
         
         return "".join([c for c in unicodedata.normalize('NFKD', string.lower().replace(" ", "").replace("_","")) if not unicodedata.combining(c)])
-
-    def client(self):
-        
-        return OpenAI()
     
     def finalize_execution(self):
         

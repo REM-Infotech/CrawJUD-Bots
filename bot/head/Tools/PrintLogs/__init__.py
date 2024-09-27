@@ -16,7 +16,7 @@ import openpyxl
 from socketio import Client
 import logging
 import json
-from Scripts.Tools.PrintLogs.socketio import socket_message, disconnect_socket
+from bot.head.Tools.PrintLogs.socketio import socket_message, disconnect_socket
 
 # Define a codificação de caracteres como UTF-8
 codificacao = 'utf-8'

@@ -5,12 +5,12 @@ from contextlib import suppress
 from datetime import datetime
 
 """ Imports do Projeto """
-from Scripts.CrawJUD import CrawJUD
-from Scripts.CrawJUD.search import SeachBot
-from Scripts.Tools.PrintLogs import printtext as prt
-from Scripts.common.selenium_excepts import webdriver_exepts
-from Scripts.common.selenium_excepts import exeption_message
-from Scripts.common.exceptions import ErroDeExecucao
+from bot.head import CrawJUD
+from bot.head.search import SeachBot
+from bot.head.Tools.PrintLogs import printtext as prt
+from bot.head.common.selenium_excepts import webdriver_exepts
+from bot.head.common.selenium_excepts import exeption_message
+from bot.head.common.exceptions import ErroDeExecucao
 
 # Selenium Imports
 from selenium.webdriver.common.by import By

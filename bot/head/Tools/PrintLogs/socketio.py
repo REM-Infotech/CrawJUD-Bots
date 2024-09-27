@@ -1,5 +1,5 @@
 from socketio import Client
-from Scripts.Tools.get_url_socket import url_socket
+from bot.head.Tools.get_url_socket import url_socket
 
 from socketio.exceptions import ConnectionError
 

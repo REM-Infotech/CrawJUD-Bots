@@ -1,7 +1,7 @@
 """ Imports do Projeto """
-from Scripts.CrawJUD import CrawJUD
-from Scripts.Tools.PrintLogs import printtext as prt
-from Scripts.CrawJUD.search import SeachBot
+from bot.head import CrawJUD
+from bot.head.Tools.PrintLogs import printtext as prt
+from bot.head.search import SeachBot
 from datetime import datetime
 from typing import Type
 from time import sleep
@@ -15,10 +15,10 @@ from PyPDF2 import *
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.remote.webelement import WebElement
-from Scripts.common.exceptions import ErroDeExecucao
+from bot.head.common.exceptions import ErroDeExecucao
 from selenium.webdriver.support import expected_conditions as EC
-from Scripts.common.selenium_excepts import webdriver_exepts
-from Scripts.common.selenium_excepts import exeption_message
+from bot.head.common.selenium_excepts import webdriver_exepts
+from bot.head.common.selenium_excepts import exeption_message
 from selenium.common.exceptions import NoSuchElementException
 
 
@@ -341,26 +341,26 @@ class PROJUDICrawlerMovimentacaoTable(CrawJUD):
             
         return pagescontent
     
-    def gpt_chat(self, text_mov: str) -> str:
+    # def gpt_chat(self, text_mov: str) -> str:
         
-        try:
+    #     try:
             
-            client = self.client()
+    #         client = self.client()
             
-            completion = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "Você é expert em análise juridica, você sabe identificar dispotivos de sentença e decisões interlocutórias"},
-                {"role": "user", "content": f":Poderia extrair o dispositivo desse texto aqui? {text_mov} Eu quero unicamente o texto, sem você falando qualquer coisa"},
-                {"role": "user", "content": "Eu quero o texto ipsis litteris, sem resumos seus"}
-            ]
-            )
+    #         completion = client.chat.completions.create(
+    #         model="gpt-3.5-turbo",
+    #         messages=[
+    #             {"role": "system", "content": "Você é expert em análise juridica, você sabe identificar dispotivos de sentença e decisões interlocutórias"},
+    #             {"role": "user", "content": f":Poderia extrair o dispositivo desse texto aqui? {text_mov} Eu quero unicamente o texto, sem você falando qualquer coisa"},
+    #             {"role": "user", "content": "Eu quero o texto ipsis litteris, sem resumos seus"}
+    #         ]
+    #         )
             
-            text = completion.choices[0].message.content
-            return text
-        except Exception as e:
-            print(e)
-            return text_mov
+    #         text = completion.choices[0].message.content
+    #         return text
+    #     except Exception as e:
+    #         print(e)
+    #         return text_mov
 
     def set_tablemoves(self) -> None:
         

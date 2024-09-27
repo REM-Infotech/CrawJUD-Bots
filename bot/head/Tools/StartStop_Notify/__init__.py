@@ -12,11 +12,11 @@ import pytz
 from time import sleep
 import json
 
-from Scripts.Tools.ClearCache import DelCache
-from Scripts.Tools.StartStop_Notify.uninstall_cert import uninstall
-from Scripts.Tools.StartStop_Notify.makefile import makezip
-from Scripts.Tools.StartStop_Notify.upload_zip import enviar_arquivo_para_gcs
-from Scripts.Tools.StartStop_Notify.send_email import email_stop, email_start
+from bot.head.Tools.ClearCache import DelCache
+from bot.head.Tools.StartStop_Notify.uninstall_cert import uninstall
+from bot.head.Tools.StartStop_Notify.makefile import makezip
+from bot.head.Tools.StartStop_Notify.upload_zip import enviar_arquivo_para_gcs
+from bot.head.Tools.StartStop_Notify.send_email import email_stop, email_start
 
 
 url_cache = []

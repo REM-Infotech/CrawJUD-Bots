@@ -6,12 +6,12 @@ from datetime import datetime
 from openpyxl.styles import Font
 from openpyxl.styles import PatternFill
 
-from Scripts.Tools.MakeTemplate.appends import capa_sucesso
-from Scripts.Tools.MakeTemplate.appends import sucesso, erro
-from Scripts.Tools.MakeTemplate.appends import cadastro_erro
-from Scripts.Tools.MakeTemplate.appends import movimentacao_sucesso
-from Scripts.Tools.MakeTemplate.appends import esaj_guias_emissao_sucesso
-from Scripts.Tools.MakeTemplate.appends import caixa_guias_emissao_sucesso
+from bot.head.Tools.MakeTemplate.appends import capa_sucesso
+from bot.head.Tools.MakeTemplate.appends import sucesso, erro
+from bot.head.Tools.MakeTemplate.appends import cadastro_erro
+from bot.head.Tools.MakeTemplate.appends import movimentacao_sucesso
+from bot.head.Tools.MakeTemplate.appends import esaj_guias_emissao_sucesso
+from bot.head.Tools.MakeTemplate.appends import caixa_guias_emissao_sucesso
 
 
 class MakeXlsx:

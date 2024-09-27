@@ -1,8 +1,10 @@
 from flask import Flask
 from flask_mail import Mail
-from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
+from flask_talisman import Talisman
+from flask_socketio import SocketIO
 from app import default_config
+from configs import csp
 
 import os
 import pathlib
@@ -11,21 +13,27 @@ from datetime import timedelta
 src_path = os.path.join(os.getcwd(), "static")
 app = Flask(__name__, static_folder=src_path)
 
-os.makedirs("logs", exist_ok=True)
-os.makedirs("Archives", exist_ok=True)
-
 app.config.from_object(default_config)
-
-mail = Mail()
 db = SQLAlchemy()
-socketio = SocketIO()
+tlsm = Talisman()
+mail = Mail()
+io = SocketIO()
 
 def init_app() -> None:
     
     from app.models import init_database
+    age = timedelta(days=31).max.seconds
     db.init_app(app)
     mail.init_app(app)
-    socketio.init_app(app)
+    io.init_app(app)
+    
+    tlsm.init_app(app, content_security_policy=csp(),
+                session_cookie_http_only=True,
+                session_cookie_samesite='Lax',
+                strict_transport_security=True,
+                strict_transport_security_max_age=age,
+                x_content_type_options= True,
+                x_xss_protection=True)
     init_database()
     
 init_app()

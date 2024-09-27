@@ -19,6 +19,7 @@ Pillow
 python-docx
 pymupdf
 pandas
+flask_talisman
 termcolor
 python-dotenv
 ## Instalar isso aqui se o servidor for linux: 
