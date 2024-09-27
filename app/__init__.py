@@ -15,18 +15,17 @@ from datetime import timedelta
 from configs import csp
 from app import default_config
 
+src_path = os.path.join(os.getcwd(), "static")
 
 db = SQLAlchemy()
 tlsm = Talisman()
 mail = Mail()
 io = SocketIO()
+app = Flask(__name__, static_folder=src_path)
+app.config.from_object(default_config)
 
-def create_app() -> tuple[Flask, int, bool]:
-
-    src_path = os.path.join(os.getcwd(), "static")
-    app = Flask(__name__, static_folder=src_path)
-
-    app.config.from_object(default_config)
+def init_app():
+    
     age = timedelta(days=31).max.seconds
     db.init_app(app)
     mail.init_app(app)
@@ -39,20 +38,11 @@ def create_app() -> tuple[Flask, int, bool]:
                 x_content_type_options= True,
                 x_xss_protection=True)
     
-    from app.models import init_database
-    from app.routes import  blueprint_reg
-    
-    init_database(app, db)
-    blueprint_reg(app, io)
-    values = dotenv_values()
-    
-    ## Cloudflare Tunnel Configs
-    hostname = values.get("HOSTNAME")
-    port = int(values.get("PORT", 5000))
-    debug = values.get('DEBUG', 'False').lower() in (
-        'true', '1', 't', 'y', 'yes')
-    
-    
-    return (app, port, debug, io)
+    with app.app_context():
+        from app.models import init_database
+        from app.routes import  blueprint_reg
+        
+        init_database(app, db)
+        blueprint_reg(app, io)
 
-
+init_app()

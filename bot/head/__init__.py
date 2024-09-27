@@ -48,7 +48,7 @@ settings = {
 
 class CrawJUD:
 
-    def __init__(self):
+    def __init__(self, path_args: str = None):
         pass
     # def __init__(self, arguments_bot: dict):
 

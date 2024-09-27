@@ -1,6 +1,5 @@
 from app import db
 from app import app
-from app.models import ExecutionsTable
 
 import os
 from typing import Type

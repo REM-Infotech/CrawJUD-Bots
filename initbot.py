@@ -1,4 +1,5 @@
 from bot import CrawJUD
+from app import app
 
 import os
 import sys
@@ -9,7 +10,7 @@ import subprocess
 
 def initBot(argv: str):
     
-    CrawJUD()
+    master = CrawJUD(argv)
 
 def install_cert(data:dict, path_cert):
 
@@ -24,4 +25,4 @@ def install_cert(data:dict, path_cert):
         print("Erro ao importar o certificado:")
         print(e.stdout)
 
-initBot(sys.argv[0])
+initBot(sys.argv[1])

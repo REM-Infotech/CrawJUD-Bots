@@ -1,7 +1,6 @@
 from flask_mail import Message
 from app import app
 from app import mail
-from app.models import Clients, ExecutionsTable
 from dotenv import dotenv_values
 
 values = dotenv_values()

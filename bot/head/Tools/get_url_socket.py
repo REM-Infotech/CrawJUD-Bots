@@ -1,8 +1,6 @@
 from app import app
 from app import db
 
-from app.models import ExecutionsTable
-
 url_cache = []
 
 def url_socket(pid) -> str:

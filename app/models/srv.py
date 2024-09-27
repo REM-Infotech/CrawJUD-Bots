@@ -1,7 +1,7 @@
 from app import db
 
 
-class Servers(db.Column):
+class Servers(db.Model):
     
     __tablename__ = 'servers'
     id = db.Column(db.Integer, primary_key=True)
