@@ -1,10 +1,6 @@
-from app import app, io
-from dotenv import  dotenv_values
-import os
+from app import create_app
 
-if __name__ == "__main__":  
+if __name__ == "__main__":
     
-    debug = dotenv_values().get('DEBUG', 'False').lower() in (
-        'true', '1', 't', 'y', 'yes')
-    
-    io.run(app, host="0.0.0.0", port=8000, debug=True)
+    app, port, debug, io = create_app()
+    io.run(app, "0.0.0.0", port=int(port), debug=debug)
