@@ -2,7 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 from app.models.users import Users, LicensesUsers
-from app.models.bots import BotsCrawJUD, Credentials
+from app.models.bots import BotsCrawJUD, Credentials, Executions
 from app.models.srv import Servers
 
 import platform
@@ -19,7 +19,7 @@ def init_database(app: Flask, db: SQLAlchemy):
         NAMESERVER = values.get("NAMESERVER")
         HOST = values.get("HOST")
         
-        if not Servers.query.filter(Servers.name == HOST).first():
+        if not Servers.query.filter(Servers.name == NAMESERVER).first():
         
             server = Servers(
                 name = NAMESERVER,

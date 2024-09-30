@@ -6,14 +6,16 @@ from bot.head.Tools.MakeTemplate import MakeXlsx
 from bot.head.Tools.PrintLogs import printtext as prt
 from bot.head.Tools.StartStop_Notify import SetStatus
 from bot.head.Tools.dicionarios import cities_Amazonas
+from bot.head.common.selenium_excepts import webdriver_exepts
+from bot.head.common.selenium_excepts import exeption_message
 
 import os
 import time
 import glob
 import json
-import pytz
 import pathlib
 import openpyxl
+import platform
 import subprocess
 import unicodedata
 import pandas as pd
@@ -37,7 +39,7 @@ from webdriver_manager.core.driver_cache import DriverCacheManager
 from bot.head.common.exceptions import ErroDeExecucao
 
 list_args = list_args = ['--ignore-ssl-errors=yes', '--ignore-certificate-errors',
-                         "--display=:10", "--window-size=1600,900", "--no-sandbox", "--disable-blink-features=AutomationControlled",
+                         "--display=:99", "--window-size=1600,900", "--no-sandbox", "--disable-blink-features=AutomationControlled",
                          '--kiosk-printing']
 settings = {
     "recentDestinations": [{"id": "Save as PDF", "origin": "local", "account": ""}],
@@ -49,61 +51,72 @@ settings = {
 class CrawJUD:
 
     def __init__(self, path_args: str = None):
-        pass
-    # def __init__(self, arguments_bot: dict):
+        
+        with open(path_args, "rb") as f:
+            arguments_bot: dict[str, str] = json.load(f)
+        
+        from bot.projudi import projudi
+        
+        self.pid = arguments_bot['pid']
+        self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve(), arguments_bot['xlsx'])
+        self.output_dir_path = pathlib.Path(self.input_file).parent.resolve().__str__()
+        self.system: str = arguments_bot.get("system")
+        self.type: str = arguments_bot.get("type")
+        self.state: str = arguments_bot.get("state")
+        self.ws: Type[Worksheet] = openpyxl.load_workbook(self.input_file).active
+        self.prt = prt(self.pid)
+        self.row = 2
+        
+        args = self.DriverLaunch()
+        if not args:
+            return
+        
+        self.driver: Type[WebDriver] = args[0]
+        self.wait: Type[WebDriverWait] = args[1]
+        
+        self.bot = locals().get(self.system)(self.state, self.type, self)
 
-    #     self.message = None
-    #     self.arguments_bot = arguments_bot
-    #     self.row = 2
-    #     self.index = 0
-    #     self.pid = arguments_bot["pid"]
-    #     self.input_file = glob.glob(
-    #         os.path.join("Temp", self.pid, "*.xlsx"))[0]
-    #     self.ws: Type[Worksheet] = openpyxl.load_workbook(
-    #         self.input_file).active
-    #     self.output_dir_path = pathlib.Path(
-    #         self.input_file).parent.resolve().__str__()
-    #     self.prt = prt(self.pid)
-    #     self.bot_name: str = arguments_bot.get("bot")
-    #     args = self.DriverLaunch()
-    #     self.senhacert = ""
-    #     self.portal = ""
-    #     self.bot = ""
-    #     self.bot_data = {}
-    #     self.set_status = SetStatus()
-
-    #     if not args:
-    #         self.prt.print_log('error', 'Erro ao inicializar Robô')
-    #         status = [self.arguments_bot['user'], self.pid,
-    #                   self.arguments_bot['bot'], 'Falha ao iniciar', self.input_file]
-    #         self.set_status.botstop(status)
-    #         return
-
-    #     self.prt.print_log('log', 'Robô inicializado!')
-    #     self.driver: Type[WebDriver] = args[0]
-    #     self.wait: Type[WebDriverWait] = args[1]
-    #     self.interact = Interact(self.driver, self.wait)
-    #     status = [self.arguments_bot['user'], self.pid,
-    #               self.arguments_bot['bot'], 'Em Execução', self.input_file]
-    #     self.set_status.botstart(status)
-
-    #     wb = openpyxl.load_workbook(filename=self.input_file)
-    #     ws: Type[Worksheet] = wb.active
-    #     self.rows = ws.max_row
-    #     self.set_status.send_total_rows(self.rows, self.pid)
-    #     self.login()
-    #     self.prt.print_log('log', 'Criando planilha de output')
-    #     namefile = f"Sucessos - PID {self.pid} {datetime.now(
-    #         pytz.timezone('Etc/GMT+4')).strftime('%d-%m-%y')}.xlsx"
-    #     self.path = f"{self.output_dir_path}/{namefile}"
-    #     MakeXlsx().make_output(f"{self.bot_name}_sucesso", self.path)
-
-    #     namefile_erro = f"Erros - PID {self.pid} {datetime.now(
-    #         pytz.timezone('Etc/GMT+4')).strftime('%d-%m-%y')}.xlsx"
-    #     self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
-    #     MakeXlsx().make_output(f"{self.bot_name}_erro", self.path_erro)
-
-    #     self.prt.print_log('log', 'Planilha criada com sucesso!')
+    def execution(self):
+        
+        while True:
+            
+            if self.row == self.ws.max_row+1:
+                self.prt = prt(self.pid, self.row)
+                break
+            
+            self.prt = prt(self.pid, self.row-1)
+            self.bot_data = {}
+            
+            for index in range(1, self.ws.max_column + 1):
+                
+                self.index = index
+                self.bot_data.update(self.set_data())
+                if index == self.ws.max_column:
+                    break
+            
+            try:
+                
+                if not len(self.bot_data) == 0:
+                    self.bot.queue()
+                
+            except Exception as e:
+                
+                old_message = self.message
+                self.message = getattr(e, 'msg', getattr(e, 'message', ""))
+                if self.message == "":
+                    for exept in webdriver_exepts():
+                        if isinstance(e, exept):
+                            self.message = exeption_message().get(exept)
+                            break
+                        
+                if not self.message:
+                    self.message = str(e)
+                    
+                error_message = f'{self.message}. | Operação: {old_message}'
+                self.prt.print_log("error", error_message)
+                self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
+            
+            self.row += 1
 
     def login(self):
 
@@ -277,7 +290,7 @@ class CrawJUD:
                   self.arguments_bot.get('bot'), 'Finalizado', namefile]
         self.set_status.botstop(status)
 
-    def DriverLaunch(self) -> list | None:
+    def DriverLaunch(self) -> list[WebDriver, WebDriverWait]:
 
         try:
 
@@ -286,25 +299,25 @@ class CrawJUD:
             user_data_dir = os.path.join(
                 os.getcwd(), 'Temp', self.pid, 'chrome')
 
-            if self.bot_name is not None and "esaj" in self.bot_name and "peticionamento" in self.bot_name:
-                state = str(self.bot_name.split("_")[2])
-                path_accepted = os.path.join(
-                    parent_path, "Browser", state, self.arguments_bot['login'], "chrome")
-                if os.path.exists(path_accepted):
-                    try:
-                        resultados = subprocess.run(["xcopy", path_accepted, user_data_dir, "/E", "/H", "/C", "/I"],
-                                                    check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.splitlines()
-                    except subprocess.CalledProcessError as e:
-                        tqdm.write(e.stderr)
-                        tqdm.write(e.stdout)
+            # if self.bot_name is not None and "esaj" in self.bot_name and "peticionamento" in self.bot_name:
+            #     state = str(self.bot_name.split("_")[2])
+            #     path_accepted = os.path.join(
+            #         parent_path, "Browser", state, self.arguments_bot['login'], "chrome")
+            #     if os.path.exists(path_accepted):
+            #         try:
+            #             resultados = subprocess.run(["xcopy", path_accepted, user_data_dir, "/E", "/H", "/C", "/I"],
+            #                                         check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.splitlines()
+            #         except subprocess.CalledProcessError as e:
+            #             tqdm.write(e.stderr)
+            #             tqdm.write(e.stdout)
 
-                else:
-                    os.makedirs(os.path.join(
-                        parent_path, "Browser"), exist_ok=True)
-                    os.makedirs(os.path.join(
-                        parent_path, "Browser", state), exist_ok=True)
-                    os.makedirs(pathlib.Path(
-                        path_accepted).parent.resolve(), exist_ok=True)
+            #     else:
+            #         os.makedirs(os.path.join(
+            #             parent_path, "Browser"), exist_ok=True)
+            #         os.makedirs(os.path.join(
+            #             parent_path, "Browser", state), exist_ok=True)
+            #         os.makedirs(pathlib.Path(
+            #             path_accepted).parent.resolve(), exist_ok=True)
 
             chrome_options.add_argument(f"user-data-dir={user_data_dir}")
             for argument in list_args:
@@ -329,10 +342,13 @@ class CrawJUD:
             chrome_options.add_experimental_option("prefs", chrome_prefs)
             driverinst = ChromeDriverManager(
                 cache_manager=driver_cache_manager).install()
-            path = os.path.join(pathlib.Path(
-                driverinst).parent.resolve(), "chromedriver.exe")
-            driver = webdriver.Chrome(
-                service=Service(path), options=chrome_options)
+            
+            path = os.path.join(pathlib.Path(driverinst).parent.resolve(), "chromedriver.exe")
+            
+            if platform.system() == "Linux":
+                path = path.replace(".exe", "")
+            
+            driver = webdriver.Chrome(service=Service(path), options=chrome_options)
 
             wait = WebDriverWait(driver, 20, 0.01)
             args = [driver, wait]
@@ -342,16 +358,4 @@ class CrawJUD:
         except Exception as e:
 
             print(e)
-            if hasattr(e, 'msg') and e.msg is not None and e.msg != '':
-                error_msg = e.msg.split(": ")[1]
-                self.prt.print_log('error', f'System Error: {error_msg}')
 
-            elif hasattr(e, 'args') and e.args is not None and e.args != '':
-                error_msg = e.args[0]
-                self.prt.print_log('error', f'System Error: {error_msg}')
-
-            else:
-                self.prt.print_log(self.pid, 'error',
-                                   f'Não foi inicializar ChromeDriver')
-
-            return None

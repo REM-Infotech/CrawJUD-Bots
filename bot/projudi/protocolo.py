@@ -10,7 +10,6 @@ from contextlib import suppress
 
 
 """ Imports do Projeto """
-from bot.head import CrawJUD
 from bot.head.search import SeachBot
 from bot.head.Tools.PrintLogs import printtext as prt
 from bot.head.common.exceptions import ErroDeExecucao
@@ -29,9 +28,9 @@ from selenium.common.exceptions import  NoSuchElementException, TimeoutException
 
 
 
-class PROJUDICrawlerPeticionamento(CrawJUD):
+class protocolo:
 
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
+    def __init__(self, Initbot) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
 

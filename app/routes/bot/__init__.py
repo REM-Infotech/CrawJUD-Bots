@@ -1,4 +1,4 @@
-from app.models import BotsCrawJUD, LicensesUsers, Users
+from app.models import BotsCrawJUD, LicensesUsers, Users, Executions
 from flask import (Blueprint, request, url_for, redirect,
                    session, jsonify, make_response)
 import os
@@ -10,6 +10,7 @@ import subprocess
 from clear import clear
 
 from app import app
+from app import db
 
 path_template = os.path.join(pathlib.Path(__file__).parent.resolve(), "templates")
 bot = Blueprint("bot", __name__, template_folder=path_template)
@@ -18,7 +19,7 @@ bot = Blueprint("bot", __name__, template_folder=path_template)
 def botlaunch(id: int, system: str, type: str):
 
 
-    user = request.form.get("login")
+    user = request.form.get("user")
     license_token = request.form.get("license_token")
     pid = request.form.get("pid")
     path_pid = os.path.join(app.config["TEMP_PATH"], pid)
@@ -46,6 +47,21 @@ def botlaunch(id: int, system: str, type: str):
     inicia = threading.Thread(target=start_, args=(path_args,))
     inicia.start()
     
+    execut = Executions(
+        pid = pid,
+        status = "Em Execução",
+        file_output = data.get("xlsx"),
+        url_socket = data.get("url_socket")
+    )
+    
+    usr = Users.query.filter(Users.login == user).first()
+    bt = BotsCrawJUD.query.filter(BotsCrawJUD.id == id).first()
+    
+    execut.user.append(usr)
+    execut.bot.append(bt)
+    
+    db.session.add(execut)
+    db.session.commit()
     return resp
 
 def start_(path_args: str):

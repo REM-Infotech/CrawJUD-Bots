@@ -16,6 +16,12 @@ execution_users = db.Table(
     db.Column('users_id', db.Integer, db.ForeignKey('users.id'), primary_key=True)
 )
 
+execution_licenses = db.Table(
+    'execution_licenses',
+    db.Column('executions_id', db.Integer, db.ForeignKey('executions.id'), primary_key=True),
+    db.Column('licenses_users_id', db.Integer, db.ForeignKey('licenses_users.id'), primary_key=True)
+)
+
 class BotsCrawJUD(db.Model):
     
     __tablename__ = 'bots'
@@ -47,7 +53,6 @@ class Executions(db.Model):
     __tablename__ = 'executions'
     pid = db.Column(db.String(length=12), nullable=False)
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(length=50), nullable=False)
     status = db.Column(db.String(length=45), nullable=False)
     file_output = db.Column(db.String(length=512))
     total_rows = db.Column(db.String(length=45))
@@ -59,3 +64,4 @@ class Executions(db.Model):
     # Relacionamento com Bots (conforme já definido antes)
     bot = db.relationship('BotsCrawJUD', secondary=execution_bots, backref=db.backref('executions', lazy=True))
     user = db.relationship('Users', secondary=execution_users, backref=db.backref('executions', lazy=True))
+    licenses = db.relationship('LicensesUsers', secondary=execution_licenses, backref=db.backref('executions', lazy=True))

@@ -12,7 +12,7 @@ def initBot(argv: str):
     
     master = CrawJUD(argv)
 
-def install_cert(data:dict, path_cert):
+def install_cert(data: dict, path_cert: str):
 
     comando = ["certutil", "-importpfx", "-user", "-f", "-p", data.get("senha_token"), "-silent", path_cert]
     try:

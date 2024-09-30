@@ -1,5 +1,4 @@
 """ Imports do Projeto """
-from bot.head import CrawJUD
 from bot.head.Tools.PrintLogs import printtext as prt
 from bot.head.search import SeachBot
 from datetime import datetime
@@ -11,6 +10,7 @@ import os
 from contextlib import suppress
 import shutil
 from PyPDF2 import *
+
 # Selenium Imports
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
@@ -22,9 +22,9 @@ from bot.head.common.selenium_excepts import exeption_message
 from selenium.common.exceptions import NoSuchElementException
 
 
-class PROJUDICrawlerMovimentacaoTable(CrawJUD):
+class movimentacao:
 
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
+    def __init__(self, Initbot) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
 

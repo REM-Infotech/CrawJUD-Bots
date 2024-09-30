@@ -1,11 +1,10 @@
-from dotenv import load_dotenv, dotenv_values
+from dotenv import dotenv_values
 from uuid import uuid4
 import platform
 import os
 
 from datetime import timedelta
 
-load_dotenv()
 values = dotenv_values()
 
 login_db = values.get('login')
@@ -54,20 +53,6 @@ for paths in [DOCS_PATH, TEMP_PATH, IMAGE_TEMP_PATH, CSV_TEMP_PATH, PDF_TEMP_PAT
     
     if not os.path.exists(paths):
         os.makedirs(paths, exist_ok=True)
-        
-    else:
-        
-        plataforma = platform.system()
-        
-        if plataforma == "Linux":
-            path =  f"{paths}" 
-            command = "rm -r " + path
-             
-        
-        elif plataforma == "Windows":
-            path =  f"{paths}\\*" 
-            command = "powershell rm -r " + path
-        
-        os.system(command)
+
 
 
