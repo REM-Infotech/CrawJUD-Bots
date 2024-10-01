@@ -54,7 +54,7 @@ class CrawJUD:
     def __init__(self, path_args: str = None):
         
         with open(path_args, "rb") as f:
-            arguments_bot: dict[str, str] = json.load(f)
+            arguments_bot: dict[str, str | int] = json.load(f)
         
         from bot.projudi import projudi
         from bot.projudi.common.elements import elements_projudi
@@ -64,12 +64,17 @@ class CrawJUD:
         self.message = None
         self.argbot = arguments_bot
         self.pid = arguments_bot['pid']
+        
         self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve(), arguments_bot['xlsx'])
         self.output_dir_path = pathlib.Path(self.input_file).parent.resolve().__str__()
+        
+        
         self.system: str = arguments_bot.get("system")
         self.type: str = arguments_bot.get("type")
-        self.state: str = arguments_bot.get("state")
         
+        
+        self.state: str = arguments_bot.get("state")
+        self.rows = int(arguments_bot.get("total_rows"))
         
         ## Abertura da planilha de input
         self.ws: Type[Worksheet] = openpyxl.load_workbook(self.input_file).active
@@ -104,7 +109,7 @@ class CrawJUD:
         self.bot = locals().get(self.system)(self.type, self)
         self.bot.execution()
 
-    def login(self):
+    def login(self) -> None:
 
         try:
 
@@ -140,7 +145,7 @@ class CrawJUD:
             self.driver.quit()
             self.prt.print_log('error', 'Erro ao realizar login')
             status = [self.argbot['user'], self.pid, self.argbot['bot'], 'Falha ao iniciar', self.input_file]
-            self.set_status.botstop(status)
+            # self.set_status.botstop(status)
 
     def set_data(self) -> dict:
 
@@ -199,7 +204,7 @@ class CrawJUD:
 
         return [minutes, seconds]
 
-    def append_moves(self):
+    def append_moves(self) -> None:
 
         if len(self.appends) > 0:
             self.append_success(
@@ -247,7 +252,7 @@ class CrawJUD:
 
         return "".join([c for c in unicodedata.normalize('NFKD', string.lower().replace(" ", "").replace("_", "")) if not unicodedata.combining(c)])
 
-    def finalize_execution(self):
+    def finalize_execution(self) -> None:
 
         self.driver.delete_all_cookies()
         self.driver.quit()
@@ -259,12 +264,10 @@ class CrawJUD:
         minutes = int(calc)
         seconds = int((calc - minutes) * 60)
 
-        self.prt.print_log("log", f"Fim da execução, tempo: {
-                           minutes} minutos e {seconds} segundos")
+        self.prt.print_log("log", f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos")
 
-        status = [self.argbot['user'], self.pid,
-                  self.argbot.get('bot'), 'Finalizado', namefile]
-        self.set_status.botstop(status)
+        status = [self.argbot['user'], self.pid,self.argbot.get('bot'), 'Finalizado', namefile]
+        # self.set_status.botstop(status)
 
     def DriverLaunch(self) -> list[WebDriver, WebDriverWait]:
 

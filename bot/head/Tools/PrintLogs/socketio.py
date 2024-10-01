@@ -20,18 +20,18 @@ def disconnect():
 def connect_socket(pid: str, url_socket: str):
     # Conecta ao servidor SocketIO no URL especificado
     
-    if len(cache_connection) < 1:
+    if len(cache_connection) == 0:
         
         server_url = f"https://{url_socket}"
         
         try:
             socketio.connect(server_url)
-            
+            cache_connection.append("Already connected")
         except Exception as e:
             
-            pass
+            print(e)
             
-        cache_connection.append("Already connected")
+        
 
 
 def disconnect_socket():
@@ -48,7 +48,8 @@ def socket_message(pid: str, formatted_message: str, url_socket: str):
         try:
             connect_socket(pid, url_socket)
             # Envia a mensagem de log formatada para o servidor SocketIO
-            socketio.emit('log_message', {'message': formatted_message, 'pid': pid}, namespace='/log')
+            if len(cache_connection) != 0:
+                socketio.emit('log_message', {'message': formatted_message, 'pid': pid}, namespace='/log')
             
         except Exception as e:
             print(e)

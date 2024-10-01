@@ -17,7 +17,13 @@ from bot.head.Tools.MakeTemplate.appends import caixa_guias_emissao_sucesso
 class MakeXlsx:
 
     def __init__(self, type: str, bot: str):
+        """
         
+        #### type: Tipo da planilha (sucesso, erro)
+        #### bot: o sistema que está sendo executado a automação
+            > Ex.: PROJUDI, ESAJ, ELAW, ETC.
+            
+        """
         self.bot = bot
         self.type = type
         

@@ -29,7 +29,7 @@ class capa(CrawJUD):
         while True:
             
             if self.row == self.ws.max_row+1:
-                self.prt = prt(self.pid, self.row, url_socket=self.argbot['url_socket'])
+                self.prt = prt(self.pid, self.ws.max_row, url_socket=self.argbot['url_socket'])
                 break
             
             self.prt = prt(self.pid, self.row-1, url_socket=self.argbot['url_socket'])
@@ -65,7 +65,9 @@ class capa(CrawJUD):
                 self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
             
             self.row += 1
-    
+
+        self.finalize_execution()
+        
     def queue(self):
         
         self.search(self.bot_data, self.prt)

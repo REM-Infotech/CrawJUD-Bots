@@ -1,7 +1,15 @@
 
+
 class elements_projudi:
     
-    AM = {
+    class AM:
         
+        btn_busca = ""
         
-    }
+    
+
+var = getattr(elements_projudi, "AM")
+
+
+
+print()

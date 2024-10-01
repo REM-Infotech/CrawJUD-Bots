@@ -5,12 +5,15 @@ import os
 import json
 import pathlib
 import platform
+import openpyxl
 import threading
 import subprocess
 from clear import clear
+from openpyxl.worksheet.worksheet import Worksheet
 
 from app import app
 from app import db
+
 
 path_template = os.path.join(pathlib.Path(__file__).parent.resolve(), "templates")
 bot = Blueprint("bot", __name__, template_folder=path_template)
@@ -40,9 +43,16 @@ def botlaunch(id: int, system: str, type: str):
         "type": type
     })
     
+    input_file = os.path.join(pathlib.Path(path_args).parent.resolve(), data['xlsx'])
+    wb = openpyxl.load_workbook(filename=input_file)
+    ws: Worksheet = wb.active
+    rows = ws.max_row
+    
+    data.update({"total_rows": rows})
+    
     with open(path_args, "w") as f:
-        f.write(json.dumps(data))       
-        
+        f.write(json.dumps(data))   
+    
     resp = make_response(jsonify({"ok": "ok"}), 200)
     inicia = threading.Thread(target=start_, args=(path_args,))
     inicia.start()
@@ -51,7 +61,8 @@ def botlaunch(id: int, system: str, type: str):
         pid = pid,
         status = "Em Execução",
         file_output = data.get("xlsx"),
-        url_socket = data.get("url_socket")
+        url_socket = data.get("url_socket"),
+        total_rows = rows
     )
     
     usr = Users.query.filter(Users.login == user).first()
@@ -62,6 +73,7 @@ def botlaunch(id: int, system: str, type: str):
     
     db.session.add(execut)
     db.session.commit()
+    
     return resp
 
 def start_(path_args: str):

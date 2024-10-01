@@ -24,6 +24,7 @@ class SeachBot:
         
         metodo = getattr(self, portal)
         self.metodo = metodo
+        
     def search(self, bot_data: dict, prt: Type[prt]):
         
         self.bot_data = bot_data
