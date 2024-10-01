@@ -1,12 +1,7 @@
 from socketio import Client
-from bot.head.Tools.get_url_socket import url_socket
-
-from socketio.exceptions import ConnectionError
 
 socketio = Client()
-
 cache_connection = []
-
 
 @socketio.event(namespace='/log')
 def connect():
@@ -30,26 +25,26 @@ def connect_socket(pid: str, url_socket: str):
         except Exception as e:
             
             print(e)
-            
-        
-
 
 def disconnect_socket():
     # Desconecta do servidor SocketIO
     socketio.disconnect()
     
     
-def socket_message(pid: str, formatted_message: str, url_socket: str):
+def socket_message(pid: str, formatted_message: str, url_socket: str, 
+                   type: str, pos: int):
     
     try:
-        pass
-    
-    finally:
-        try:
-            connect_socket(pid, url_socket)
-            # Envia a mensagem de log formatada para o servidor SocketIO
-            if len(cache_connection) != 0:
-                socketio.emit('log_message', {'message': formatted_message, 'pid': pid}, namespace='/log')
+        connect_socket(pid, url_socket)
+        # Envia a mensagem de log formatada para o servidor SocketIO
+        if len(cache_connection) != 0:
+            data = {'message': formatted_message, 
+                    'pid': pid,
+                    "type": type,
+                    "pos": pos}
             
-        except Exception as e:
-            print(e)
+            socketio.emit('log_message', data, namespace='/log')
+        
+    except Exception as e:
+        print(e)
+        

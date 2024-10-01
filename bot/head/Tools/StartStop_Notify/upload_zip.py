@@ -1,12 +1,20 @@
 from google.cloud import storage
 from google.oauth2 import service_account
 
-from dotenv import dotenv_values
+import os
 import json
+from dotenv import dotenv_values
 
-def enviar_arquivo_para_gcs(arquivo_local, objeto_destino) -> bool:
+def enviar_arquivo_para_gcs(zip_file: str) -> bool:
         
     try:
+        path_output = os.path.join(os.getcwd(), zip_file)
+            
+        if os.path.exists(path_output):
+            arquivo_local = path_output
+            objeto_destino = os.path.basename(path_output)
+        
+        
         bucket_name = "outputexec-bots"
         project_id = "modular-hulling-404421"
         # Inicializa o cliente GCS

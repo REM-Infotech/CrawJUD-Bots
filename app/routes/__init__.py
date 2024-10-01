@@ -32,5 +32,5 @@ def handle_leave(data):
 def handle_message(data):
     pid = data['pid']
     message = data['message']
-    emit('log_message', {'message': message, 'pid': pid}, room=pid)
+    emit('log_message', data, room=pid)
     # print("mensagem enviada")

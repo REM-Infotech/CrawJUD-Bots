@@ -2,148 +2,151 @@ from app import db
 from app import app
 
 import os
-from typing import Type
+import json
+import pytz
+
+import pathlib
 import logging
 import platform
-from clear import clear
-from datetime import datetime
-import pytz
+import openpyxl
 from time import sleep
-import json
+from clear import clear
+from typing import Type
+from datetime import datetime
+from werkzeug.datastructures import FileStorage
 
+from app.models import Users, BotsCrawJUD, Executions
+from openpyxl.worksheet.worksheet import Worksheet
+
+url_cache = []
 from bot.head.Tools.ClearCache import DelCache
-from bot.head.Tools.StartStop_Notify.uninstall_cert import uninstall
 from bot.head.Tools.StartStop_Notify.makefile import makezip
+from bot.head.Tools.StartStop_Notify.uninstall_cert import uninstall
 from bot.head.Tools.StartStop_Notify.upload_zip import enviar_arquivo_para_gcs
 from bot.head.Tools.StartStop_Notify.send_email import email_stop, email_start
 
 
-url_cache = []
 
-def url_socket(pid) -> str:
+class SetStatus:
     
     
-    if len(url_cache) > 0:
-        return url_cache[0]
     
-    with app.app_context():
+    def __init__(self, form: dict[str, str] = {}, files: dict[FileStorage] = {},
+                 id: int  = None, system: str = None, type: str = None,
+                 usr: str = None, pid: str = None, status: str = "Finalizado") -> str:
         
-        sleep(5)
+        if len(form):
+            self.form = form
+            
+        if len(files):
+            self.files = files
+            
+        self.id = id
+        self.system = system
+        self.type = type
+        self.user = form.get("user", usr)
+        self.pid = form.get("pid", pid)
+        self.status = status
         
-        url_Server = ExecutionsTable.query.filter_by(pid=pid).first()
-        url_srv = url_Server.url_socket
+    def start_bot(self) -> str:
         
-        db.session.close()
-    
-    url_cache.append(url_srv)
-    return url_srv
-
-
-class SetStatus():
-    
-    def send_total_rows(self, rows, pid):
+        path_pid = os.path.join(app.config["TEMP_PATH"], self.pid)
+        os.makedirs(path_pid, exist_ok=True)
+        
+        for f, value in self.files.items():
+            filesav = os.path.join(path_pid, f)
+            value.save(filesav)
+        
+        data = {} 
+        path_args = os.path.join(path_pid, f"{self.pid}.json")
+        for key, value in self.form.items():
+            data.update({key: value})
+        
+        data.update({
+            "id": self.id,
+            "system": self.system,
+            "type": self.type
+        })
+        
+        input_file = os.path.join(pathlib.Path(path_args).parent.resolve(), data['xlsx'])
+        wb = openpyxl.load_workbook(filename=input_file)
+        ws: Worksheet = wb.active
+        rows = ws.max_row
+        
+        data.update({"total_rows": rows})
+        
+        with open(path_args, "w") as f:
+            f.write(json.dumps(data))   
+        
+        execut = Executions(
+            pid = self.pid,
+            status = "Em Execução",
+            arquivo_xlsx = data.get("xlsx"),
+            url_socket = data.get("url_socket"),
+            total_rows = rows,
+            data_execucao = datetime.now(pytz.timezone('Etc/GMT+4')),
+            file_output = "Arguardando Arquivo"
+        )
+        
+        usr = Users.query.filter(Users.login == self.user).first()
+        bt = BotsCrawJUD.query.filter(BotsCrawJUD.id == self.id).first()
+        
+        execut.user.append(usr)
+        execut.bot.append(bt)
+        
+        db.session.add(execut)
+        db.session.commit()
         
         try:
-            socket_address = url_socket(pid)
-                
-            with app.app_context():
-                QueryLogs = ExecutionsTable.query.filter_by(pid=pid).first()
-                QueryLogs.total_rows = rows
-                QueryLogs.url_socket = socket_address
-                db.session.commit()
-                db.session.close()
-                
+            email_start(usr, self.pid)
+            
         except Exception as e:
             logging.error(f'Exception: {e}', exc_info=True)
-        
-    def botstart(self, status):
-        
-        try:
-            with app.app_context():
-
-                InsertExecution = ExecutionsTable.query.filter_by(pid=status[1]).first()
-                
-                if platform.system() == "Windows":
-                    
-                    status[4] = str(status[4]).split("\\")[-1]
-                
-                InsertExecution.data_execucao = datetime.now(pytz.timezone('Etc/GMT+4'))
-                InsertExecution.file_output = "Arguardando Arquivo"
-                InsertExecution.arquivo_xlsx = status[4]  
-                InsertExecution.status = status[3]
-                
-                try:
-                    db.session.commit()
-                    db.session.close()
-                    
-                except Exception as e:
-                    print(e)
             
-            email_start(status)
-            
-        except Exception as e:
-            logging.error(f'Exception: {e}', exc_info=True)   
+        return path_args
     
-    def botstop(self, status):
+    def botstop(self):
         
         try:
+            srv = platform.system() in ("Windows")
+            sys = self.system.lower() in ("esaj")
+            typebot = self.type.lower() in ("protocolo")
             
-            if platform.system() == "Windows" and "esaj" in status[2] and "peticionamento" in status[2]:
+            if all([srv, sys, typebot]):
                 
-                json_args = os.path.join(os.getcwd(), "Temp", status[1], f"args_{status[1]}.json")
-                
-                with open(json_args, "rb") as file:
-                    
-                    arg = json.load(file)["login"]
+                json_args = os.path.join(os.getcwd(), "Temp", self.pid, f"{self.pid}.json")
+                with open(json_args, "rb") as f:
+                    arg = json.load(f)["login"]
 
                 try:
-                    uninstall(arg)
+                    self.uninstall(arg)
                 except Exception as e:
                     print(e)
             
-            zip_file = makezip(status)
+            zip_file = makezip(self.pid)
+            objeto_destino = os.path.basename(zip_file)
+            enviar_arquivo_para_gcs(zip_file)
             
-            path_output = os.path.join(os.getcwd(), zip_file)
             
-            if os.path.exists(path_output):
-                
-                arquivo_local = path_output
-
-                objeto_destino = path_output.split("/")[-1]
-                
-            
-            enviar_arquivo_para_gcs(arquivo_local, objeto_destino)
+            execution = Executions.query.filter(Executions.pid == self.pid).first()
             
             try:
-                email_stop(status)
-            
+                email_stop(execution)
             except Exception as e:
-                print(e)
+                logging.error(f'Exception: {e}', exc_info=True)
             
-            with app.app_context():
-                try:
-                    UpdateTable = ExecutionsTable.query.filter_by(pid=status[1]).first()
                     
-                except Exception as e:
-                    print(e)
-                    
-                UpdateTable.status = status[3]
-                UpdateTable.file_output = objeto_destino
-                UpdateTable.data_finalizacao = datetime.now(pytz.timezone('Etc/GMT+4'))
-                db.session.commit()
-                db.session.close()
+            execution.status = self.status
+            execution.file_output = objeto_destino
+            execution.data_finalizacao = datetime.now(pytz.timezone('Etc/GMT+4'))
+            db.session.commit()
+            db.session.close()
         
-            DelCache().clear(status[1])
-            
-            clear()
+            DelCache(self.pid)
+
             
         except Exception as e:
             logging.error(f'Exception: {e}', exc_info=True)
-            
-    
-
-# Substitua os valores abaixo pelos seus próprios dados
-nome_do_bucket = 'seu-bucket'
 
 
 

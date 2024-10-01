@@ -3,9 +3,8 @@ import zipfile
 from datetime import datetime
 import pytz
 
-def makezip(status) -> str:
+def makezip(pid: str) -> str:
     
-    pid:str = status[1]
     file_paths = []
     temp_path = os.path.join(os.getcwd(), "Temp", pid)
     for root, dirs, files in os.walk(temp_path):

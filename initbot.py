@@ -24,5 +24,3 @@ def install_cert(data: dict, path_cert: str):
     except subprocess.CalledProcessError as e:
         print("Erro ao importar o certificado:")
         print(e.stdout)
-
-initBot(sys.argv[1])

@@ -21,14 +21,13 @@ if platform.system() == "Windows":
     from pywinauto import Application
     
 from bot.head.Tools.PrintLogs import printtext as prt
-from bot.projudi.common.elements import elements_projudi
-from bot.esaj.common.elements import elements_esaj
 
-typings = elements_projudi | elements_esaj
 
 class AuthBot:
     
-    def __init__(self, elements: Type[typings], prt: Type[prt], driver: WebDriver, wait: WebDriverWait, info_creds: list, pid:str, method: str =  None, bot: str = None):
+    def __init__(self, elements, prt: Type[prt], 
+                 driver: WebDriver, wait: WebDriverWait, 
+                 info_creds: list, pid:str, method: str =  None, bot: str = None):
         
         self.driver  = driver
         self.wait = wait
@@ -128,15 +127,15 @@ class AuthBot:
         if self.info_creds:
             
             # 0638164-88.2019.8.04.0015
-            self.driver.get()
+            self.driver.get(self.elements.url_login)
 
-            username: WebElement = self.wait.until(EC.presence_of_element_located ((By.CSS_SELECTOR, )))
+            username: WebElement = self.wait.until(EC.presence_of_element_located ((By.CSS_SELECTOR, self.elements.campo_username)))
             username.send_keys(self.info_creds[0])
 
             password = self.driver.find_element(By.CSS_SELECTOR, self.elements.campo_passwd)
             password.send_keys(self.info_creds[1])
 
-            entrar = self.driver.find_element(By.CSS_SELECTOR, )
+            entrar = self.driver.find_element(By.CSS_SELECTOR, self.elements.btn_entrar)
             entrar.click()
             
             check_login = None

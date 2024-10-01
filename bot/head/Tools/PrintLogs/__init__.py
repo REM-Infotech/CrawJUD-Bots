@@ -37,7 +37,7 @@ class printtext:
         finally:
             prompt = f"({self.pid}, {type}, pos:{self.row}, {datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%H:%M:%S')}) {message}"
             tqdm.write(prompt)
-            socket_message(str(self.pid), prompt, self.url_socket)
+            socket_message(self.pid, prompt, self.url_socket, type, self.row)
             mensagens.append(prompt)
             self.list_messages = mensagens
             if "fim da execução" in message.lower():

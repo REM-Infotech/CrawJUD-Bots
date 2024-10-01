@@ -1,16 +1,13 @@
 import subprocess
 from tqdm import tqdm
 
-def uninstall(dados):
+def uninstall(nome_do_certificado: str):
     
     certs = {}
     try:
 
         comando = ["certutil", "-store", "-user", "my"]
-
         resultados = subprocess.run(comando, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.splitlines()
-        
-        nome_do_certificado = dados  # Modifique conforme necessário para o nome que você busca
 
         # Encontrando o hash baseado no nome
         hash_certificado = None

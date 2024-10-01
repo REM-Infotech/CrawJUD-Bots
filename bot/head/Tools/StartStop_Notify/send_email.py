@@ -1,83 +1,74 @@
 from flask_mail import Message
-from app import app
-from app import mail
+from flask import current_app
+
 from dotenv import dotenv_values
 
+from app import mail
+from app.models import Users, Executions
+
+app = current_app
 values = dotenv_values()
-
-def getmail(status):
+from app import db
+  
+def email_start(execution: Executions) -> None:
     
-    with app.app_context():
-        return ExecutionsTable.query.filter_by(pid=status[1]).first()
-
-
-def email_start(status):
-    
-    get_mail = getmail(status)
+    pid = execution.pid
+    usr = execution.user[0]
+    display_name = execution.bot[0].display_name
+    xlsx = execution.arquivo_xlsx
             
     with app.app_context():
-        try:
-            get_email_admin = Clients.query.filter_by(license_token=get_mail.license_token).first()
-        except Exception as e:
-            print(e)
         
-        
+        url_web = dotenv_values().get("url_web")
         sendermail = values['MAIL_DEFAULT_SENDER']
 
-        email_admin = get_email_admin.email_admin
+        email_admin = usr.licenseusr[0].email_admin
         robot = f"Notificações do Robô <{sendermail}>"
         assunto = "Notificação de execução"
-        destinatario = get_mail.email
-        mensagem = f"""  <h1>Notificação de inicialização - PID {status[1]}</h1>
-                        <p>Olá Usuário "{get_mail.nomeuser}", sua execução foi iniciada com sucesso!</p>
+        destinatario = usr.email
+        mensagem = f"""  <h1>Notificação de inicialização - PID {pid}</h1>
+                        <p>Olá {usr.nome_usuario}, sua execução foi iniciada com sucesso!</p>
                         <ul>
-                            <li>Robô: {status[2]}</li>
-                            <li>Planilha: {status[4]}</li>
+                            <li>Robô: {display_name}</li>
+                            <li>Planilha: {xlsx}</li>
                         </ul>
-                        <p>Acompanhe a execução do robô em <b><a href="https://console6.rhsolutions.info/executions">Nosso sistema</a></a></b><p>
+                        <p>Acompanhe a execução do robô em <b><a href="{url_web}">Nosso sistema</a></a></b><p>
                         <p>Por favor, <b>NÃO RESPONDER ESTE EMAIL</b></p>
         """
         
-        if get_mail.type_user == "admin" or get_mail.type_user == "super_admin":
-            msg = Message(assunto, sender=robot, recipients=[destinatario], html=mensagem)
-        
-        else:
-            msg = Message(assunto, sender=robot, recipients=[destinatario], html=mensagem, cc=[email_admin])
-            
+        msg = Message(assunto, sender=robot, recipients=[destinatario], html=mensagem, cc=[email_admin])
         mail.send(msg)
         
 
-def email_stop(status):
+def email_stop(execution: Executions) -> None:
     
-    get_mail = getmail(status)
+    pid = execution.pid
+    usr = execution.user[0]
+    url_web = dotenv_values().get("url_web")
     
-    with app.app_context():
-        try:
-            get_email_admin = Clients.query.filter_by(license_token=get_mail.license_token).first()
-        except Exception as e:
-            print(e)
-        
-        sendermail = values['MAIL_DEFAULT_SENDER']
+    display_name = execution.bot[0].display_name
+    xlsx = execution.arquivo_xlsx
 
-        email_admin = get_email_admin.email_admin
-        robot = f"Notificações do Robô <{sendermail}>"
-        assunto = "Notificação de execução"
-        destinatario = get_mail.email
-        mensagem = f"""  <h1>Notificação de Finalização - PID {status[1]}</h1>
-                        <p>Olá {get_mail.nomeuser}, Execução finalizada!</p>
-                        <ul>
-                            <li>Robô: {status[2]}</li>
-                            <li>Planilha: {status[4]}</li>
-                        </ul>
-                        <p>Verifique o status da execução do robô em <b><a href="https://console6.rhsolutions.info/executions">Nosso sistema</a></a></b><p>
-                        <p>Por favor, <b>NÃO RESPONDER ESTE EMAIL</b></p>
-        """
-        if get_mail.type_user == "admin" or get_mail.type_user == "super_admin":
-            
-            msg = Message(assunto, sender=robot, recipients=[destinatario], html=mensagem)
-        
-        else:
-            msg = Message(assunto, sender=robot, recipients=[destinatario], html=mensagem, cc=[email_admin])
-            
-        mail.send(msg)
+    try:
+        email_admin = usr.licenseusr[0].email_admin
+    except Exception as e:
+        print(e)
+    
+    sendermail = values['MAIL_DEFAULT_SENDER']
+    robot = f"Notificações do Robô <{sendermail}>"
+    assunto = "Notificação de execução"
+    destinatario = usr.email
+    mensagem = f"""  <h1>Notificação de Finalização - PID {pid}</h1>
+                    <p>Olá {usr.nome_usuario}, Execução finalizada!</p>
+                    <ul>
+                        <li>Robô: {display_name}</li>
+                        <li>Planilha: {xlsx}</li>
+                    </ul>
+                    <p>Verifique o status da execução do robô em <b><a href="{url_web}">Nosso sistema</a></a></b><p>
+                    <p>Por favor, <b>NÃO RESPONDER ESTE EMAIL</b></p>
+    """
+
+    msg = Message(assunto, sender=robot, recipients=[destinatario], html=mensagem, cc=[email_admin])
+    
+    mail.send(msg)
             
