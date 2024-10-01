@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
+from app import app, db
 from app.models.users import Users, LicensesUsers
 from app.models.bots import BotsCrawJUD, Credentials, Executions
 from app.models.srv import Servers
@@ -9,7 +10,7 @@ import platform
 import pandas as pd
 from uuid import uuid4
 from dotenv import dotenv_values
-def init_database(app: Flask, db: SQLAlchemy):
+def init_database():
     
     values = dotenv_values()
     with app.app_context():

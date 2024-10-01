@@ -24,6 +24,48 @@ class capa(CrawJUD):
         
         self.start_time = time.perf_counter()
     
+    def execution(self):
+        
+        while True:
+            
+            if self.row == self.ws.max_row+1:
+                self.prt = prt(self.pid, self.row, url_socket=self.argbot['url_socket'])
+                break
+            
+            self.prt = prt(self.pid, self.row-1, url_socket=self.argbot['url_socket'])
+            self.bot_data = {}
+            
+            for index in range(1, self.ws.max_column + 1):
+                
+                self.index = index
+                self.bot_data.update(self.set_data())
+                if index == self.ws.max_column:
+                    break
+            
+            try:
+                
+                if not len(self.bot_data) == 0:
+                    self.queue()
+                
+            except Exception as e:
+                
+                old_message = self.message
+                self.message = getattr(e, 'msg', getattr(e, 'message', ""))
+                if self.message == "":
+                    for exept in webdriver_exepts():
+                        if isinstance(e, exept):
+                            self.message = exeption_message().get(exept)
+                            break
+                        
+                if not self.message:
+                    self.message = str(e)
+                    
+                error_message = f'{self.message}. | Operação: {old_message}'
+                self.prt.print_log("error", error_message)
+                self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
+            
+            self.row += 1
+    
     def queue(self):
         
         self.search(self.bot_data, self.prt)

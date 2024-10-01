@@ -24,7 +24,7 @@ from bot.head.Tools.PrintLogs import printtext as prt
 
 class AuthBot:
     
-    def __init__(self, prt: Type[prt], driver: Type[WebDriver], wait: WebDriverWait, info_creds: list, pid:str, method: str =  "passkey", bot: str = None):
+    def __init__(self, prt: Type[prt], driver: WebDriver, wait: WebDriverWait, info_creds: list, pid:str, method: str =  None, bot: str = None):
         
         self.driver  = driver
         self.wait = wait
@@ -34,9 +34,9 @@ class AuthBot:
         self.pid = pid
         self.prt = prt
         
-    def set_portal(self, portal: str) -> bool:
+    def set_portal(self) -> bool:
         
-        metodo = getattr(self, portal)
+        metodo = getattr(self, self.bot)
         return metodo()
     
     def esaj(self):

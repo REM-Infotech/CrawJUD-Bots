@@ -25,10 +25,11 @@ mensagens = []
 
 class printtext:
     
-    def __init__(self, pid, row = 0):
+    def __init__(self, pid, row = 0, url_socket: str = None):
         
         self.pid = pid
         self.row = row
+        self.url_socket = url_socket
 
     def print_log(self, type: str = None, message: str = None) -> str:
         try:
@@ -36,7 +37,7 @@ class printtext:
         finally:
             prompt = f"({self.pid}, {type}, pos:{self.row}, {datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%H:%M:%S')}) {message}"
             tqdm.write(prompt)
-            socket_message(str(self.pid), prompt)
+            socket_message(str(self.pid), prompt, self.url_socket)
             mensagens.append(prompt)
             self.list_messages = mensagens
             if "fim da execução" in message.lower():

@@ -40,9 +40,7 @@ def init_app():
     
     with app.app_context():
         from app.models import init_database
-        from app.routes import  blueprint_reg
+        init_database()
         
-        init_database(app, db)
-        blueprint_reg(app, io)
-
+from app import routes
 init_app()

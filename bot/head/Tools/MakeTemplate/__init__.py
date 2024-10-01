@@ -16,7 +16,14 @@ from bot.head.Tools.MakeTemplate.appends import caixa_guias_emissao_sucesso
 
 class MakeXlsx:
 
-    def make_output(self, bot_name: str, path_template: str):
+    def __init__(self, type: str, bot: str):
+        
+        self.bot = bot
+        self.type = type
+        
+        pass
+    
+    def make_output(self, path_template: str):
 
         # Criar um novo workbook e uma planilha
         workbook = openpyxl.Workbook()
@@ -26,33 +33,21 @@ class MakeXlsx:
         # Cabeçalhos iniciais
         cabecalhos = ["NUMERO_PROCESSO"]
         list_to_append = []
-        splitname = bot_name.split("_")
 
         for name, func in globals().items():
             
             if "_" in name:
-                splitnamedef = name.split("_")
-                if len(splitnamedef) == 4:
-                    if callable(func) and splitname[1] == splitnamedef[0] and splitname[-2] == splitnamedef[-2] and splitname[-1] == splitnamedef[-1]:
-                        list_to_append.extend(func())
-                        break  # Sai do loop após encontrar a primeira correspondência
+                name_search = f"{self.bot}_{self.type}"
+                if callable(func) and name_search == name:
+                    list_to_append.extend(func())
+                    break  # Sai do loop após encontrar a primeira correspondência
                     
         if len(list_to_append) == 0:
 
             for name, func in globals().items():
-                if "_" in name:
-                    splitnamedef = name.split("_")
-                    if len(splitnamedef) == 2:
-                        if callable(func) and splitname[-2] == splitnamedef[0] and splitname[-1] == splitnamedef[-1]:
-                            list_to_append.extend(func())
-                            break   # Sai do loop após encontrar a primeira correspondência
-        
-        if len(list_to_append) == 0:
-            
-            for name, func in globals().items():
-                if callable(func) and splitname[-1] == name:
+                if callable(func) and name == self.type:
                     list_to_append.extend(func())
-                    break   # Sai do loop após encontrar a primeira correspondência
+                    break # Sai do loop após encontrar a primeira correspondência
         
         # Adicionar os itens da lista aos cabeçalhos
         if list_to_append:

@@ -17,12 +17,12 @@ def disconnect():
     pass
     
     
-def connect_socket(pid):
+def connect_socket(pid: str, url_socket: str):
     # Conecta ao servidor SocketIO no URL especificado
     
     if len(cache_connection) < 1:
         
-        server_url = f"{url_socket(pid)}"
+        server_url = f"https://{url_socket}"
         
         try:
             socketio.connect(server_url)
@@ -39,14 +39,14 @@ def disconnect_socket():
     socketio.disconnect()
     
     
-def socket_message(pid, formatted_message):
+def socket_message(pid: str, formatted_message: str, url_socket: str):
     
     try:
         pass
     
     finally:
         try:
-            connect_socket(pid)
+            connect_socket(pid, url_socket)
             # Envia a mensagem de log formatada para o servidor SocketIO
             socketio.emit('log_message', {'message': formatted_message, 'pid': pid}, namespace='/log')
             

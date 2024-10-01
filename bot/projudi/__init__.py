@@ -1,13 +1,9 @@
 from bot.projudi.capa import capa
 from bot.projudi.protocolo import protocolo
 from bot.projudi.movimentacao import movimentacao
-from bot.projudi.common.elements import elements_projudi
 
 
-def projudi(state: str, bot: str, Master):
-    
-    
-    elementos = getattr(elements_projudi, state.upper())
+def projudi(bot: str, Master):
     
     try:
         func = globals().get(bot)

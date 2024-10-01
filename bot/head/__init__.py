@@ -9,9 +9,10 @@ from bot.head.Tools.dicionarios import cities_Amazonas
 from bot.head.common.selenium_excepts import webdriver_exepts
 from bot.head.common.selenium_excepts import exeption_message
 
+
 import os
 import time
-import glob
+import pytz
 import json
 import pathlib
 import openpyxl
@@ -56,16 +57,40 @@ class CrawJUD:
             arguments_bot: dict[str, str] = json.load(f)
         
         from bot.projudi import projudi
+        from bot.projudi.common.elements import elements_projudi
         
+        
+        ## Definição de variaveis utilizadas pelos robôs
+        self.message = None
+        self.argbot = arguments_bot
         self.pid = arguments_bot['pid']
         self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve(), arguments_bot['xlsx'])
         self.output_dir_path = pathlib.Path(self.input_file).parent.resolve().__str__()
         self.system: str = arguments_bot.get("system")
         self.type: str = arguments_bot.get("type")
         self.state: str = arguments_bot.get("state")
+        
+        
+        ## Abertura da planilha de input
         self.ws: Type[Worksheet] = openpyxl.load_workbook(self.input_file).active
-        self.prt = prt(self.pid)
+        self.prt = prt(pid=self.pid, url_socket=arguments_bot['url_socket'])
         self.row = 2
+        
+        
+        ## Criação das planilhas de output
+        time_xlsx = datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%d-%m-%y')
+        self.prt.print_log('log', 'Criando planilha de output')
+        
+        namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
+        self.path = f"{self.output_dir_path}/{namefile}"
+        MakeXlsx("sucesso", self.type).make_output(self.path)
+
+        namefile_erro = f"Erros - PID {self.pid} {time_xlsx}.xlsx"
+        self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
+        MakeXlsx("erro", self.type).make_output(self.path_erro)
+        
+        ## Carrega elementos do bot
+        self.elementos = getattr(elements_projudi, self.state.upper())
         
         args = self.DriverLaunch()
         if not args:
@@ -74,79 +99,32 @@ class CrawJUD:
         self.driver: Type[WebDriver] = args[0]
         self.wait: Type[WebDriverWait] = args[1]
         
-        self.bot = locals().get(self.system)(self.state, self.type, self)
-
-    def execution(self):
+        self.login()
         
-        while True:
-            
-            if self.row == self.ws.max_row+1:
-                self.prt = prt(self.pid, self.row)
-                break
-            
-            self.prt = prt(self.pid, self.row-1)
-            self.bot_data = {}
-            
-            for index in range(1, self.ws.max_column + 1):
-                
-                self.index = index
-                self.bot_data.update(self.set_data())
-                if index == self.ws.max_column:
-                    break
-            
-            try:
-                
-                if not len(self.bot_data) == 0:
-                    self.bot.queue()
-                
-            except Exception as e:
-                
-                old_message = self.message
-                self.message = getattr(e, 'msg', getattr(e, 'message', ""))
-                if self.message == "":
-                    for exept in webdriver_exepts():
-                        if isinstance(e, exept):
-                            self.message = exeption_message().get(exept)
-                            break
-                        
-                if not self.message:
-                    self.message = str(e)
-                    
-                error_message = f'{self.message}. | Operação: {old_message}'
-                self.prt.print_log("error", error_message)
-                self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
-            
-            self.row += 1
+        self.bot = locals().get(self.system)(self.type, self)
+        self.bot.execution()
 
     def login(self):
 
         try:
 
             Get_Login = True
-            upper_nome_bot = str(
-                str(self.arguments_bot.get("bot")).split("_")[1]).upper()
-            path_auth = os.path.join(os.getcwd(), 'Temp', self.pid, f'{
-                                     self.arguments_bot.get("bot")}.json')
-            self.portal = str(str(self.arguments_bot.get("bot")).split("_")[1])
+            
+            login = self.argbot.get("login", None)
+            password = self.argbot.get("password", None)
+            login_method = self.argbot.get("login_method", None)
+            
+            if login:
 
-            if os.path.exists(path_auth):
-
-                self.bot = self.arguments_bot.get("bot")
-                get_method = str(self.arguments_bot.get("bot")).split("_")
-                method = ""
-                if "esaj" == get_method[1] and "peticionamento" == get_method[-1]:
-                    method = "cert"
-
-                login: dict = json.load(open(path_auth))[
-                    'login'][upper_nome_bot]
+                self.bot = self.argbot.get("bot")
                 self.prt.print_log('log', 'Usuário e senha obtidos!')
                 auth = AuthBot(
                     prt=self.prt,
                     driver=self.driver, wait=self.wait,
-                    info_creds=[login.get('username'), login['password']],
-                    method=method, bot=self.bot, pid=self.pid)
+                    info_creds=[login, password],
+                    method=login_method, bot=self.system, pid=self.pid)
 
-                Get_Login = auth.set_portal(self.portal)
+                Get_Login = auth.set_portal()
 
         except Exception as e:
             print(e)
@@ -154,16 +132,14 @@ class CrawJUD:
 
         if Get_Login is True:
 
-            if os.path.exists(path_auth):
-                self.senhacert = login.get("senha_token", "")
-                self.prt.print_log('log', 'Login efetuado com sucesso!')
+            self.senhacert = self.argbot.get("token", None)
+            self.prt.print_log('log', 'Login efetuado com sucesso!')
 
         elif Get_Login is False:
 
             self.driver.quit()
             self.prt.print_log('error', 'Erro ao realizar login')
-            status = [self.arguments_bot['user'], self.pid,
-                      self.arguments_bot['bot'], 'Falha ao iniciar', self.input_file]
+            status = [self.argbot['user'], self.pid, self.argbot['bot'], 'Falha ao iniciar', self.input_file]
             self.set_status.botstop(status)
 
     def set_data(self) -> dict:
@@ -286,8 +262,8 @@ class CrawJUD:
         self.prt.print_log("log", f"Fim da execução, tempo: {
                            minutes} minutos e {seconds} segundos")
 
-        status = [self.arguments_bot['user'], self.pid,
-                  self.arguments_bot.get('bot'), 'Finalizado', namefile]
+        status = [self.argbot['user'], self.pid,
+                  self.argbot.get('bot'), 'Finalizado', namefile]
         self.set_status.botstop(status)
 
     def DriverLaunch(self) -> list[WebDriver, WebDriverWait]:
@@ -302,7 +278,7 @@ class CrawJUD:
             # if self.bot_name is not None and "esaj" in self.bot_name and "peticionamento" in self.bot_name:
             #     state = str(self.bot_name.split("_")[2])
             #     path_accepted = os.path.join(
-            #         parent_path, "Browser", state, self.arguments_bot['login'], "chrome")
+            #         parent_path, "Browser", state, self.argbot['login'], "chrome")
             #     if os.path.exists(path_accepted):
             #         try:
             #             resultados = subprocess.run(["xcopy", path_accepted, user_data_dir, "/E", "/H", "/C", "/I"],
