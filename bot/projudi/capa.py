@@ -10,17 +10,18 @@ from bot.head.Tools.PrintLogs import printtext as prt
 from bot.head.common.selenium_excepts import webdriver_exepts
 from bot.head.common.selenium_excepts import exeption_message
 
-
 # Selenium Imports
 from selenium.webdriver.common.by import By
 from bot.head import CrawJUD
+
+
 class capa(CrawJUD):
 
-    def __init__(self, Initbot) -> None:
+    def __init__(self, Initbot: Type[CrawJUD]) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
         
-        self.search = SeachBot(self.driver, self.wait, self.system).search
+        self.search = SeachBot(self.driver, self.wait, self.system, self.elementos).search
         
         self.start_time = time.perf_counter()
     

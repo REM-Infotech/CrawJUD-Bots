@@ -21,10 +21,14 @@ if platform.system() == "Windows":
     from pywinauto import Application
     
 from bot.head.Tools.PrintLogs import printtext as prt
+from bot.projudi.common.elements import elements_projudi
+from bot.esaj.common.elements import elements_esaj
+
+typings = elements_projudi | elements_esaj
 
 class AuthBot:
     
-    def __init__(self, prt: Type[prt], driver: WebDriver, wait: WebDriverWait, info_creds: list, pid:str, method: str =  None, bot: str = None):
+    def __init__(self, elements: Type[typings], prt: Type[prt], driver: WebDriver, wait: WebDriverWait, info_creds: list, pid:str, method: str =  None, bot: str = None):
         
         self.driver  = driver
         self.wait = wait
@@ -33,6 +37,7 @@ class AuthBot:
         self.bot = bot
         self.pid = pid
         self.prt = prt
+        self.elements = elements
         
     def set_portal(self) -> bool:
         
@@ -48,7 +53,7 @@ class AuthBot:
 
             if self.method == "cert":
 
-                self.driver.get("https://consultasaj.tjam.jus.br/sajcas/login#aba-certificado")
+                self.driver.get(self.elements.url_login)
                 logincert: WebElement = self.wait.until(EC.presence_of_all_elements_located((By.XPATH, '//*[@id="certificados"]')))
                 sleep(3)
 
@@ -94,16 +99,16 @@ class AuthBot:
                 return True
 
 
-            self.driver.get("https://consultasaj.tjam.jus.br/sajcas/login")
+            self.driver.get(self.elements.url_login)
 
-            userlogin = self.driver.find_element(By. CSS_SELECTOR, '#usernameForm')
+            userlogin = self.driver.find_element(By. CSS_SELECTOR, self.elements.campo_username)
             userlogin.click()
             userlogin.send_keys(loginuser)
 
-            userpass = self.driver.find_element(By. CSS_SELECTOR, '#passwordForm')
+            userpass = self.driver.find_element(By. CSS_SELECTOR, self.elements.campo_passwd)
             userpass.click()
             userpass.send_keys(passuser)
-            entrar = self.driver.find_element(By.XPATH, '//*[@id="pbEntrar"]')
+            entrar = self.driver.find_element(By.XPATH, self.elements.btn_entrar)
             entrar.click()
             sleep(2)
 
@@ -118,21 +123,20 @@ class AuthBot:
                 
             return True
 
-
     def projudi(self):
         
         if self.info_creds:
             
             # 0638164-88.2019.8.04.0015
-            self.driver.get("https://projudi.tjam.jus.br/projudi/usuario/logon.do?actionType=inicio")
+            self.driver.get()
 
-            username: WebElement = self.wait.until(EC.presence_of_element_located ((By.CSS_SELECTOR, '#login')))
+            username: WebElement = self.wait.until(EC.presence_of_element_located ((By.CSS_SELECTOR, )))
             username.send_keys(self.info_creds[0])
 
-            password = self.driver.find_element(By.CSS_SELECTOR, '#senha')
+            password = self.driver.find_element(By.CSS_SELECTOR, self.elements.campo_passwd)
             password.send_keys(self.info_creds[1])
 
-            entrar = self.driver.find_element(By.CSS_SELECTOR, '#btEntrar')
+            entrar = self.driver.find_element(By.CSS_SELECTOR, )
             entrar.click()
             
             check_login = None

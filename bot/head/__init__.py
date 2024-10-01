@@ -57,9 +57,9 @@ class CrawJUD:
             arguments_bot: dict[str, str | int] = json.load(f)
         
         from bot.projudi import projudi
-        from bot.projudi.common.elements import elements_projudi
-        
-        
+        from bot.elements_esajprojudi.common.elements import elements_projudi
+        from bot.esaj.common.elements import 
+
         ## Definição de variaveis utilizadas pelos robôs
         self.message = None
         self.argbot = arguments_bot
@@ -95,8 +95,9 @@ class CrawJUD:
         MakeXlsx("erro", self.type).make_output(self.path_erro)
         
         ## Carrega elementos do bot
-        self.elementos = getattr(elements_projudi, self.state.upper())
-        
+        self.elementos: Type[
+            elements_projudi | elements_esaj] = locals().get(f"elements_{self.system.lower()}")(self.state.upper())
+        self.elementos
         args = self.DriverLaunch()
         if not args:
             return

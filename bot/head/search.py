@@ -12,10 +12,16 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import  NoSuchElementException, TimeoutException
 from bot.head.interator import Interact
 
+from bot.projudi.common.elements import elements_projudi
+from bot.esaj.common.elements import elements_esaj
+
+typings = elements_projudi | elements_esaj
+
 class SeachBot:
     
-    def __init__(self, driver: Type[WebDriver], wait: Type[WebDriverWait], portal, bot: str = None) -> None:
+    def __init__(self, elementos: Type[typings], driver: Type[WebDriver], wait: Type[WebDriverWait], portal, bot: str = None) -> None:
         
+        self.elementos = elementos
         self.driver = driver
         self.wait = wait
         self.bot = bot
@@ -92,7 +98,7 @@ class SeachBot:
             
     def projudi(self):
 
-        self.driver.get("https://projudi.tjam.jus.br/projudi/processo/buscaProcessosQualquerInstancia.do?actionType=pesquisar")
+        self.driver.get(self.elementos.url_busca)
 
         inputproc = None
         enterproc = None
