@@ -18,8 +18,23 @@ def handle_disconnect():
 
 @io.on('join', namespace='/log')
 def handle_join(data):
+    
     room = data['pid']
+    
+    log_pid = CacheLogs.query.filter(CacheLogs.pid == room).first()    
+    if log_pid:
+        data={
+            "pid" : room,
+            "pos" : log_pid.pos,
+            "total" : log_pid.total,
+            "remaining" : log_pid.remaining,
+            "success" : log_pid.success,
+            "errors" : log_pid.errors,
+            "status" : log_pid.status,
+            "last_log" : log_pid.last_log}
+    
     join_room(room)
+    emit('log_message', data, room=room)
     # print(f"Client {request.sid} joined room {room}")
 
 @io.on('leave', namespace='/log')

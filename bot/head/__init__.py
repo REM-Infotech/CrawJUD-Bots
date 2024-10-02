@@ -141,8 +141,11 @@ class CrawJUD:
                 SetStatus(status='Falha ao iniciar', pid=self.pid, 
                         system=self.system, type=self.type).botstop()
             
+            if self.row > 2:
+                self.prt = prt(self.pid, self.row, self.argbot['url_socket'])
+                
             self.prt.print_log('error', str(e))
-        
+
     def login(self) -> None:
 
         try:

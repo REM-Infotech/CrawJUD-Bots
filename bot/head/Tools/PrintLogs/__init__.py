@@ -49,7 +49,7 @@ class printtext:
 
         try:
             savelog = os.path.join(os.getcwd(), 'Temp' , self.pid, f'LogFile - PID {self.pid}.txt')
-            with open(savelog.encode("utf-8"), "a") as f:
+            with open(savelog, "a") as f:
                 for mensagem in self.list_messages:
                     
                     if self.pid in mensagem:
