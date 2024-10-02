@@ -8,46 +8,46 @@ class elements_esaj:
     url_busca: str = ""
     btn_busca: str = ""
     
+    class SP:
+        url_login = ""
+        campo_username = ''
+        campo_passwd = ''
+        btn_entrar = ""
+        
+        url_busca = ""
+        btn_busca = ""
+        
+    class AC:
+        url_login = ""
+        url_busca = ""
+        btn_busca = ""
+        
+    class AM:
+        url_login = ""
+        campo_username = ''
+        campo_passwd = ''
+        btn_entrar = ''
+        chk_login = ''
+        
+        url_busca = ""
+        btn_busca = ""
+    
     def __init__(self, state: str) -> None:
         
         # Mapeia os estados às classes correspondentes
-        state_classes = {
+        state_classes: dict[str, self.AC | self.AM | self.SP] = {
             "SP": self.SP,
             "AC": self.AC,
             "AM": self.AM
         }
         
         # Se o estado passado existir no dicionário, atualiza as variáveis
-        if state in state_classes:
-            state_class = state_classes[state]()
-            for attr_name, attr_value in state_class.__dict__.items():
-                if not attr_name.startswith('__'):  # Ignora atributos internos
-                    setattr(self, attr_name, attr_value)
-        else:
-            raise ValueError(f"Estado '{state}' não é válido.")
+        state_class = state_classes[state].__dict__.copy()
+
+        for func, name in self.AM.__dict__.items():
+            if not func.startswith('__'):
+                setattr(self, func, name)
+                print(f"{func}: {name}")
 
     # Classes internas para diferentes estados
-    class SP:
-        url_login = "https://consultasaj.tjam.jus.br/sajcas/login#aba-certificado"
-        campo_username = '#usernameForm'
-        campo_passwd = '#passwordForm'
-        btn_entrar = ""
-        
-        url_busca = "url_de_busca_SP"
-        btn_busca = "btn_busca_SP"
-        
-    class AC:
-        url_login = "https://projudi.tjam.jus.br/projudi/processo/buscaProcessosQualquerInstancia.do?actionType=pesquisar"
-        url_busca = "url_de_busca_AC"
-        btn_busca = "btn_busca_AC"
-        
-    class AM:
-        url_login = "https://projudi.tjam.jus.br/projudi/processo/buscaProcessosQualquerInstancia.do?actionType=pesquisar"
-        campo_username = '#usernameForm'
-        campo_passwd = '#passwordForm'
-        btn_entrar = '//*[@id="pbEntrar"]'
-        
-        
-        url_busca = "url_de_busca_AC"
-        btn_busca = "btn_busca_AC"
         
