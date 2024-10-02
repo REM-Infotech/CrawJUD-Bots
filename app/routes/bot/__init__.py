@@ -69,21 +69,15 @@ def stop_execution(user: str, pid: str) -> int:
         ).first()
         
         filename = get_file(pid)
-        if get_info.status == 'Finalizado':
+        if filename != "":
+            get_info.status = 'Finalizado'
+            get_info.file_output = filename
+            get_info.data_finalizacao = datetime.now(pytz.timezone('Etc/GMT+4'))
+            db.session.commit()
+            db.session.close()
             return 200
         
-        elif get_info.status != 'Finalizado':
-            
-            if filename != "":
-                
-                get_info.status = 'Finalizado'
-                get_info.file_output = filename
-                get_info.data_finalizacao = datetime.now(pytz.timezone('Etc/GMT+4'))
-                db.session.commit()
-                db.session.close()
-                return 200
-            
-
+        elif filename == "":
             try:
                 
                 get_process = psutil.process_iter(['cmdline'])
@@ -111,6 +105,7 @@ def stop_execution(user: str, pid: str) -> int:
             SetStatus(usr=user, pid=pid, system=system, type=type).botstop()
             return 200
         
+        return 200
     except Exception as e:
         print(e)
         return 500

@@ -31,6 +31,9 @@ if debug is True:
     database_uri = "sqlite:///project.db"
 
 SQLALCHEMY_DATABASE_URI = database_uri
+SQLALCHEMY_BINDS = {
+    'cachelogs':      'sqlite:///cachelogs.db'
+}
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 ## FLASK CONFIG   

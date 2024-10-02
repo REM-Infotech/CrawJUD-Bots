@@ -137,11 +137,11 @@ class CrawJUD:
             if self.driver:
                 self.driver.quit()
             
-            self.prt.print_log('error', str(e))
             with current_app.app_context():
                 SetStatus(status='Falha ao iniciar', pid=self.pid, 
                         system=self.system, type=self.type).botstop()
             
+            self.prt.print_log('error', str(e))
         
     def login(self) -> None:
 
@@ -157,14 +157,14 @@ class CrawJUD:
 
                 self.bot = self.argbot.get("bot")
                 self.prt.print_log('log', 'Usuário e senha obtidos!')
-                auth = AuthBot(
+                self.auth = AuthBot(
                     self.elementos,
                     prt=self.prt,
                     driver=self.driver, wait=self.wait,
                     info_creds=[login, password],
                     method=login_method, bot=self.system, pid=self.pid)
 
-                Get_Login = auth.set_portal()
+                Get_Login = self.auth.set_portal()
 
         except Exception as e:
             print(e)
@@ -290,12 +290,12 @@ class CrawJUD:
         calc = execution_time / 60
         minutes = int(calc)
         seconds = int((calc - minutes) * 60)
-
-        self.prt.print_log("success", f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos")
-
+        
         with current_app.app_context():
             SetStatus(status='Finalizado', pid=self.pid, 
                     system=self.system, type=self.type).botstop()
+            
+        self.prt.print_log("success", f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos")
 
     def DriverLaunch(self) -> list[WebDriver, WebDriverWait]:
 

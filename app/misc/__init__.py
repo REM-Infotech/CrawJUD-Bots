@@ -30,7 +30,7 @@ def storageClient() -> Client:
 
 def CredentialsGCS() -> Credentials:
     
-    credentials_dict = json.load(dotenv_values().get("credentials_dict"))
+    credentials_dict = json.loads(dotenv_values().get("credentials_dict"))
     return Credentials.from_service_account_info(
         credentials_dict).with_scopes(['https://www.googleapis.com/auth/cloud-platform'])
     

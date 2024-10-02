@@ -29,6 +29,9 @@ class capa(CrawJUD):
         
         while True:
             
+            if self.driver.title.lower() == "a sessao expirou":
+                self.auth.set_portal()
+            
             if self.row == self.ws.max_row+1:
                 self.prt = prt(self.pid, self.ws.max_row, url_socket=self.argbot['url_socket'])
                 break

@@ -6,8 +6,10 @@ from app import db
 import pytz
 salt = bcrypt.gensalt()
 
-
-
+admins = db.Table(
+    'admins', 
+    db.Column('license_user_id', db.Integer, db.ForeignKey('licenses_users.id'), primary_key=True),
+    db.Column('users_id', db.Integer, db.ForeignKey('users.id'), primary_key=True))
 
 licenseusr = db.Table(
     'licenseusr', 
@@ -26,7 +28,6 @@ licenses_users_credentials = db.Table(
     db.Column('license_user_id', db.Integer, db.ForeignKey('licenses_users.id'), primary_key=True),
     db.Column('credential_id', db.Integer, db.ForeignKey('credentials.id'), primary_key=True)
 )
-
 
 class Users(db.Model):
 
@@ -67,16 +68,18 @@ class LicensesUsers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name_client = db.Column(db.String(length=60), nullable=False, unique=True)
     cpf_cnpj = db.Column(db.String(length=30), nullable=False, unique=True)
-    email_admin = db.Column(db.String(length=50), nullable=False, unique=True)
     license_token = db.Column(db.String(length=512), nullable=False, unique=True)
     
     # Relacionamento de muitos para muitos com users
-    users = db.relationship('Users', secondary=licenseusr, backref='licenseusr')
+    users = db.relationship('Users', secondary=licenseusr, backref='licenses')
+    admins = db.relationship('Users', secondary=admins, backref='admin')
     
     # Relacionamento de muitos para muitos com Credentials
     credentials = db.relationship('Credentials', secondary=licenses_users_credentials, backref='licenses')
     
     # Relacionamento com Bots (conforme já definido antes)
-    bots = db.relationship('BotsCrawJUD', secondary=licenses_users_bots, backref=db.backref('licenses_users', lazy=True))
+    bots = db.relationship('BotsCrawJUD', secondary=licenses_users_bots, backref=db.backref('licenses', lazy=True))
+    
+    
 
 

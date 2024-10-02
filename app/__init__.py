@@ -46,19 +46,20 @@ def check_allowed_origin(origin: str = "https://google.com"):
 
 def init_app():
     
-    age = timedelta(days=31).max.seconds
-    db.init_app(app)
-    mail.init_app(app)
-    io.init_app(app, cors_allowed_origins=check_allowed_origin)
-    tlsm.init_app(app, content_security_policy=csp(),
-                session_cookie_http_only=True,
-                session_cookie_samesite='Lax',
-                strict_transport_security=True,
-                strict_transport_security_max_age=age,
-                x_content_type_options= True,
-                x_xss_protection=True)
-    
     with app.app_context():
+        
+        age = timedelta(days=31).max.seconds
+        db.init_app(app)
+        mail.init_app(app)
+        io.init_app(app, cors_allowed_origins=check_allowed_origin)
+        tlsm.init_app(app, content_security_policy=csp(),
+                    session_cookie_http_only=True,
+                    session_cookie_samesite='Lax',
+                    strict_transport_security=True,
+                    strict_transport_security_max_age=age,
+                    x_content_type_options= True,
+                    x_xss_protection=True)
+    
         from app.models import init_database
         init_database()
         

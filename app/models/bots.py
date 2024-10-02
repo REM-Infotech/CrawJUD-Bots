@@ -65,3 +65,20 @@ class Executions(db.Model):
     bot = db.relationship('BotsCrawJUD', secondary=execution_bots, backref=db.backref('executions', lazy=True))
     user = db.relationship('Users', secondary=execution_users, backref=db.backref('executions', lazy=True))
     licenses = db.relationship('LicensesUsers', secondary=execution_licenses, backref=db.backref('executions', lazy=True))
+    
+    
+class CacheLogs(db.Model):
+    
+    __bind_key__ = 'cachelogs'
+    __tablename__ = 'cachelogs'
+    id = db.Column(db.Integer, primary_key=True)
+    pid = db.Column(db.String(length=12), nullable=False)
+    pos = db.Column(db.Integer, nullable=False)
+    
+    total = db.Column(db.Integer, nullable=False)
+    success = db.Column(db.Integer, nullable=False)
+    errors = db.Column(db.Integer, nullable=False)
+    remaining = db.Column(db.Integer, nullable=False)
+    status = db.Column(db.String(length=45), nullable=False)
+    
+    last_log = db.Column(db.Text, nullable=False)
