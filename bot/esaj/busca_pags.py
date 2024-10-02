@@ -24,13 +24,13 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import  NoSuchElementException, TimeoutException
 
 
-class EsajBuscaPagamento(CrawJUD):
+class busca_pags(CrawJUD):
 
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
-
-        self.search = SeachBot(self.driver, self.wait, self.portal).search
+        
+        self.search = SeachBot(self.elementos, self.driver, self.wait, self.system).search
         
         self.start_time = time.perf_counter()
         
