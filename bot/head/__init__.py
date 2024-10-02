@@ -123,9 +123,15 @@ class CrawJUD:
                 
                 return
             
-            self.bot = locals().get(self.system)(self.type, self)
+            bots = list(locals().items())
+            for name, func in bots:
+                print(name)
+                if name.lower() == self.system.lower():
+                    self.bot = func(self.type, self)
+                    break
+                
             self.bot.execution()
-
+            
         except Exception as e:
             
             if self.driver:
@@ -259,7 +265,7 @@ class CrawJUD:
         if not message:
             message = f'Execução do processo Nº{data[0]} efetuada com sucesso!'
 
-        self.prt.print_log('log', message)
+        self.prt.print_log('success', message)
 
     def append_error(self, motivo_erro: list):
 
@@ -285,10 +291,11 @@ class CrawJUD:
         minutes = int(calc)
         seconds = int((calc - minutes) * 60)
 
-        self.prt.print_log("log", f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos")
+        self.prt.print_log("success", f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos")
 
-        status = [self.argbot['user'], self.pid,self.argbot.get('bot'), 'Finalizado', namefile]
-        # self.set_status.botstop(status)
+        with current_app.app_context():
+            SetStatus(status='Finalizado', pid=self.pid, 
+                    system=self.system, type=self.type).botstop()
 
     def DriverLaunch(self) -> list[WebDriver, WebDriverWait]:
 

@@ -21,7 +21,7 @@ class capa(CrawJUD):
         
         self.__dict__ = Initbot.__dict__.copy()
         
-        self.search = SeachBot(self.driver, self.wait, self.system, self.elementos).search
+        self.search = SeachBot(self.elementos, self.driver, self.wait, self.system).search
         
         self.start_time = time.perf_counter()
     

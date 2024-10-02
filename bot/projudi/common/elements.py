@@ -9,28 +9,28 @@ class elements_projudi:
     btn_busca: str = ""
     
     class SP:
-        url_login = "https://consultasaj.tjam.jus.br/sajcas/login#aba-certificado"
-        campo_username = '#usernameForm'
-        campo_passwd = '#passwordForm'
+        url_login = ""
+        campo_username = ''
+        campo_passwd = ''
         btn_entrar = ""
         
-        url_busca = "url_de_busca_SP"
-        btn_busca = "btn_busca_SP"
+        url_busca = ""
+        btn_busca = ""
         
     class AC:
-        url_login = "https://projudi.tjam.jus.br/projudi/processo/buscaProcessosQualquerInstancia.do?actionType=pesquisar"
-        url_busca = "url_de_busca_AC"
-        btn_busca = "btn_busca_AC"
+        url_login = ""
+        url_busca = ""
+        btn_busca = ""
         
     class AM:
-        url_login = "https://projudi.tjam.jus.br/projudi/processo/buscaProcessosQualquerInstancia.do?actionType=pesquisar"
-        campo_username = '#usernameForm'
-        campo_passwd = '#passwordForm'
-        btn_entrar = '//*[@id="pbEntrar"]'
+        url_login = "https://projudi.tjam.jus.br/projudi/usuario/logon.do?actionType=inicio"
+        campo_username = '#login'
+        campo_passwd = '#senha'
+        btn_entrar = '#btEntrar'
+        chk_login = 'iframe[name="userMainFrame"]'
         
-        
-        url_busca = "url_de_busca_AC"
-        btn_busca = "btn_busca_AC"
+        url_busca = "https://projudi.tjam.jus.br/projudi/processo/buscaProcessosQualquerInstancia.do?actionType=pesquisar"
+        btn_busca = ""
     
     def __init__(self, state: str) -> None:
         
@@ -41,14 +41,13 @@ class elements_projudi:
             "AM": self.AM
         }
         
-        teste = self.AM..items()
         # Se o estado passado existir no dicionário, atualiza as variáveis
         state_class = state_classes[state].__dict__.copy()
 
-        for func, name in state_classes[state].__dict__().items():
-            setattr(self, func, name)
-        
-        return self
+        for func, name in self.AM.__dict__.items():
+            if not func.startswith('__'):
+                setattr(self, func, name)
+                print(f"{func}: {name}")
 
     # Classes internas para diferentes estados
     

@@ -141,7 +141,7 @@ class AuthBot:
             check_login = None
             
             with suppress(TimeoutException):
-                check_login = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'iframe[name="userMainFrame"]')))
+                check_login = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.chk_login)))
             
             if check_login:
                 return True
