@@ -14,7 +14,7 @@ from PyPDF2 import *
 """ Imports do Projeto """
 from datetime import datetime
 from bot.head import CrawJUD
-from bot.head.search import SeachBot
+
 from bot.head.Tools.PrintLogs import printtext as prt
 from bot.head.common.exceptions import ErroDeExecucao
 from bot.head.common.selenium_excepts import webdriver_exepts

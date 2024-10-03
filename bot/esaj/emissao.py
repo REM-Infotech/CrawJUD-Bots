@@ -1,7 +1,7 @@
 """ Imports do Projeto """
 from bot.head import CrawJUD
 from bot.head.Tools.PrintLogs import printtext as prt
-from bot.head.search import SeachBot
+
 from bot.head.count_doc import count_doc
 from typing import Type
 import time
@@ -46,9 +46,6 @@ class emissao(CrawJUD):
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
-        
-        self.search = SeachBot(self.elementos, self.driver, self.wait, self.system).search
-        
         self.start_time = time.perf_counter()
         
     def execution(self):

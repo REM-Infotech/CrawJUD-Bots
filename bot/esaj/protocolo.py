@@ -11,7 +11,7 @@ from contextlib import suppress
 
 """ Imports do Projeto """
 from bot.head import CrawJUD
-from bot.head.search import SeachBot
+
 from bot.head.Tools.PrintLogs import printtext as prt
 from bot.head.common.exceptions import ErroDeExecucao
 from bot.head.common.selenium_excepts import webdriver_exepts
@@ -32,9 +32,6 @@ class protocolo(CrawJUD):
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
-        
-        self.search = SeachBot(self.elementos, self.driver, self.wait, self.system).search
-        
         self.start_time = time.perf_counter()
         
     def execution(self):

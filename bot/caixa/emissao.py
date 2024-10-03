@@ -16,7 +16,7 @@ from contextlib import suppress
 """ Imports do Projeto """
 from bot.head import CrawJUD
 from bot.head.count_doc import count_doc
-from bot.head.search import SeachBot
+
 from bot.head.Tools.PrintLogs import printtext as prt
 from bot.head.common.exceptions import ErroDeExecucao
 from bot.head.common.selenium_excepts import webdriver_exepts

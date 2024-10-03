@@ -1,6 +1,6 @@
 """ Imports do Projeto """
 from bot.head.Tools.PrintLogs import printtext as prt
-from bot.head.search import SeachBot
+
 from datetime import datetime
 from typing import Type
 from time import sleep
@@ -27,9 +27,6 @@ class movimentacao:
     def __init__(self, Initbot) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
-
-        self.search = SeachBot(self.driver, self.wait, self.portal).search
-        
         self.start_time = time.perf_counter()
     
     def execution(self):

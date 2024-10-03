@@ -1,6 +1,7 @@
 """ Inicia """
 from flask import current_app
 from bot.head.auth import AuthBot
+from bot.head.search import SeachBot
 from bot.head.interator import Interact
 from bot.head.nome_colunas import nomes_colunas
 from bot.head.Tools.MakeTemplate import MakeXlsx
@@ -51,15 +52,29 @@ settings = {
 
 class CrawJUD:
     
+    def master_bots(self):
+        
+        from bot.esaj import esaj
+        from bot.projudi import projudi
+        bots = list(locals().items())
+        
+        for name, func in bots:
+            print(name)
+            if name.lower() == self.system.lower():
+                return func(self.type, self)
+            
+    def elements_bot(self):
+        
+        from bot.esaj.common.elements import elements_esaj
+        from bot.projudi.common.elements import elements_projudi
+        return locals().get(f"elements_{self.system.lower()}")(self.state.upper())
+        
+    
     def __init__(self, path_args: str = None):
         
         self.driver = None
         with open(path_args, "rb") as f:
             arguments_bot: dict[str, str | int] = json.load(f)
-        
-        from bot.projudi import projudi
-        from bot.projudi.common.elements import elements_projudi
-        from bot.esaj.common.elements import elements_esaj
 
         ## Definição de variaveis utilizadas pelos robôs
         self.message = None
@@ -97,8 +112,7 @@ class CrawJUD:
             MakeXlsx("erro", self.type).make_output(self.path_erro)
             
             ## Carrega elementos do bot
-            self.elementos: Type[
-                elements_projudi | elements_esaj] = locals().get(f"elements_{self.system.lower()}")(self.state.upper())
+            self.elementos = self.elements_bot()
 
             args = self.DriverLaunch()
             if not args:
@@ -122,15 +136,9 @@ class CrawJUD:
                             system=self.system, type=self.type).botstop()
                 
                 return
-            
-            bots = list(locals().items())
-            for name, func in bots:
-                print(name)
-                if name.lower() == self.system.lower():
-                    self.bot = func(self.type, self)
-                    break
-                
-            self.bot.execution()
+
+            self.search = SeachBot(self.elementos, self.driver, self.wait, self.system).search
+            self.master_bots().execution()
             
         except Exception as e:
             

@@ -28,7 +28,7 @@ class SeachBot:
         
         self.interact = Interact(self.driver, self.wait)
         
-        metodo = getattr(self, portal)
+        metodo = getattr(self, portal, None)
         self.metodo = metodo
         
     def search(self, bot_data: dict, prt: Type[prt]) -> None:

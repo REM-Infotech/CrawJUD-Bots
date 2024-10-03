@@ -5,12 +5,11 @@ from contextlib import suppress
 
 
 """ Imports do Projeto """
-from bot.head import CrawJUD
-from bot.head.search import SeachBot
+
 from bot.head.Tools.PrintLogs import printtext as prt
 from bot.head.common.selenium_excepts import webdriver_exepts
 from bot.head.common.selenium_excepts import exeption_message
-
+from bot.head import CrawJUD
 
 # Selenium Imports
 from selenium.webdriver.common.by import By
@@ -24,9 +23,6 @@ class capa(CrawJUD):
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
-        
-        self.search = SeachBot(self.elementos, self.driver, self.wait, self.system).search
-        
         self.start_time = time.perf_counter()
         
     def execution(self):
