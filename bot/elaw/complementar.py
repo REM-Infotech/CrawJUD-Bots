@@ -33,7 +33,7 @@ lista1 = ["NUMERO_PROCESSO", "UNIDADE_CONSUMIDORA", "DIVISAO",
           "DATA_CITACAO", "PROVIMENTO", "FASE", "FATO_GERADOR",
           "DESC_OBJETO", "OBJETO"]
 
-class ElawComplementarCad(CrawJUD):
+class complement(CrawJUD):
 
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
         

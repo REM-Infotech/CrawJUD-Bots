@@ -40,17 +40,16 @@ from webdriver_manager.core.driver_cache import DriverCacheManager
 
 from bot.head.common.exceptions import ErroDeExecucao
 
-list_args = list_args = ['--ignore-ssl-errors=yes', '--ignore-certificate-errors',
-                         "--display=:99", "--window-size=1600,900", "--no-sandbox", "--disable-blink-features=AutomationControlled",
-                         '--kiosk-printing']
-settings = {
-    "recentDestinations": [{"id": "Save as PDF", "origin": "local", "account": ""}],
-    "selectedDestinationId": "Save as PDF",
-    "version": 2
-}
+
 
 
 class CrawJUD:
+
+    settings = {
+        "recentDestinations": [{"id": "Save as PDF", "origin": "local", "account": ""}],
+        "selectedDestinationId": "Save as PDF",
+        "version": 2
+    }
     
     def master_bots(self):
         
@@ -75,6 +74,9 @@ class CrawJUD:
         self.driver = None
         with open(path_args, "rb") as f:
             arguments_bot: dict[str, str | int] = json.load(f)
+            
+        self.list_args = ['--ignore-ssl-errors=yes', '--ignore-certificate-errors', "--display=:99", "--window-size=1600,900", 
+                 "--no-sandbox", "--disable-blink-features=AutomationControlled", '--kiosk-printing']    
 
         ## Definição de variaveis utilizadas pelos robôs
         self.message = None
@@ -118,6 +120,7 @@ class CrawJUD:
             if not args:
                 return
             
+            self.login_method = self.argbot.get("login_method", None)
             self.driver: Type[WebDriver] = args[0]
             self.wait: Type[WebDriverWait] = args[1]
             
@@ -153,6 +156,7 @@ class CrawJUD:
                 self.prt = prt(self.pid, self.row, self.argbot['url_socket'])
                 
             self.prt.print_log('error', str(e))
+            return
 
     def login(self) -> None:
 
@@ -162,7 +166,6 @@ class CrawJUD:
             
             login = self.argbot.get("login", None)
             password = self.argbot.get("password", None)
-            login_method = self.argbot.get("login_method", None)
             
             if login:
 
@@ -173,7 +176,7 @@ class CrawJUD:
                     prt=self.prt,
                     driver=self.driver, wait=self.wait,
                     info_creds=[login, password],
-                    method=login_method, bot=self.system, pid=self.pid)
+                    method=self.login_method, bot=self.system, pid=self.pid)
 
                 Get_Login = self.auth.set_portal()
 
@@ -312,33 +315,32 @@ class CrawJUD:
 
         try:
 
-            parent_path = os.path.join(os.getcwd())
             chrome_options = Options()
-            user_data_dir = os.path.join(
-                os.getcwd(), 'Temp', self.pid, 'chrome')
+            user_data_dir = os.path.join(os.getcwd(), 'Temp', self.pid, 'chrome')
+            
+            if not os.getlogin() == "root" or platform.system() != "Linux":
+                self.list_args.remove("--no-sandbox")
+            
+            if platform.system() == "Windows" and self.login_method == "cert":
+                state = str(self.state)
+                path_accepted = str(os.path.join(os.getcwd(), "Browser", state, self.argbot['login'], "chrome"))
+                path_exist =  os.path.exists(path_accepted)
+                if path_exist:
+                    try:
+                        resultados = subprocess.run(["xcopy", path_accepted, user_data_dir, "/E", "/H", "/C", "/I"],
+                        check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.splitlines()
+                        
+                        for item in resultados:
+                            self.prt.print_log("log", item)
+                        
+                    except subprocess.CalledProcessError as e:
+                        raise e
 
-            # if self.bot_name is not None and "esaj" in self.bot_name and "peticionamento" in self.bot_name:
-            #     state = str(self.bot_name.split("_")[2])
-            #     path_accepted = os.path.join(
-            #         parent_path, "Browser", state, self.argbot['login'], "chrome")
-            #     if os.path.exists(path_accepted):
-            #         try:
-            #             resultados = subprocess.run(["xcopy", path_accepted, user_data_dir, "/E", "/H", "/C", "/I"],
-            #                                         check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.splitlines()
-            #         except subprocess.CalledProcessError as e:
-            #             tqdm.write(e.stderr)
-            #             tqdm.write(e.stdout)
-
-            #     else:
-            #         os.makedirs(os.path.join(
-            #             parent_path, "Browser"), exist_ok=True)
-            #         os.makedirs(os.path.join(
-            #             parent_path, "Browser", state), exist_ok=True)
-            #         os.makedirs(pathlib.Path(
-            #             path_accepted).parent.resolve(), exist_ok=True)
+                elif not path_exist:
+                    os.makedirs(path_accepted, exist_ok=True)
 
             chrome_options.add_argument(f"user-data-dir={user_data_dir}")
-            for argument in list_args:
+            for argument in self.list_args:
                 chrome_options.add_argument(argument)
 
             for root, dirs, files in os.walk(os.path.join(os.getcwd())):
@@ -350,12 +352,11 @@ class CrawJUD:
                 "download.prompt_for_download": False,
                 "plugins.always_open_pdf_externally": True,
                 "profile.default_content_settings.popups": 0,
-                'printing.print_preview_sticky_settings.appState': json.dumps(settings),
+                'printing.print_preview_sticky_settings.appState': json.dumps(self.settings),
                 "download.default_directory": "{}".format(os.path.join(self.output_dir_path))
             }
 
-            path_chrome = os.path.join(pathlib.Path(
-                self.input_file).parent.resolve())
+            path_chrome = os.path.join(pathlib.Path(self.input_file).parent.resolve())
             driver_cache_manager = DriverCacheManager(root_dir=path_chrome)
             chrome_options.add_experimental_option("prefs", chrome_prefs)
             driverinst = ChromeDriverManager(
@@ -363,7 +364,7 @@ class CrawJUD:
             
             path = os.path.join(pathlib.Path(driverinst).parent.resolve(), "chromedriver.exe")
             
-            if platform.system() == "Linux":
+            if platform.system() != "Windows":
                 path = path.replace(".exe", "")
             
             driver = webdriver.Chrome(service=Service(path), options=chrome_options)
@@ -375,5 +376,5 @@ class CrawJUD:
 
         except Exception as e:
 
-            print(e)
+            raise e
 

@@ -26,7 +26,7 @@ from selenium.common.exceptions import  NoSuchElementException, TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 
 
-class ElawDownloadDoc(CrawJUD):
+class download(CrawJUD):
 
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
         

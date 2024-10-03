@@ -27,7 +27,7 @@ type_doc = {
     14: "cnpj"
 }
 
-class ElawProvisao(CrawJUD):
+class provisao(CrawJUD):
 
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
         

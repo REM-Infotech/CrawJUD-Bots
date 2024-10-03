@@ -52,8 +52,6 @@ def stop_bot(user: str, pid: str):
 
 def start_(path_args: str):
     
-    clear()
-    
     with app.app_context():
         initBot(path_args)
 

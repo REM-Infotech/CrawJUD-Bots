@@ -30,7 +30,7 @@ type_doc = {
     14: "cnpj"
 }
 
-class ElawPagamentos(CrawJUD):
+class sol_pags(CrawJUD):
 
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
         

@@ -93,6 +93,7 @@ class SetStatus:
         
         execut.user.append(usr)
         execut.bot.append(bt)
+        execut.licenses.append(usr.licenses[0])
         
         db.session.add(execut)
         db.session.commit()
@@ -141,9 +142,6 @@ class SetStatus:
             execution.data_finalizacao = datetime.now(pytz.timezone('Etc/GMT+4'))
             db.session.commit()
             db.session.close()
-        
-            DelCache(self.pid)
-
             
         except Exception as e:
             logging.error(f'Exception: {e}', exc_info=True)

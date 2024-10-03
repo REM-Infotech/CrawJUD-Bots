@@ -26,7 +26,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import  NoSuchElementException, TimeoutException
 
 
-class ElawAndamentos(CrawJUD):
+class andamentos(CrawJUD):
 
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
         

@@ -86,7 +86,7 @@ css_selector = {
 
 }
 
-class ElawCadastros(CrawJUD):
+class cadastro(CrawJUD):
 
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
         

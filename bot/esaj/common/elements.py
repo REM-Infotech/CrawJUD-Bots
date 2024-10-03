@@ -1,3 +1,6 @@
+from typing import Any
+
+
 class elements_esaj:
     
     url_login: str = ""
@@ -50,4 +53,3 @@ class elements_esaj:
                 print(f"{func}: {name}")
 
     # Classes internas para diferentes estados
-        

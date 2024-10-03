@@ -12,6 +12,7 @@ passwd_db = values.get('password')
 host_db = values.get('host')
 database_name = values.get('database')
 
+os.makedirs("Archives", exist_ok=True)
 
 ## FLASK-MAIL CONFIG
 MAIL_SERVER = values['MAIL_SERVER']
