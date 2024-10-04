@@ -85,3 +85,18 @@ class CacheLogs(db.Model):
     status = db.Column(db.String(length=45), nullable=False)
     
     last_log = db.Column(db.Text, nullable=False)
+
+
+class ThreadBots(db.Model):
+    
+    __bind_key__ = 'cachelogs'
+    __tablename__ = 'thread_bots'
+    id = db.Column(db.Integer, primary_key=True)
+    pid = db.Column(db.String(length=12), nullable=False)
+    thread_id = db.Column(db.Integer, nullable=False)
+    
+    def __init__(self, pid: str = None, thread_id: int = 0) -> None:
+        
+        self.pid = pid
+        self.thread_id = thread_id
+    

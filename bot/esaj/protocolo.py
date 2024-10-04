@@ -36,7 +36,7 @@ class protocolo(CrawJUD):
         
     def execution(self):
         
-        while True:
+        while not self.thread._is_stopped:
             if self.row == self.ws.max_row+1:
                 self.prt = prt(self.pid, self.row)
                 break
@@ -51,6 +51,7 @@ class protocolo(CrawJUD):
             try:
                 
                 if not len(self.bot_data) == 0:
+                    self.prt = prt(self.pid, self.row-1, url_socket=self.argbot['url_socket'])
                     self.queue()
                 
             except Exception as e:

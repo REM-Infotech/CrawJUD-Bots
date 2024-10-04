@@ -58,7 +58,7 @@ def handle_message(data: dict[str, str | int]):
             pid = pid,
             pos = int(data["pos"]),
             total = int(execut.total_rows)-1,
-            remaining = execut.total_rows,
+            remaining = int(execut.total_rows)-1,
             success = 0,
             errors = 0,
             status = execut.status,

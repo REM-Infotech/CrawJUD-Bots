@@ -1,5 +1,5 @@
 """ Inicia """
-from flask import current_app
+from flask import Flask
 from bot.head.auth import AuthBot
 from bot.head.search import SeachBot
 from bot.head.interator import Interact
@@ -39,38 +39,24 @@ from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.core.driver_cache import DriverCacheManager
 
 from bot.head.common.exceptions import ErroDeExecucao
+from initbot import WorkerThread
 
 
 
-
-class CrawJUD:
+class CrawJUD(WorkerThread):
 
     settings = {
         "recentDestinations": [{"id": "Save as PDF", "origin": "local", "account": ""}],
         "selectedDestinationId": "Save as PDF",
         "version": 2
     }
-    
-    def master_bots(self):
-        
-        from bot.esaj import esaj
-        from bot.projudi import projudi
-        bots = list(locals().items())
-        
-        for name, func in bots:
-            print(name)
-            if name.lower() == self.system.lower():
-                return func(self.type, self)
+
+
+    def __init__(self, worker_thread: WorkerThread):
             
-    def elements_bot(self):
+        self.__dict__ = worker_thread.__dict__.copy()
         
-        from bot.esaj.common.elements import elements_esaj
-        from bot.projudi.common.elements import elements_projudi
-        return locals().get(f"elements_{self.system.lower()}")(self.state.upper())
-        
-    
-    def __init__(self, path_args: str = None):
-        
+    def setup(self, app: Flask, path_args: str = None):
         self.driver = None
         with open(path_args, "rb") as f:
             arguments_bot: dict[str, str | int] = json.load(f)
@@ -82,7 +68,7 @@ class CrawJUD:
         self.message = None
         self.argbot = arguments_bot
         self.pid = arguments_bot['pid']
-        
+        self.app = app
         self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve(), arguments_bot['xlsx'])
         self.output_dir_path = pathlib.Path(self.input_file).parent.resolve().__str__()
         
@@ -114,7 +100,7 @@ class CrawJUD:
             MakeXlsx("erro", self.type).make_output(self.path_erro)
             
             ## Carrega elementos do bot
-            self.elementos = self.elements_bot()
+            self.elementos = elements_bot(self.system, self.state)
 
             args = self.DriverLaunch()
             if not args:
@@ -134,21 +120,23 @@ class CrawJUD:
 
                 self.driver.quit()
                 self.prt.print_log('error', 'Erro ao realizar login')
-                with current_app.app_context():
+                with app.app_context():
                     SetStatus(status='Falha ao iniciar', pid=self.pid, 
                             system=self.system, type=self.type).botstop()
                 
                 return
 
             self.search = SeachBot(self.elementos, self.driver, self.wait, self.system).search
-            self.master_bots().execution()
+            bot = master_bots(self.system, self.type, self)
+            bot()
             
         except Exception as e:
             
+            print(e)
             if self.driver:
                 self.driver.quit()
             
-            with current_app.app_context():
+            with app.app_context():
                 SetStatus(status='Falha ao iniciar', pid=self.pid, 
                         system=self.system, type=self.type).botstop()
             
@@ -185,9 +173,7 @@ class CrawJUD:
             Get_Login = False
 
         return Get_Login
-            
-            
-
+    
     def set_data(self) -> dict:
 
         returns = {}
@@ -296,7 +282,7 @@ class CrawJUD:
     def finalize_execution(self) -> None:
 
         self.driver.delete_all_cookies()
-        self.driver.quit()
+        self.driver.close()
 
         namefile = self.path.split("/")[-1]
         end_time = time.perf_counter()
@@ -305,14 +291,14 @@ class CrawJUD:
         minutes = int(calc)
         seconds = int((calc - minutes) * 60)
         
-        with current_app.app_context():
+        with self.app.app_context():
             SetStatus(status='Finalizado', pid=self.pid, 
                     system=self.system, type=self.type).botstop()
             
         self.prt.print_log("success", f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos")
 
     def DriverLaunch(self) -> list[WebDriver, WebDriverWait]:
-
+        
         try:
 
             chrome_options = Options()
@@ -375,6 +361,14 @@ class CrawJUD:
             return args
 
         except Exception as e:
-
             raise e
 
+
+from bot.esaj import esaj, elements_esaj     
+from bot.projudi import projudi, elements_projudi
+
+def master_bots(system: str, type_bot: str, master: CrawJUD) -> projudi| esaj:
+    return globals().get(system.lower())(type_bot, master)
+        
+def elements_bot(system: str, state: str) -> elements_projudi | elements_esaj:
+    return globals().get(f"elements_{system.lower()}")(state)

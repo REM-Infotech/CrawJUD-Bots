@@ -48,7 +48,7 @@ class SetStatus:
         self.pid = form.get("pid", pid)
         self.status = status
         
-    def start_bot(self) -> str:
+    def start_bot(self) -> tuple[str, str]:
         
         path_pid = os.path.join(app.config["TEMP_PATH"], self.pid)
         os.makedirs(path_pid, exist_ok=True)
@@ -90,21 +90,21 @@ class SetStatus:
         
         usr = Users.query.filter(Users.login == self.user).first()
         bt = BotsCrawJUD.query.filter(BotsCrawJUD.id == self.id).first()
-        
+        licenses = usr.licenses[0]
         execut.user.append(usr)
         execut.bot.append(bt)
-        execut.licenses.append(usr.licenses[0])
+        execut.licenses.append(licenses)
         
         db.session.add(execut)
         db.session.commit()
         
         try:
-            email_start(usr, self.pid)
+            email_start(execut)
             
         except Exception as e:
             logging.error(f'Exception: {e}', exc_info=True)
             
-        return path_args
+        return (path_args, bt.display_name)
     
     def botstop(self):
         

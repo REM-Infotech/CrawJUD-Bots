@@ -24,7 +24,7 @@ class capa(CrawJUD):
     
     def execution(self):
         
-        while True:
+        while not self.thread._is_stopped:
             
             if self.driver.title.lower() == "a sessao expirou":
                 self.auth.set_portal()
@@ -33,7 +33,6 @@ class capa(CrawJUD):
                 self.prt = prt(self.pid, self.ws.max_row, url_socket=self.argbot['url_socket'])
                 break
             
-            self.prt = prt(self.pid, self.row-1, url_socket=self.argbot['url_socket'])
             self.bot_data = {}
             
             for index in range(1, self.ws.max_column + 1):
@@ -46,12 +45,13 @@ class capa(CrawJUD):
             try:
                 
                 if not len(self.bot_data) == 0:
+                    self.prt = prt(self.pid, self.row-1, url_socket=self.argbot['url_socket'])
                     self.queue()
                 
             except Exception as e:
                 
-                old_message = self.message
-                self.message = getattr(e, 'msg', getattr(e, 'message', ""))
+                old_message = str(self.message)
+                self.message = str(getattr(e, 'msg', getattr(e, 'message', "")))
                 if self.message == "":
                     for exept in webdriver_exepts():
                         if isinstance(e, exept):

@@ -50,6 +50,5 @@ class elements_esaj:
         for func, name in self.AM.__dict__.items():
             if not func.startswith('__'):
                 setattr(self, func, name)
-                print(f"{func}: {name}")
 
     # Classes internas para diferentes estados
