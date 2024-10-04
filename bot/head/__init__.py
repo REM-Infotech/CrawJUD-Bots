@@ -72,7 +72,7 @@ class CrawJUD(WorkerThread):
         self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve(), arguments_bot['xlsx'])
         self.output_dir_path = pathlib.Path(self.input_file).parent.resolve().__str__()
         
-        
+        self.login_method = arguments_bot['login_method']
         self.system: str = arguments_bot.get("system")
         self.type: str = arguments_bot.get("type")
         
@@ -364,11 +364,12 @@ class CrawJUD(WorkerThread):
             raise e
 
 
-from bot.esaj import esaj, elements_esaj     
+from bot.esaj import esaj, elements_esaj
+from bot.elaw import elaw, elements_elaw
 from bot.projudi import projudi, elements_projudi
 
-def master_bots(system: str, type_bot: str, master: CrawJUD) -> projudi| esaj:
+def master_bots(system: str, type_bot: str, master: CrawJUD) -> projudi | esaj | elaw:
     return globals().get(system.lower())(type_bot, master)
         
-def elements_bot(system: str, state: str) -> elements_projudi | elements_esaj:
+def elements_bot(system: str, state: str) -> elements_projudi | elements_esaj | elements_elaw:
     return globals().get(f"elements_{system.lower()}")(state)

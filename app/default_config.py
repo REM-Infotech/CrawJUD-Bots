@@ -9,7 +9,7 @@ values = dotenv_values()
 
 login_db = values.get('login')
 passwd_db = values.get('password')
-host_db = values.get('host')
+host_db = values.get('dbhost')
 database_name = values.get('database')
 
 os.makedirs("Archives", exist_ok=True)
