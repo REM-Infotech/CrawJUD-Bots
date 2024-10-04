@@ -9,7 +9,7 @@ from contextlib import suppress
 
 """ Imports do Projeto """
 from bot.head import CrawJUD
-from bot.head.search import SeachBot
+
 from bot.head.Tools.PrintLogs import printtext as prt
 from bot.head.common.exceptions import ErroDeExecucao
 from bot.head.common.selenium_excepts import webdriver_exepts
@@ -29,81 +29,22 @@ type_doc = {
     14: "cnpj"
 }
 
-css_selector = {
 
-    "numero_processo": "input[id='j_id_3k_1:j_id_3k_4_2_2_2_9_f_2:txtNumeroMask']",
-    
-    "estado": {
-
-        "combo": "div[id='j_id_3k_1:j_id_3k_4_2_2_1_9_u_1:comboEstadoVara']",
-        "panel": "div[id='j_id_3k_1:j_id_3k_4_2_2_1_9_u_1:comboEstadoVara_panel']"
-
-    },
-
-    "comarca": {
-
-        "combo": "div[id='j_id_3k_1:j_id_3k_4_2_2_1_9_u_1:comboComarcaVara']",
-        "panel": "div[id='j_id_3k_1:j_id_3k_4_2_2_1_9_u_1:comboComarcaVara_panel']"
-
-    },
-
-    "foro": {
-
-        "combo": "div[id='j_id_3k_1:j_id_3k_4_2_2_1_9_u_1:comboForoTribunal']",
-        "panel": "div[id='j_id_3k_1:j_id_3k_4_2_2_1_9_u_1:comboForoTribunal_panel']"
-
-    },
-
-    "vara": {
-
-        "combo": "div[id='j_id_3k_1:j_id_3k_4_2_2_1_9_u_1:comboVara']",
-        "panel": "div[id='j_id_3k_1:j_id_3k_4_2_2_1_9_u_1:comboVara_panel']"
-
-    },
-    
-    "empresa": {
-
-        "combo": "div[id='j_id_3k_1:comboClientProcessoParte']",
-        "panel": "input[id='j_id_3k_1:comboClientProcessoParte_filter']"
-
-    },
-    
-    "tipo_empresa": {
-
-        "combo": "div[id='j_id_3k_1:j_id_3k_4_2_2_4_9_2_5']",
-        "panel": "div[id='j_id_3k_1:j_id_3k_4_2_2_4_9_2_5_panel']"
-
-    },
-    
-    "tipo_parte_contraria": {
-
-        "combo": "div[id='j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:j_id_3k_4_2_2_5_9_9_4_2_m']",
-        "panel": "div[id='j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:j_id_3k_4_2_2_5_9_9_4_2_m_panel']"
-
-    },
-    
-    
-
-}
-
-class ElawCadastros(CrawJUD):
+class cadastro(CrawJUD):
 
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
-
-        self.search = SeachBot(self.driver, self.wait, self.portal, self.bot).search
-        
         self.start_time = time.perf_counter()
         
     def execution(self):
         
-        while True:
+        while not self.thread._is_stopped:
             
             if self.row == self.ws.max_row+1:
                 break
             
-            self.prt = prt(self.pid, self.row-1)
+            
             self.bot_data = {}
             for index in range(1, self.ws.max_column + 1):
                 self.index = index
@@ -114,6 +55,7 @@ class ElawCadastros(CrawJUD):
             try:
                 
                 if not len(self.bot_data) == 0:
+                    self.prt = prt(self.pid, self.row-1, url_socket=self.argbot['url_socket'])
                     self.queue()
                 
             except Exception as e:
@@ -260,13 +202,16 @@ class ElawCadastros(CrawJUD):
         """Declaração dos CSS em variáveis"""
         
         key = "ESTADO"
-        comboEstadoVara = css_selector.get(key.lower()).get("combo")
-        elemento = css_selector.get(key.lower()).get("panel")
+        comboEstadoVara = self.elementos.estado_combo
+        elemento = self.elementos.estado_panel
         
         self.message = 'Informando estado do processo'
         self.prt.print_log("log", self.message)
         
-        set_estado: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboEstadoVara)), message="Erro ao encontrar elemento")
+        set_estado: WebElement = self.wait.until(
+            EC.presence_of_element_located((
+                By.CSS_SELECTOR, comboEstadoVara)), message="Erro ao encontrar elemento")
+        
         set_estado.click()
         sleep(0.5)
 
@@ -284,8 +229,8 @@ class ElawCadastros(CrawJUD):
         
         key = "COMARCA"
         
-        comboComarcaVara = css_selector.get(key.lower()).get("combo")
-        elemento = css_selector.get(key.lower()).get("panel")
+        comboComarcaVara = self.elementos.comarca_combo
+        elemento = self.elementos.comarca_panel
         
         self.message = 'Informando comarca do processo'
         self.prt.print_log("log", self.message)
@@ -307,8 +252,8 @@ class ElawCadastros(CrawJUD):
         
         key = "FORO"
         
-        comboForoTribunal = css_selector.get(key.lower()).get("combo")
-        elemento = css_selector.get(key.lower()).get("panel")
+        comboForoTribunal = self.elementos.foro_combo
+        elemento = self.elementos.foro_panel
         
         self.message = 'Informando foro do processo'
         self.prt.print_log("log", self.message)
@@ -329,8 +274,8 @@ class ElawCadastros(CrawJUD):
         """Declaração dos CSS em variáveis"""
         key = "VARA"
         
-        comboVara = css_selector.get(key.lower()).get("combo")
-        elemento = css_selector.get(key.lower()).get("panel")
+        comboVara = self.elementos.vara_combo
+        elemento = self.elementos.vara_panel
         
         self.message = 'Informando vara do processo'
         self.prt.print_log("log", self.message)
@@ -348,7 +293,7 @@ class ElawCadastros(CrawJUD):
     def informa_proceso(self) -> None:
         
         key = "NUMERO_PROCESSO"
-        css_campo_processo = css_selector.get(key.lower())
+        css_campo_processo = self.elementos.numero_processo
         
         self.message = 'Informando número do processo'
         self.prt.print_log("log", self.message)
@@ -369,8 +314,8 @@ class ElawCadastros(CrawJUD):
         """Declaração dos CSS em variáveis"""
         
         key = "EMPRESA"
-        comboClientProcessoParte = css_selector.get(key.lower())["combo"]
-        elemento = css_selector.get(key.lower())["panel"]
+        comboClientProcessoParte = self.elementos.empresa_combo
+        elemento = self.elementos.empresa_panel
         
         self.message = "Informando Empresa"
         self.prt.print_log("log", self.message)
@@ -396,8 +341,8 @@ class ElawCadastros(CrawJUD):
         """Declaração dos CSS em variáveis"""
         
         key = "TIPO_EMPRESA"
-        comboClientProcessoParte = css_selector.get(key.lower())["combo"]
-        elemento = css_selector.get(key.lower())["panel"]
+        comboClientProcessoParte = self.elementos.tipo_empresa_combo
+        elemento = self.elementos.tipo_empresa_panel
         
         self.message = "Informando classificação da Empresa"
         self.prt.print_log("log", self.message)
@@ -417,12 +362,6 @@ class ElawCadastros(CrawJUD):
     
     def parte_contraria(self) -> None:
 
-        css_list_tipo_parte = 'div[id="j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:j_id_3k_4_2_2_5_9_9_4_2_m"]'
-        seach_tipo_parte_css = 'input[id="j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:j_id_3k_4_2_2_5_9_9_4_2_m_filter"]'
-        
-        css_table_tipo_doc = 'table[id="j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:tipoDocumentoInput"]'
-        css_campo_doc = 'input[id="j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:cpfCnpjInput"]'
-        css_search_button = 'button[id="j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:j_id_3k_4_2_2_5_9_9_4_2_f"]'
         
         self.message = 'Preechendo informações da parte contrária'
         self.prt.print_log("log", self.message)
@@ -430,23 +369,23 @@ class ElawCadastros(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         list_tipo_parte: WebElement = self.wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, css_list_tipo_parte)), message="Erro ao encontrar elemento")
+            (By.CSS_SELECTOR, self.elementos.css_list_tipo_parte)), message="Erro ao encontrar elemento")
         list_tipo_parte.click()
         sleep(0.5)
         
         search_tipo_parte: WebElement = self.wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, seach_tipo_parte_css)), message="Erro ao encontrar elemento")
+            (By.CSS_SELECTOR, self.elementos.seach_tipo_parte_css)), message="Erro ao encontrar elemento")
         search_tipo_parte.click()
         sleep(0.05)
         
         self.interact.send_key(search_tipo_parte, self.bot_data.get("TIPO_PARTE_CONTRARIA"))
         self.interact.send_key(search_tipo_parte, Keys.ENTER)
         self.driver.execute_script(
-            f"document.querySelector('{css_list_tipo_parte}').blur()")
+            f"document.querySelector('{self.elementos.css_list_tipo_parte}').blur()")
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         
-        table_tipo_doc: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_table_tipo_doc)), message="Erro ao encontrar elemento")
+        table_tipo_doc: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elementos.css_table_tipo_doc)), message="Erro ao encontrar elemento")
         table_tipo_doc = table_tipo_doc.find_elements(By.TAG_NAME, 'td')
         self.interact.sleep_load('div[id="j_id_3x"]')
 
@@ -465,7 +404,7 @@ class ElawCadastros(CrawJUD):
         
         self.interact.sleep_load('div[id="j_id_3x"]')
         campo_doc: WebElement = self.wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, css_campo_doc)), message="Erro ao encontrar elemento")
+            (By.CSS_SELECTOR, self.elementos.css_campo_doc)), message="Erro ao encontrar elemento")
         campo_doc.click()
         sleep(0.05)
         campo_doc.clear()
@@ -474,7 +413,7 @@ class ElawCadastros(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         search_button_parte: WebElement = self.wait.until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, css_search_button)), message="Erro ao encontrar elemento")
+            EC.presence_of_element_located((By.CSS_SELECTOR, self.elementos.css_search_button)), message="Erro ao encontrar elemento")
         search_button_parte.click()
         self.interact.sleep_load('div[id="j_id_3x"]')
 

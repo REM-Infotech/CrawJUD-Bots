@@ -14,7 +14,7 @@ from PyPDF2 import *
 """ Imports do Projeto """
 from datetime import datetime
 from bot.head import CrawJUD
-from bot.head.search import SeachBot
+
 from bot.head.Tools.PrintLogs import printtext as prt
 from bot.head.common.exceptions import ErroDeExecucao
 from bot.head.common.selenium_excepts import webdriver_exepts
@@ -42,11 +42,11 @@ class CrawlerCalculoTJ(CrawJUD):
         
     def execution(self):
         
-        while True:
+        while not self.thread._is_stopped:
             if self.row == self.ws.max_row+1:
                 self.prt = prt(self.pid, self.row)
                 break
-            self.prt = prt(self.pid, self.row-1)
+            
             self.bot_data = {}
             for index in range(1, self.ws.max_column + 1):
                 self.index = index
@@ -57,6 +57,7 @@ class CrawlerCalculoTJ(CrawJUD):
             try:
                 
                 if not len(self.bot_data) == 0:
+                    self.prt = prt(self.pid, self.row-1, url_socket=self.argbot['url_socket'])
                     self.queue()
                 
             except Exception as e:

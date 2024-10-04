@@ -29,6 +29,13 @@ licenses_users_credentials = db.Table(
     db.Column('credential_id', db.Integer, db.ForeignKey('credentials.id'), primary_key=True)
 )
 
+class SuperUser(db.Model):
+    
+    __tablename__ = "superuser"
+    id: int = db.Column(db.Integer, primary_key=True)
+    users_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    users = db.relationship('Users', backref=db.backref('supersu', lazy=True))
+
 class Users(db.Model):
 
     __tablename__ = 'users'
@@ -42,9 +49,9 @@ class Users(db.Model):
     login_id = db.Column(db.String(length=64), nullable=False, default=str(uuid4()))
     filename = db.Column(db.String(length=128))
     blob_doc = db.Column(db.LargeBinary(length=(2**32)-1))
-
+    
     def __init__(self, login: str = None, nome_usuario: str = None,
-                 email: str = None, license_key: str = None) -> None:
+                 email: str = None) -> None:
 
         self.login = login
         self.nome_usuario = nome_usuario
@@ -65,10 +72,10 @@ class Users(db.Model):
 class LicensesUsers(db.Model):
     
     __tablename__ = 'licenses_users'
-    id = db.Column(db.Integer, primary_key=True)
-    name_client = db.Column(db.String(length=60), nullable=False, unique=True)
-    cpf_cnpj = db.Column(db.String(length=30), nullable=False, unique=True)
-    license_token = db.Column(db.String(length=512), nullable=False, unique=True)
+    id: int = db.Column(db.Integer, primary_key=True)
+    name_client: str = db.Column(db.String(length=60), nullable=False, unique=True)
+    cpf_cnpj: str = db.Column(db.String(length=30), nullable=False, unique=True)
+    license_token: str = db.Column(db.String(length=512), nullable=False, unique=True)
     
     # Relacionamento de muitos para muitos com users
     users = db.relationship('Users', secondary=licenseusr, backref='licenses')
@@ -76,10 +83,7 @@ class LicensesUsers(db.Model):
     
     # Relacionamento de muitos para muitos com Credentials
     credentials = db.relationship('Credentials', secondary=licenses_users_credentials, backref='licenses')
-    
-    # Relacionamento com Bots (conforme já definido antes)
+    executions = db.relationship('Executions', secondary='execution_licenses', back_populates='licenses')
     bots = db.relationship('BotsCrawJUD', secondary=licenses_users_bots, backref=db.backref('licenses', lazy=True))
     
     
-
-

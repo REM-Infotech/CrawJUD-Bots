@@ -8,7 +8,7 @@ def webdriver_exepts() -> list:
             ElementNotInteractableException, ElementClickInterceptedException, ValueError, Exception]
 
 
-def exeption_message() -> dict:
+def exeption_message() -> dict[str, str]:
 
     return {
         TimeoutException: "Falha ao encontrar elemento",
