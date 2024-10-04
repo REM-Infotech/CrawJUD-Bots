@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from app import app, db
 from app.models.users import Users, LicensesUsers
-from app.models.bots import BotsCrawJUD, Credentials, Executions, CacheLogs
+from app.models.bots import BotsCrawJUD, Credentials, Executions, CacheLogs, ThreadBots
 from app.models.srv import Servers
 
 import platform

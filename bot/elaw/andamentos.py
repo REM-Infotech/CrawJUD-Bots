@@ -9,7 +9,7 @@ import unicodedata
 
 """ Imports do Projeto """
 from bot.head import CrawJUD
-from bot.head.search import SeachBot
+
 from bot.head.Tools.PrintLogs import printtext as prt
 from bot.head.common.exceptions import ErroDeExecucao
 from bot.head.common.selenium_excepts import webdriver_exepts
@@ -26,23 +26,20 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import  NoSuchElementException, TimeoutException
 
 
-class ElawAndamentos(CrawJUD):
+class andamentos(CrawJUD):
 
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
-
-        self.search = SeachBot(self.driver, self.wait, self.portal).search
-        
         self.start_time = time.perf_counter()
         
     def execution(self):
         
-        while True:
+        while not self.thread._is_stopped:
             if self.row == self.ws.max_row+1:
                 self.prt = prt(self.pid, self.row)
                 break
-            self.prt = prt(self.pid, self.row-1)
+            
             self.bot_data = {}
             for index in range(1, self.ws.max_column + 1):
                 self.index = index
@@ -53,6 +50,7 @@ class ElawAndamentos(CrawJUD):
             try:
                 
                 if not len(self.bot_data) == 0:
+                    self.prt = prt(self.pid, self.row-1, url_socket=self.argbot['url_socket'])
                     self.queue()
                 
             except Exception as e:

@@ -1,7 +1,7 @@
 """ Imports do Projeto """
 from bot.head import CrawJUD
 from bot.head.Tools.PrintLogs import printtext as prt
-from bot.head.search import SeachBot
+
 from bot.head.count_doc import count_doc
 from typing import Type
 import time
@@ -46,18 +46,15 @@ class emissao(CrawJUD):
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
-        
-        self.search = SeachBot(self.elementos, self.driver, self.wait, self.system).search
-        
         self.start_time = time.perf_counter()
         
     def execution(self):
         
-        while True:
+        while not self.thread._is_stopped:
             if self.row == self.ws.max_row+1:
                 self.prt = prt(self.pid, self.row)
                 break
-            self.prt = prt(self.pid, self.row-1)
+            
             self.bot_data = {}
             for index in range(1, self.ws.max_column + 1):
                 self.index = index
@@ -68,6 +65,7 @@ class emissao(CrawJUD):
             try:
                 
                 if not len(self.bot_data) == 0:
+                    self.prt = prt(self.pid, self.row-1, url_socket=self.argbot['url_socket'])
                     self.queue()
                 
             except Exception as e:

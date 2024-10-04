@@ -57,8 +57,8 @@ def handle_message(data: dict[str, str | int]):
         log_pid = CacheLogs(
             pid = pid,
             pos = int(data["pos"]),
-            total = execut.total_rows,
-            remaining = execut.total_rows,
+            total = int(execut.total_rows)-1,
+            remaining = int(execut.total_rows)-1,
             success = 0,
             errors = 0,
             status = execut.status,

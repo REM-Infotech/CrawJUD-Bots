@@ -22,6 +22,7 @@ execution_licenses = db.Table(
     db.Column('licenses_users_id', db.Integer, db.ForeignKey('licenses_users.id'), primary_key=True)
 )
 
+
 class BotsCrawJUD(db.Model):
     
     __tablename__ = 'bots'
@@ -64,7 +65,9 @@ class Executions(db.Model):
     # Relacionamento com Bots (conforme já definido antes)
     bot = db.relationship('BotsCrawJUD', secondary=execution_bots, backref=db.backref('executions', lazy=True))
     user = db.relationship('Users', secondary=execution_users, backref=db.backref('executions', lazy=True))
-    licenses = db.relationship('LicensesUsers', secondary=execution_licenses, backref=db.backref('executions', lazy=True))
+    licenses = db.relationship('LicensesUsers', secondary='execution_licenses', back_populates='executions')
+    
+
     
     
 class CacheLogs(db.Model):
@@ -82,3 +85,18 @@ class CacheLogs(db.Model):
     status = db.Column(db.String(length=45), nullable=False)
     
     last_log = db.Column(db.Text, nullable=False)
+
+
+class ThreadBots(db.Model):
+    
+    __bind_key__ = 'cachelogs'
+    __tablename__ = 'thread_bots'
+    id = db.Column(db.Integer, primary_key=True)
+    pid = db.Column(db.String(length=12), nullable=False)
+    thread_id = db.Column(db.Integer, nullable=False)
+    
+    def __init__(self, pid: str = None, thread_id: int = 0) -> None:
+        
+        self.pid = pid
+        self.thread_id = thread_id
+    

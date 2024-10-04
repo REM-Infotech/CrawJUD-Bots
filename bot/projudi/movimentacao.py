@@ -1,6 +1,6 @@
 """ Imports do Projeto """
 from bot.head.Tools.PrintLogs import printtext as prt
-from bot.head.search import SeachBot
+
 from datetime import datetime
 from typing import Type
 from time import sleep
@@ -27,21 +27,18 @@ class movimentacao:
     def __init__(self, Initbot) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
-
-        self.search = SeachBot(self.driver, self.wait, self.portal).search
-        
         self.start_time = time.perf_counter()
     
     def execution(self):
         
-        while True:
+        while not self.thread._is_stopped:
             if self.row == self.ws.max_row+1:
                 self.prt = prt(self.pid, self.row)
                 break
             
             self.appends = []
             self.resultados = []
-            self.prt = prt(self.pid, self.row-1)
+            
             self.bot_data = {}
             for index in range(1, self.ws.max_column + 1):
                 self.index = index

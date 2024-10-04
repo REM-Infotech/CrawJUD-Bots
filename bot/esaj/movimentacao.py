@@ -6,7 +6,7 @@ from datetime import datetime
 
 """ Imports do Projeto """
 from bot.head import CrawJUD
-from bot.head.search import SeachBot
+
 from bot.head.Tools.PrintLogs import printtext as prt
 from bot.head.common.selenium_excepts import webdriver_exepts
 from bot.head.common.selenium_excepts import exeption_message
@@ -24,21 +24,18 @@ class movimentacao(CrawJUD):
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
-        
-        self.search = SeachBot(self.elementos, self.driver, self.wait, self.system).search
-        
         self.start_time = time.perf_counter()
 
     def execution(self):
         
-        while True:
+        while not self.thread._is_stopped:
             if self.row == self.ws.max_row+1:
                 self.prt = prt(self.pid, self.row)
                 break
             
             self.appends = []
             self.resultados = []
-            self.prt = prt(self.pid, self.row-1)
+            
             self.bot_data = {}
             for index in range(1, self.ws.max_column + 1):
                 self.index = index
