@@ -62,7 +62,6 @@ class elements_elaw:
         css_search_button = 'button[id="j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:j_id_3k_4_2_2_5_9_9_4_2_f"]'
         
         ##
-
         url_login = ""
         campo_username = ''
         campo_passwd = ''
