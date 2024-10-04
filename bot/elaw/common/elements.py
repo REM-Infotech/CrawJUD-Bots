@@ -1,34 +1,5 @@
 class elements_elaw:
     
-    url_login: str = ""
-    campo_username: str = ''
-    campo_passwd: str = ''
-    btn_entrar: str = ""
-    url_busca: str = ""
-    btn_busca: str = ""
-    
-    
-    numero_processo: str = ""
-    estado_combo: str = ""
-    estado_panel: str = ""
-    comarca_combo: str = ""
-    comarca_panel: str = ""
-    foro_combo: str = ""
-    foro_panel: str = ""
-    vara_combo: str = ""
-    vara_panel: str = ""
-    empresa_combo: str = ""
-    empresa_panel: str = ""
-    tipo_empresa_combo: str = ""
-    tipo_empresa_panel: str = ""
-    tipo_parte_contraria_combo: str = ""
-    tipo_parte_contraria_panel: str = ""
-    css_list_tipo_parte = ''
-    seach_tipo_parte_css = ''
-    css_table_tipo_doc = ''
-    css_campo_doc = ''
-    css_search_button = ''
-    
     class AME:
         
         numero_processo = "input[id='j_id_3k_1:j_id_3k_4_2_2_2_9_f_2:txtNumeroMask']"
@@ -79,9 +50,8 @@ class elements_elaw:
         }
         
         # Se o estado passado existir no dicionário, atualiza as variáveis
-        state_class = state_classes[state].__dict__.copy()
-
-        for func, name in self.AM.__dict__.items():
+        state_class = state_classes[state]
+        for func, name in state_class.__dict__.items():
             if not func.startswith('__'):
                 setattr(self, func, name)
                 print(f"{func}: {name}")
