@@ -46,7 +46,7 @@ class complement(CrawJUD):
             if self.row == self.ws.max_row+1:
                 self.prt = prt(self.pid, self.row)
                 break
-            self.prt = prt(self.pid, self.row-1)
+            
             self.bot_data = {}
             for index in range(1, self.ws.max_column + 1):
                 self.index = index

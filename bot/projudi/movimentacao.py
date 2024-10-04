@@ -38,7 +38,7 @@ class movimentacao:
             
             self.appends = []
             self.resultados = []
-            self.prt = prt(self.pid, self.row-1)
+            
             self.bot_data = {}
             for index in range(1, self.ws.max_column + 1):
                 self.index = index
