@@ -31,7 +31,7 @@ class capa(CrawJUD):
                 self.auth.set_portal()
             
             if self.row == self.ws.max_row+1:
-                self.prt = prt(self.pid, self.ws.max_row, url_socket=self.argbot['url_socket'])
+                self.row = self.ws.max_row
                 break
             
             self.bot_data = {}

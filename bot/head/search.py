@@ -18,7 +18,7 @@ class SeachBot(CrawJUD):
     def __init__(self, Head: CrawJUD):
         
         self.__dict__ = Head.__dict__.copy()
-        self.metodo = getattr(self, self.system, None)
+        self.metodo = getattr(self, f"{self.system.lower()}_search", None)
         
     def __call__(self) -> None:
         
@@ -27,7 +27,7 @@ class SeachBot(CrawJUD):
         self.prt(self)()
         self.metodo()
 
-    def elaw(self) -> bool:
+    def elaw_search(self) -> bool:
         
         if self.driver.current_url != "https://amazonas.elaw.com.br/processoList.elaw":
         
@@ -56,7 +56,7 @@ class SeachBot(CrawJUD):
         
         return False
         
-    def esaj(self):
+    def esaj_search(self):
         
         grau = int(str(self.bot_data.get("GRAU")).replace("º", ""))
         if grau == 1:
@@ -84,9 +84,9 @@ class SeachBot(CrawJUD):
         openprocess: WebElement = self.wait.until(EC.presence_of_element_located((By.ID, id_consultar)))
         self.interact.click(openprocess)
             
-    def projudi(self):
+    def projudi_search(self):
 
-        self.driver.get(self.elementos.url_busca)
+        self.driver.get(self.elements.url_busca)
 
         inputproc = None
         enterproc = None

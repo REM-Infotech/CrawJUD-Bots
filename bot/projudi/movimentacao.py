@@ -1,14 +1,11 @@
 """ Imports do Projeto """
-from bot.head.Tools.PrintLogs import printtext as prt
-
-from datetime import datetime
-from typing import Type
-from time import sleep
-import time
 import re
 import os
-from contextlib import suppress
+import time
 import shutil
+from time import sleep
+from contextlib import suppress
+
 from PyPDF2 import *
 
 # Selenium Imports
@@ -21,10 +18,11 @@ from bot.head.common.selenium_excepts import webdriver_exepts
 from bot.head.common.selenium_excepts import exeption_message
 from selenium.common.exceptions import NoSuchElementException
 
+from bot.head import CrawJUD
 
-class movimentacao:
+class movimentacao(CrawJUD):
 
-    def __init__(self, Initbot) -> None:
+    def __init__(self, Initbot: CrawJUD) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
@@ -33,8 +31,9 @@ class movimentacao:
         
         self.row = 2
         while not self.thread._is_stopped:
+            
             if self.row == self.ws.max_row+1:
-                self.prt = prt(self.pid, self.row)
+                self.row = self.ws.max_row
                 break
             
             self.appends = []

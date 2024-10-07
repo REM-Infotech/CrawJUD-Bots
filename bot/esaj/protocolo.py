@@ -38,7 +38,7 @@ class protocolo(CrawJUD):
         
         while not self.thread._is_stopped:
             if self.row == self.ws.max_row+1:
-                self.prt = prt(self.pid, self.row)
+                self.row = self.ws.max_row
                 break
             
             self.bot_data = {}

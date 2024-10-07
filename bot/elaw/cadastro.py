@@ -203,8 +203,8 @@ class cadastro(CrawJUD):
         """Declaração dos CSS em variáveis"""
         
         key = "ESTADO"
-        comboEstadoVara = self.elementos.estado_combo
-        elemento = self.elementos.estado_panel
+        comboEstadoVara = self.elements.estado_combo
+        elemento = self.elements.estado_panel
         
         self.message = 'Informando estado do processo'
         self.prt.print_log("log", self.message)
@@ -230,8 +230,8 @@ class cadastro(CrawJUD):
         
         key = "COMARCA"
         
-        comboComarcaVara = self.elementos.comarca_combo
-        elemento = self.elementos.comarca_panel
+        comboComarcaVara = self.elements.comarca_combo
+        elemento = self.elements.comarca_panel
         
         self.message = 'Informando comarca do processo'
         self.prt.print_log("log", self.message)
@@ -253,8 +253,8 @@ class cadastro(CrawJUD):
         
         key = "FORO"
         
-        comboForoTribunal = self.elementos.foro_combo
-        elemento = self.elementos.foro_panel
+        comboForoTribunal = self.elements.foro_combo
+        elemento = self.elements.foro_panel
         
         self.message = 'Informando foro do processo'
         self.prt.print_log("log", self.message)
@@ -275,8 +275,8 @@ class cadastro(CrawJUD):
         """Declaração dos CSS em variáveis"""
         key = "VARA"
         
-        comboVara = self.elementos.vara_combo
-        elemento = self.elementos.vara_panel
+        comboVara = self.elements.vara_combo
+        elemento = self.elements.vara_panel
         
         self.message = 'Informando vara do processo'
         self.prt.print_log("log", self.message)
@@ -294,7 +294,7 @@ class cadastro(CrawJUD):
     def informa_proceso(self) -> None:
         
         key = "NUMERO_PROCESSO"
-        css_campo_processo = self.elementos.numero_processo
+        css_campo_processo = self.elements.numero_processo
         
         self.message = 'Informando número do processo'
         self.prt.print_log("log", self.message)
@@ -315,8 +315,8 @@ class cadastro(CrawJUD):
         """Declaração dos CSS em variáveis"""
         
         key = "EMPRESA"
-        comboClientProcessoParte = self.elementos.empresa_combo
-        elemento = self.elementos.empresa_panel
+        comboClientProcessoParte = self.elements.empresa_combo
+        elemento = self.elements.empresa_panel
         
         self.message = "Informando Empresa"
         self.prt.print_log("log", self.message)
@@ -342,8 +342,8 @@ class cadastro(CrawJUD):
         """Declaração dos CSS em variáveis"""
         
         key = "TIPO_EMPRESA"
-        comboClientProcessoParte = self.elementos.tipo_empresa_combo
-        elemento = self.elementos.tipo_empresa_panel
+        comboClientProcessoParte = self.elements.tipo_empresa_combo
+        elemento = self.elements.tipo_empresa_panel
         
         self.message = "Informando classificação da Empresa"
         self.prt.print_log("log", self.message)
@@ -370,23 +370,23 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         list_tipo_parte: WebElement = self.wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, self.elementos.css_list_tipo_parte)), message="Erro ao encontrar elemento")
+            (By.CSS_SELECTOR, self.elements.css_list_tipo_parte)), message="Erro ao encontrar elemento")
         list_tipo_parte.click()
         sleep(0.5)
         
         search_tipo_parte: WebElement = self.wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, self.elementos.seach_tipo_parte_css)), message="Erro ao encontrar elemento")
+            (By.CSS_SELECTOR, self.elements.seach_tipo_parte_css)), message="Erro ao encontrar elemento")
         search_tipo_parte.click()
         sleep(0.05)
         
         self.interact.send_key(search_tipo_parte, self.bot_data.get("TIPO_PARTE_CONTRARIA"))
         self.interact.send_key(search_tipo_parte, Keys.ENTER)
         self.driver.execute_script(
-            f"document.querySelector('{self.elementos.css_list_tipo_parte}').blur()")
+            f"document.querySelector('{self.elements.css_list_tipo_parte}').blur()")
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         
-        table_tipo_doc: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elementos.css_table_tipo_doc)), message="Erro ao encontrar elemento")
+        table_tipo_doc: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.css_table_tipo_doc)), message="Erro ao encontrar elemento")
         table_tipo_doc = table_tipo_doc.find_elements(By.TAG_NAME, 'td')
         self.interact.sleep_load('div[id="j_id_3x"]')
 
@@ -405,7 +405,7 @@ class cadastro(CrawJUD):
         
         self.interact.sleep_load('div[id="j_id_3x"]')
         campo_doc: WebElement = self.wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, self.elementos.css_campo_doc)), message="Erro ao encontrar elemento")
+            (By.CSS_SELECTOR, self.elements.css_campo_doc)), message="Erro ao encontrar elemento")
         campo_doc.click()
         sleep(0.05)
         campo_doc.clear()
@@ -414,7 +414,7 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         search_button_parte: WebElement = self.wait.until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, self.elementos.css_search_button)), message="Erro ao encontrar elemento")
+            EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.css_search_button)), message="Erro ao encontrar elemento")
         search_button_parte.click()
         self.interact.sleep_load('div[id="j_id_3x"]')
 

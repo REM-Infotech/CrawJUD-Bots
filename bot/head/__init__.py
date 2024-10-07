@@ -62,12 +62,13 @@ class CrawJUD(WorkerThread):
         self.url_socket = arguments_bot["url_socket"]
         self.pid = arguments_bot['pid']
         self.row = int(0)
+        self.app = app
         
         self.message = str('Inicializando robô')
         self.type_log = str("log")
         self.prt(self)()
         
-        self.app = app
+        
         self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve(), arguments_bot['xlsx'])
         self.output_dir_path = pathlib.Path(self.input_file).parent.resolve().__str__()
         
@@ -105,7 +106,7 @@ class CrawJUD(WorkerThread):
             self.prt(self)()
             
             ## Carrega elementos do bot
-            self.elementos = elements_bot(self.system, self.state)
+            self.elements = elements_bot(self.system, self.state)
             
             args = self.DriverLaunch()
             if not args:
@@ -170,7 +171,7 @@ class CrawJUD(WorkerThread):
 
             Get_Login = True
             
-            self.login = self.argbot.get("login", None)
+            self.username = self.argbot.get("login", None)
             self.password = self.argbot.get("password", None)
             
             if self.login:
@@ -179,7 +180,7 @@ class CrawJUD(WorkerThread):
                 self.type_log = "log"
                 self.prt(self)()
                 
-                Get_Login = self.auth = AuthBot(self)
+                Get_Login = AuthBot(self)()
 
         except Exception as e:
             print(e)
@@ -377,7 +378,7 @@ class CrawJUD(WorkerThread):
             
             self.message = "WebDriver inicializado"
             self.type_log = "log"
-            self.prt(self)
+            self.prt(self)()
             
             return args
 

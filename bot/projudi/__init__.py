@@ -1,10 +1,6 @@
-
-
 class projudi:
     
-    from bot.projudi.capa import capa
-    from bot.projudi.protocolo import protocolo
-    from bot.projudi.movimentacao import movimentacao
+    
     bot = ""
     Master = ""
     
@@ -12,7 +8,16 @@ class projudi:
         self.bot = bot
         self.Master = Master
     
-    def __call__(self) -> capa | protocolo | movimentacao:
-        self.execution = globals().get(self.bot)(self.Master).execution()
-    
+    def __call__(self):
+        try:
+            self.execution: capa | protocolo | movimentacao = globals().get(self.bot)(self.Master)
+            self.execution.execution()
+            
+        except Exception as e:
+            print(e)
+            raise e
+        
+from bot.projudi.capa import capa
+from bot.projudi.protocolo import protocolo
+from bot.projudi.movimentacao import movimentacao
 from bot.projudi.common.elements import elements_projudi

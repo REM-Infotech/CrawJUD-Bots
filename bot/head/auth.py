@@ -29,16 +29,16 @@ class AuthBot(CrawJUD):
     
     def __init__(self, Head: CrawJUD):
         self.__dict__ = Head.__dict__.copy()
-        self.metodo: self.esaj | self.projudi | self.elaw = getattr(self, self.system)
+        self.metodo: self.esaj | self.projudi | self.elaw = getattr(self, self.system.lower())
     
     def __call__(self) -> bool:
-        self.metodo()    
+        return self.metodo()    
     
     def esaj(self):
 
             loginuser = ''.join(
-                filter(lambda x: x not in string.punctuation, self.info_creds[0]))
-            passuser = self.info_creds[1]
+                filter(lambda x: x not in string.punctuation, self.username))
+            passuser = self.password
             sleep(3)
 
             if self.method == "cert":
@@ -115,29 +115,26 @@ class AuthBot(CrawJUD):
 
     def projudi(self):
         
-        if self.info_creds:
-            
-            # 0638164-88.2019.8.04.0015
-            self.driver.get(self.elements.url_login)
+        self.driver.get(self.elements.url_login)
 
-            username: WebElement = self.wait.until(EC.presence_of_element_located ((By.CSS_SELECTOR, self.elements.campo_username)))
-            username.send_keys(self.info_creds[0])
+        username: WebElement = self.wait.until(EC.presence_of_element_located ((By.CSS_SELECTOR, self.elements.campo_username)))
+        username.send_keys(self.username)
 
-            password = self.driver.find_element(By.CSS_SELECTOR, self.elements.campo_passwd)
-            password.send_keys(self.info_creds[1])
+        password = self.driver.find_element(By.CSS_SELECTOR, self.elements.campo_passwd)
+        password.send_keys(self.password)
 
-            entrar = self.driver.find_element(By.CSS_SELECTOR, self.elements.btn_entrar)
-            entrar.click()
+        entrar = self.driver.find_element(By.CSS_SELECTOR, self.elements.btn_entrar)
+        entrar.click()
+        
+        check_login = None
+        
+        with suppress(TimeoutException):
+            check_login = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.chk_login)))
+        
+        if check_login:
+            return True
             
-            check_login = None
-            
-            with suppress(TimeoutException):
-                check_login = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.chk_login)))
-            
-            if check_login:
-                return True
-                
-            return False
+        return False
             
     def elaw(self):
 
@@ -146,10 +143,10 @@ class AuthBot(CrawJUD):
 
             # wait until page load
             username: WebElement = self.wait.until(EC.presence_of_element_located((By.ID, 'username')))
-            username.send_keys(self.info_creds[0])
+            username.send_keys(self.username)
 
             password: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#password')))
-            password.send_keys(self.info_creds[1])
+            password.send_keys(self.password)
 
             entrar: WebElement = self.wait.until(EC.presence_of_element_located((By.ID, "j_id_a_1_5_f")))
             entrar.click()

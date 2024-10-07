@@ -1,3 +1,4 @@
+from app import io
 # Importações necessárias
 import os
 import pytz
@@ -7,7 +8,6 @@ from time import sleep
 from datetime import datetime
 
 from bot.head import CrawJUD
-from bot.head.Tools.PrintLogs.socketio import socket_message, disconnect_socket
 
 # Define a codificação de caracteres como UTF-8
 codificacao = 'utf-8'
@@ -20,14 +20,15 @@ class printtext(CrawJUD):
         self.__dict__ = Head.__dict__.copy()
         
     def log_message(self) -> None:
-        prompt = f"({self.pid}, {self.type_log}, pos:{self.row}, {datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%H:%M:%S')}) {self.message}"
-        tqdm.write(prompt)
-        socket_message(self.pid, prompt, self.url_socket, self.type_log, self.row)
-        mensagens.append(prompt)
+        self.prompt = f"({self.pid}, {self.type_log}, pos:{self.row}, {datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%H:%M:%S')}) {self.message}"
+        tqdm.write(self.prompt)
+        
+        self.socket_message()
+        mensagens.append(self.prompt)
+        
         self.list_messages = mensagens
         if "fim da execução" in self.message.lower():
             sleep(1)
-            disconnect_socket()
             self.file_log()
             
     def file_log(self):
@@ -52,5 +53,23 @@ class printtext(CrawJUD):
             tqdm.write(f"{e}")
 
     def __call__(self) -> str:
-        log_message = self.log_message()
-        log_message()
+        self.log_message()
+
+    
+    def socket_message(self):
+    
+        try:
+            data = {'message': self.prompt,
+                    'pid': self.pid, 
+                    "type": self.type_log, 
+                    "pos": self.row}
+            
+            self.emitMessage(data)
+            
+        except Exception as e:
+            print(e)
+
+    def emitMessage(self, data: dict[str, str]):
+        
+        with self.app.app_context():
+            io.emit('log_message', data, namespace='/log')
