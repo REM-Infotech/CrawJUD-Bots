@@ -6,7 +6,7 @@ from datetime import datetime
 
 """ Imports do Projeto """
 
-from bot.head.Tools.PrintLogs import printtext as prt
+
 from bot.head.common.selenium_excepts import webdriver_exepts
 from bot.head.common.selenium_excepts import exeption_message
 
@@ -51,19 +51,19 @@ class capa(CrawJUD):
             except Exception as e:
                 
                 old_message = self.message
-                self.message = getattr(e, 'msg', getattr(e, 'message', ""))
-                if self.message == "":
+                message_error: str = getattr(e, 'msg', getattr(e, 'message', ""))
+                if message_error == "":
                     for exept in webdriver_exepts():
                         if isinstance(e, exept):
-                            self.message = exeption_message().get(exept)
+                            message_error = exeption_message().get(exept)
                             break
                         
-                if not self.message:
-                    self.message = str(e)
+                if not message_error:
+                    message_error = str(e)
                 
                 self.type_log = "error"
-                self.message_error = f'{self.message}. | Operação: {old_message}'
-                self.prt(self)()
+                self.message_error = f'{message_error}. | Operação: {old_message}'
+                self.prt(self)
                 self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
                 self.message_error = None
                 
@@ -73,14 +73,16 @@ class capa(CrawJUD):
         
     def queue(self):
         
-        self.search()
+        self.search(self)
         self.driver.refresh()
-        self.append_success(self.get_process_informations())
+        self.append_success(self.get_process_informations(), "Informações do processo extraidas com sucesso!")
 
     def get_process_informations(self) -> list:
 
-        self.prt.print_log("log", f"Obtendo informações do processo {self.bot_data.get('NUMERO_PROCESSO')}...") 
-
+        self.message = f"Obtendo informações do processo {self.bot_data.get('NUMERO_PROCESSO')}..."
+        self.type_log = "log"
+        self.prt(self)
+        
         navegar = self.driver.find_element(By.CSS_SELECTOR, '#tabItemprefix2')
         navegar.click()
 
@@ -224,8 +226,10 @@ class capa(CrawJUD):
         elif advPoloAtivo == "Parte sem advogado":
             get_oab = ''
 
-        processo_data = [self.bot_data.get('NUMERO_PROCESSO'), area_direito, "Geral", "Amazonas", comarca, foro, vara, data_distribuicao, nomePoloAtivo, "Autor",
-                         cpfPoloAtivo, nomePoloPassivo, "réu", cpfPoloPassivo, statusproc, "Liliane Da Silva Roque", advPoloAtivo, "Fonseca Melo e Viana Advogados Associados", 
+        processo_data = [self.bot_data.get('NUMERO_PROCESSO'), area_direito, "Geral", 
+                         "Amazonas", comarca, foro, vara, data_distribuicao, nomePoloAtivo, "Autor",
+                         cpfPoloAtivo, nomePoloPassivo, "réu", cpfPoloPassivo, statusproc, "Liliane Da Silva Roque", 
+                         advPoloAtivo, "Fonseca Melo e Viana Advogados Associados", 
                          valorDaCausa]
         
         """

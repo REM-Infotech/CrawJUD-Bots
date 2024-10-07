@@ -10,7 +10,7 @@ from contextlib import suppress
 """ Imports do Projeto """
 from bot.head import CrawJUD
 
-from bot.head.Tools.PrintLogs import printtext as prt
+
 from bot.head.common.exceptions import ErroDeExecucao
 from bot.head.common.selenium_excepts import webdriver_exepts
 from bot.head.common.selenium_excepts import exeption_message
@@ -62,19 +62,19 @@ class complement(CrawJUD):
             except Exception as e:
                 
                 old_message = self.message
-                self.message = getattr(e, 'msg', getattr(e, 'message', ""))
-                if self.message == "":
+                message_error = getattr(e, 'msg', getattr(e, 'message', ""))
+                if message_error == "":
                     for exept in webdriver_exepts():
                         if isinstance(e, exept):
-                            self.message = exeption_message().get(exept)
+                            message_error = exeption_message().get(exept)
                             break
                         
-                if not self.message:
-                    self.message = str(e)
+                if not message_error:
+                    message_error = str(e)
                 
                 self.type_log = "error"
-                self.message_error = f'{self.message}. | Operação: {old_message}'
-                self.prt(self)()
+                self.message_error = f'{message_error}. | Operação: {old_message}'
+                self.prt(self)
                 self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
                 self.message_error = None
             
@@ -84,13 +84,13 @@ class complement(CrawJUD):
         
     def queue(self) -> None:
 
-        search = self.search(self.bot_data, self.prt)
+        search = self.search(self)
         
         if search is True:
                 
             self.message = "Inicializando complemento de cadastro"
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             edit_proc_button = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'button[id="dtProcessoResults:0:btnEditar"]')))
             edit_proc_button.click()
             
@@ -130,14 +130,14 @@ class complement(CrawJUD):
         elif not search is True:
             self.message = "Processo não encontrado!"
             self.type_log = "error"
-            self.prt(self)()
+            self.prt(self)
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
 
     def unidade_consumidora(self) -> None:
 
         self.message = "Informando unidade consumidora"
         self.type_log = "log"
-        self.prt(self)()
+        self.prt(self)
 
         css_input_uc = 'textarea[id="j_id_3k_1:j_id_3k_4_2_2_6_9_44_2:j_id_3k_4_2_2_6_9_44_3_1_2_2_1_1:j_id_3k_4_2_2_6_9_44_3_1_2_2_1_13"]'
 
@@ -151,7 +151,7 @@ class complement(CrawJUD):
 
         self.message = "Unidade consumidora informada!"
         self.type_log = "log"
-        self.prt(self)()
+        self.prt(self)
 
     def divisao(self) -> None:
 
@@ -159,7 +159,7 @@ class complement(CrawJUD):
         elemento = 'input[id="j_id_3k_1:j_id_3k_4_2_2_a_9_44_2:j_id_3k_4_2_2_a_9_44_3_1_2_2_1_1:fieldid_9241typeSelectField1CombosCombo_filter"]'
         self.message = "Informando divisão"
         self.type_log = "log"
-        self.prt(self)()
+        self.prt(self)
         
         div_divisao: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_set_divisao)))
         div_divisao.click()
@@ -178,7 +178,7 @@ class complement(CrawJUD):
 
         self.message = "Divisão informada!"
         self.type_log = "log"
-        self.prt(self)()
+        self.prt(self)
 
     def data_citacao(self) -> None:
 
@@ -241,7 +241,7 @@ class complement(CrawJUD):
         
         self.message = "Provimento antecipatório informado!"
         self.type_log = "log"
-        self.prt(self)()    
+        self.prt(self)    
 
     def fato_gerador(self) -> None:
 
@@ -251,7 +251,7 @@ class complement(CrawJUD):
         
         self.message = "Informando fato gerador"
         self.type_log = "log"
-        self.prt(self)()
+        self.prt(self)
 
         
         div_fatogerador: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, fatogeradorCombo)))
@@ -264,7 +264,7 @@ class complement(CrawJUD):
 
         self.message = "Fato gerador informado!"
         self.type_log = "log"
-        self.prt(self)()    
+        self.prt(self)    
     
     def desc_objeto(self) -> None:
         
@@ -287,7 +287,7 @@ class complement(CrawJUD):
         
         self.message = "Informando objeto do processo"
         self.type_log = "log"
-        self.prt(self)()
+        self.prt(self)
         
         div_objeto: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, objetoCombo)))
         div_objeto.click()
@@ -302,7 +302,7 @@ class complement(CrawJUD):
         
         self.message = "Objeto do processo informado!"
         self.type_log = "log"
-        self.prt(self)()
+        self.prt(self)
 
     def salvar_tudo(self) -> None:
 

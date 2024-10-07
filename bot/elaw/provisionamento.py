@@ -8,7 +8,7 @@ from contextlib import suppress
 """ Imports do Projeto """
 from bot.head import CrawJUD
 
-from bot.head.Tools.PrintLogs import printtext as prt
+
 from bot.head.common.exceptions import ErroDeExecucao
 from bot.head.common.selenium_excepts import webdriver_exepts
 from bot.head.common.selenium_excepts import exeption_message
@@ -57,19 +57,19 @@ class provisao(CrawJUD):
             except Exception as e:
                 
                 old_message = self.message
-                self.message = getattr(e, 'msg', getattr(e, 'message', ""))
-                if self.message == "":
+                message_error = getattr(e, 'msg', getattr(e, 'message', ""))
+                if message_error == "":
                     for exept in webdriver_exepts():
                         if isinstance(e, exept):
-                            self.message = exeption_message().get(exept)
+                            message_error = exeption_message().get(exept)
                             break
                         
-                if not self.message:
-                    self.message = str(e)
+                if not message_error:
+                    message_error = str(e)
                 
                 self.type_log = "error"
-                self.message_error = f'{self.message}. | Operação: {old_message}'
-                self.prt(self)()
+                self.message_error = f'{message_error}. | Operação: {old_message}'
+                self.prt(self)
                 self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
                 self.message_error = None
             
@@ -81,7 +81,7 @@ class provisao(CrawJUD):
 
         module = "search_processo"
         
-        check_cadastro = self.search(self.bot_data, self.prt)
+        check_cadastro = self.search(self)
         if check_cadastro is True:
             
             self.prt.print_log("log", "Processo encontrado! Informando valores...")
@@ -177,7 +177,7 @@ class provisao(CrawJUD):
             
             self.message = "Informando valores"
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             css_val_inpt = 'input[id="j_id_2m:j_id_2p_2e:processoAmountObjetoDt:0:amountValor_input"][type="text"]'
             campo_valor_dml = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_val_inpt)))
                 
@@ -205,7 +205,7 @@ class provisao(CrawJUD):
             
             self.message = "Alterando risco"
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             for item in filter_risk:
                 
                 # label_risco = self.driver.find_element(By.CSS_SELECTOR, 'label[id="j_id_2m:j_id_2p_2e:processoAmountObjetoDt:0:j_id_2p_2i_5_1_6_5_k_2_2_1_label"]').text.lower()
@@ -228,7 +228,7 @@ class provisao(CrawJUD):
                 
                 self.message = "Alterando datas de correção base e juros"
                 self.type_log = "log"
-                self.prt(self)()
+                self.prt(self)
                 if self.bot_data.get("DATA_ATUALIZACAO") is not None or self.bot_data.get("DATA_ATUALIZACAO") != "":
                     
                     DataCorrecaoCss = 'input[id="j_id_2m:j_id_2p_2e:processoAmountObjetoDt:0:amountDataCorrecao_input"]'
@@ -255,7 +255,7 @@ class provisao(CrawJUD):
             
             self.message = "Informando justificativa"
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             informar_motivo: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'textarea[id="j_id_2m:j_id_2p_2e:j_id_2p_2i_8:j_id_2p_2i_j"]')))
             informar_motivo.send_keys(f"Atualização de provisão - {self.bot_data.get('OBSERVACAO')}")
             id_informar_motivo = informar_motivo.get_attribute("id")

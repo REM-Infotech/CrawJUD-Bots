@@ -18,6 +18,11 @@ class printtext(CrawJUD):
     
     def __init__(self, Head: CrawJUD):
         self.__dict__ = Head.__dict__.copy()
+    
+    def __call__(self, Head: CrawJUD):
+        
+        self.__dict__ = Head.__dict__.copy()
+        self.log_message()
         
     def log_message(self) -> None:
         
@@ -56,10 +61,6 @@ class printtext(CrawJUD):
 
             # Exibe o erro
             tqdm.write(f"{e}")
-
-    def __call__(self) -> str:
-        self.log_message()
-
     
     def socket_message(self):
     

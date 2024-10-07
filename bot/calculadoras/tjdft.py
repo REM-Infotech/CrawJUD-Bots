@@ -15,7 +15,7 @@ from PyPDF2 import *
 from datetime import datetime
 from bot.head import CrawJUD
 
-from bot.head.Tools.PrintLogs import printtext as prt
+
 from bot.head.common.exceptions import ErroDeExecucao
 from bot.head.common.selenium_excepts import webdriver_exepts
 from bot.head.common.selenium_excepts import exeption_message
@@ -62,19 +62,19 @@ class CrawlerCalculoTJ(CrawJUD):
             except Exception as e:
                 
                 old_message = self.message
-                self.message = getattr(e, 'msg', getattr(e, 'message', ""))
-                if self.message == "":
+                message_error = getattr(e, 'msg', getattr(e, 'message', ""))
+                if message_error == "":
                     for exept in webdriver_exepts():
                         if isinstance(e, exept):
-                            self.message = exeption_message().get(exept)
+                            message_error = exeption_message().get(exept)
                             break
                         
-                if not self.message:
-                    self.message = str(e)
+                if not message_error:
+                    message_error = str(e)
                 
                 self.type_log = "error"
-                self.message_error = f'{self.message}. | Operação: {old_message}'
-                self.prt(self)()
+                self.message_error = f'{message_error}. | Operação: {old_message}'
+                self.prt(self)
                 self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
                 self.message_error = None
             
@@ -100,7 +100,7 @@ class CrawlerCalculoTJ(CrawJUD):
         try:
             self.message = "Acessando Página de cálculo.."
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             self.driver.get("https://www.tjdft.jus.br/servicos/atualizacao-monetaria-1/calculo")
             
             check_cookies = None
@@ -126,7 +126,7 @@ class CrawlerCalculoTJ(CrawJUD):
             sleep(2)
             self.message = "Informando numero do processo"
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             css_input_numproc = 'input[id="num_processo"][name="num_processo"]'
             get_input_process: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_input_numproc))) 
             get_input_process.click()
@@ -134,7 +134,7 @@ class CrawlerCalculoTJ(CrawJUD):
             
             self.message = "numero do processo informado"
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             
         except Exception as e:
             
@@ -148,14 +148,14 @@ class CrawlerCalculoTJ(CrawJUD):
             css_name_requerente = 'input[name="requerente"][id="requerente"]'
             self.message = "Informando requerente"
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             get_name_requerente: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_name_requerente))) 
             get_name_requerente.click()
             get_name_requerente.send_keys(self.bot_data.get("REQUERENTE"))
 
             self.message = "Nome do requerente informado"
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             
         except Exception as e:
             self.message = ""
@@ -168,14 +168,14 @@ class CrawlerCalculoTJ(CrawJUD):
             css_name_requerido = 'input[name="requerido"][id="requerido"]'
             self.message = "Informado requerido"
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             get_name_requerido: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_name_requerido))) 
             get_name_requerido.click()
             get_name_requerido.send_keys(self.bot_data.get("REQUERIDO"))
 
             self.message = "Nome do requerido informado"
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
         
         except Exception as e:
             self.message = ""
@@ -186,7 +186,7 @@ class CrawlerCalculoTJ(CrawJUD):
         try:
             self.message = "Informando incidencia de juros e data de incidencia"
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             
             juros_partir = str(self.bot_data.get("JUROS_PARTIR")).upper()
             
@@ -220,7 +220,7 @@ class CrawlerCalculoTJ(CrawJUD):
             css_data_valor_devido = 'input[id="data-0"][name="parcela_data:list"]'
             self.message = "Informando data valor devido"
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             data_valor_devido: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_data_valor_devido))) 
             data_valor_devido.click()
             data_valor_devido.send_keys(self.bot_data.get("DATA_CALCULO"))
@@ -229,7 +229,7 @@ class CrawlerCalculoTJ(CrawJUD):
             css_valor_devido = 'input[id="valor-0"][name="parcela_valor:list"]'
             self.message = "Informando valor devido"
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             valor_devido: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_valor_devido))) 
             valor_devido.click()
             
@@ -239,7 +239,7 @@ class CrawlerCalculoTJ(CrawJUD):
 
             self.message = "valor devido informado"
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
         
         except Exception as e:
             self.message = ""
@@ -254,7 +254,7 @@ class CrawlerCalculoTJ(CrawJUD):
                 css_multa_percentual = 'input[name="multa_percent"][id="multa_percent"]'
                 self.message = "Informando multa percentual"
                 self.type_log = "log"
-                self.prt(self)()
+                self.prt(self)
                 
                 if self.bot_data.get("MULTA_PERCENTUAL", None):
                     multa_percentual: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_multa_percentual))) 
@@ -277,7 +277,7 @@ class CrawlerCalculoTJ(CrawJUD):
 
                 self.message = "Multa informada"
                 self.type_log = "log"
-                self.prt(self)()
+                self.prt(self)
             
             except Exception as e:
                 raise ErroDeExecucao()
@@ -288,7 +288,7 @@ class CrawlerCalculoTJ(CrawJUD):
                 css_honorario_sucumb = 'input[name="honor_sucumb_percent"][id="honor_sucumb_percent"]'
                 self.message = "Informando Honorários de Sucumbência"
                 self.type_log = "log"
-                self.prt(self)()
+                self.prt(self)
                 
                 disabled_state = ""
                 
@@ -322,7 +322,7 @@ class CrawlerCalculoTJ(CrawJUD):
 
                 self.message = "Percentual Honorários de Sucumbência informado"
                 self.type_log = "log"
-                self.prt(self)()
+                self.prt(self)
             
             except Exception as e:
                 
@@ -344,7 +344,7 @@ class CrawlerCalculoTJ(CrawJUD):
                 css_honorario_exec = 'input[id="honor_exec_percent"]'
                 self.message = "Informando Honorários de Cumprimento"
                 self.type_log = "log"
-                self.prt(self)()
+                self.prt(self)
                 
                 disabled_state = ""
                 
@@ -378,7 +378,7 @@ class CrawlerCalculoTJ(CrawJUD):
 
                 self.message = "Informado Honorários de Cumprimento"
                 self.type_log = "log"
-                self.prt(self)()
+                self.prt(self)
             
             except Exception as e:
                 
@@ -390,7 +390,7 @@ class CrawlerCalculoTJ(CrawJUD):
                 css_data_custas = 'input[id="custas-data-0"]'
                 self.message = "Informando valor custas"
                 self.type_log = "log"
-                self.prt(self)()
+                self.prt(self)
                 data_custas: WebElement = self.driver.find_element(By.CSS_SELECTOR, css_data_custas)
                 data_custas.click()
                 data_custas.send_keys(self.bot_data.get("CUSTAS_DATA"))
@@ -399,7 +399,7 @@ class CrawlerCalculoTJ(CrawJUD):
                 css_custas_valor = 'input[id="custas-valor-0"]'
                 self.message = "Informando valor devido"
                 self.type_log = "log"
-                self.prt(self)()
+                self.prt(self)
                 custas_valor: WebElement = self.driver.find_element(By.CSS_SELECTOR, css_custas_valor)
                 custas_valor.click()
                 
@@ -409,7 +409,7 @@ class CrawlerCalculoTJ(CrawJUD):
 
                 self.message = "Valor custas informado"
                 self.type_log = "log"
-                self.prt(self)()
+                self.prt(self)
             
             except Exception as e:
                 self.message = ""

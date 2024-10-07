@@ -3,7 +3,7 @@ from typing import Type
 from contextlib import suppress
 from bot.head.common.exceptions import ErroDeExecucao
 
-from bot.head.Tools.PrintLogs import printtext as prt
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
@@ -15,18 +15,17 @@ from bot.head import CrawJUD
 
 class SeachBot(CrawJUD):
     
-    def __init__(self):
+    def __init__(self, Head: CrawJUD):
         
-        
-        self.metodo = getattr(self, f"{self.system.lower()}_search", None)
+        self.__dict__ = Head.__dict__.copy()
         
     def __call__(self, Head: CrawJUD) -> None:
         
         self.__dict__ = Head.__dict__.copy()
         self.type_log = 'log'
         self.message = f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}'
-        self.prt(self)()
-        self.metodo()
+        self.prt(self)
+        return getattr(self, f"{self.system.lower()}_search", None)()
 
     def elaw_search(self) -> bool:
         
@@ -109,7 +108,7 @@ class SeachBot(CrawJUD):
                 enterproc.click()
                 self.message = "Processo encontrado!"
                 self.type_log = "log"
-                self.prt(self)()
+                self.prt(self)
                 
                 with suppress(TimeoutException, NoSuchElementException):
                 

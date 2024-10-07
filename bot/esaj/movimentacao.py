@@ -7,7 +7,7 @@ from datetime import datetime
 """ Imports do Projeto """
 from bot.head import CrawJUD
 
-from bot.head.Tools.PrintLogs import printtext as prt
+
 from bot.head.common.selenium_excepts import webdriver_exepts
 from bot.head.common.selenium_excepts import exeption_message
 from bot.head.common.exceptions import ErroDeExecucao
@@ -49,19 +49,19 @@ class movimentacao(CrawJUD):
             except Exception as e:
                 
                 old_message = self.message
-                self.message = getattr(e, 'msg', getattr(e, 'message', ""))
-                if self.message == "":
+                message_error = getattr(e, 'msg', getattr(e, 'message', ""))
+                if message_error == "":
                     for exept in webdriver_exepts():
                         if isinstance(e, exept):
-                            self.message = exeption_message().get(exept)
+                            message_error = exeption_message().get(exept)
                             break
                         
-                if not self.message:
-                    self.message = str(e)
+                if not message_error:
+                    message_error = str(e)
                 
                 self.type_log = "error"
-                self.message_error = f'{self.message}. | Operação: {old_message}'
-                self.prt(self)()
+                self.message_error = f'{message_error}. | Operação: {old_message}'
+                self.prt(self)
                 self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
                 self.message_error = None
             
@@ -71,7 +71,7 @@ class movimentacao(CrawJUD):
         
     def queue(self) -> None:
         
-        self.search(self.bot_data, self.prt)
+        self.search(self)
         self.get_moves()
         self.append_moves()
         

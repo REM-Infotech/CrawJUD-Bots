@@ -11,7 +11,7 @@ from contextlib import suppress
 
 """ Imports do Projeto """
 
-from bot.head.Tools.PrintLogs import printtext as prt
+
 from bot.head.common.exceptions import ErroDeExecucao
 from bot.head.common.selenium_excepts import webdriver_exepts
 from bot.head.common.selenium_excepts import exeption_message
@@ -61,19 +61,19 @@ class protocolo:
             except Exception as e:
                 
                 old_message = self.message
-                self.message = getattr(e, 'msg', getattr(e, 'message', ""))
-                if self.message == "":
+                message_error = getattr(e, 'msg', getattr(e, 'message', ""))
+                if message_error == "":
                     for exept in webdriver_exepts():
                         if isinstance(e, exept):
-                            self.message = exeption_message().get(exept)
+                            message_error = exeption_message().get(exept)
                             break
                         
-                if not self.message:
-                    self.message = str(e)
+                if not message_error:
+                    message_error = str(e)
                 
                 self.type_log = "error"
-                self.message_error = f'{self.message}. | Operação: {old_message}'
-                self.prt(self)()
+                self.message_error = f'{message_error}. | Operação: {old_message}'
+                self.prt(self)
                 self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
                 self.message_error = None
             
@@ -83,7 +83,7 @@ class protocolo:
     
     def queue(self):
         
-        self.search(self.bot_data, self.prt)
+        self.search(self)
         
         self.detect_intimacao()
         
@@ -146,7 +146,7 @@ class protocolo:
             self.driver.switch_to.frame(self.driver.find_element(By.CSS_SELECTOR, 'iframe[frameborder="0"][id]'))
             self.message = f"Enviando arquivo '{file}'"
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             
             css_inptfile = 'input[id="conteudo"]'
             input_file_element:WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, css_inptfile)))
@@ -161,7 +161,7 @@ class protocolo:
 
             self.message = "Arquivo enviado com sucesso!"
             self.type_log = "log"
-            self.prt(self)()       
+            self.prt(self)       
 
             sleep(1)
             type_file: WebElement = self.wait.until(EC.presence_of_element_located((By.ID, f'tipo0')))
@@ -201,13 +201,13 @@ class protocolo:
                 self.message = f"Enviando arquivo '{file}'"
                 file_to_upload = "".join([c for c in unicodedata.normalize('NFKD', file.replace(" ", "").replace("_","")) if not unicodedata.combining(c)])
                 self.type_log = "log"
-                self.prt(self)()
+                self.prt(self)
                 input_file_element:WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="conteudo"]')))
                 input_file_element.send_keys(f'{os.path.join(pathlib.Path(self.input_file).parent.resolve())}/{file_to_upload}')
                 self.wait_progressbar()
                 self.message = f"Arquivo '{file}' enviado com sucesso!"
                 self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             
             sleep(3)
             tablefiles : WebElement = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'resultTable')))
@@ -277,7 +277,7 @@ class protocolo:
             self.message = f'Peticionamento do processo Nº{self.bot_data.get("NUMERO_PROCESSO")} concluído com sucesso!'
             
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
 
             self.append_success([self.bot_data.get("NUMERO_PROCESSO"), self.message, filename])
 

@@ -1,5 +1,5 @@
 from bot.head.common.exceptions import ItemNaoEcontrado
-from bot.head.Tools.PrintLogs import printtext as prt
+
 from bot.head import CrawJUD
 
 from time import sleep

@@ -2,7 +2,9 @@ from selenium.common.exceptions import (TimeoutException, StaleElementReferenceE
                                         ElementClickInterceptedException)
 
 
-def webdriver_exepts() -> list:
+def webdriver_exepts() -> list[TimeoutException | StaleElementReferenceException |  
+                               NoSuchElementException | ElementNotInteractableException | 
+                               ElementClickInterceptedException]:
 
     return [TimeoutException, StaleElementReferenceException, NoSuchElementException,
             ElementNotInteractableException, ElementClickInterceptedException, ValueError, Exception]

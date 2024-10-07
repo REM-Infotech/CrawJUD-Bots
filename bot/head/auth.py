@@ -22,7 +22,7 @@ if platform.system() == "Windows":
     from pywinauto.application import WindowSpecification
     from pywinauto import Application
     
-from bot.head.Tools.PrintLogs import printtext as prt
+
 from bot.head import CrawJUD
 
 class AuthBot(CrawJUD):

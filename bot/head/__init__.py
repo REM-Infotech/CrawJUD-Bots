@@ -46,7 +46,7 @@ class CrawJUD(WorkerThread):
             
         self.__dict__ = worker_thread.__dict__.copy()
         time.sleep(5)
-        self.prt: Type[printtext] = printtext
+        self.prt: Type[printtext] = printtext(self)
         
     def setup(self, app: Flask, path_args: str = None):
         
@@ -63,10 +63,10 @@ class CrawJUD(WorkerThread):
         self.pid = arguments_bot['pid']
         self.row = int(0)
         self.app = app
-        
+        self.message_error = None
         self.message = str('Inicializando robô')
         self.type_log = str("log")
-        self.prt(self)()
+        self.prt(self)
         
         
         self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve(), arguments_bot['xlsx'])
@@ -91,7 +91,7 @@ class CrawJUD(WorkerThread):
             
             self.message = 'Criando planilha de output'
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             
             namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
             self.path = f"{self.output_dir_path}/{namefile}"
@@ -103,7 +103,7 @@ class CrawJUD(WorkerThread):
             
             self.message = 'Planilhas criadas!'
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             
             ## Carrega elementos do bot
             self.elements = elements_bot(self.system, self.state)
@@ -113,7 +113,7 @@ class CrawJUD(WorkerThread):
                 
                 self.message = "Erro ao inicializar WebDriver"
                 self.type_log = "error"
-                self.prt(self)()
+                self.prt(self)
                 return
             
             self.login_method = self.argbot.get("login_method", None)
@@ -128,7 +128,7 @@ class CrawJUD(WorkerThread):
                 
                 self.message = 'Login efetuado com sucesso!'
                 self.type_log = "log"
-                self.prt(self)()
+                self.prt(self)
 
             elif Get_Login is False:
 
@@ -136,7 +136,7 @@ class CrawJUD(WorkerThread):
                 
                 self.message = 'Erro ao realizar login'
                 self.type_log = "error"
-                self.prt(self)()
+                self.prt(self)
                 
                 with app.app_context():
                     SetStatus(status='Falha ao iniciar', pid=self.pid, 
@@ -162,7 +162,7 @@ class CrawJUD(WorkerThread):
             self.row = 0
             self.message = f'Falha ao iniciar\n Informe a mensagem de erro ao suporte\n\n{str(e)}'
             self.type_log = "error"
-            self.prt(self)()
+            self.prt(self)
             return
 
     def login(self) -> None:
@@ -178,7 +178,7 @@ class CrawJUD(WorkerThread):
                 
                 self.message = 'Usuário e senha obtidos!'
                 self.type_log = "log"
-                self.prt(self)()
+                self.prt(self)
                 
                 self.auth = AuthBot(self)
                 Get_Login = self.auth()
@@ -282,7 +282,7 @@ class CrawJUD(WorkerThread):
 
         self.type_log = "success"
         self.message = message
-        self.prt(self)()
+        self.prt(self)
 
     def append_error(self, motivo_erro: list):
 
@@ -314,7 +314,7 @@ class CrawJUD(WorkerThread):
             
         self.type_log = "success"
         self.message = f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos"
-        self.prt(self)()
+        self.prt(self)
 
     def DriverLaunch(self) -> list[WebDriver, WebDriverWait]:
         
@@ -383,7 +383,7 @@ class CrawJUD(WorkerThread):
             
             self.message = "WebDriver inicializado"
             self.type_log = "log"
-            self.prt(self)()
+            self.prt(self)
             
             return args
 

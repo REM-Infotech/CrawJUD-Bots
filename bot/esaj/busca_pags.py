@@ -1,7 +1,7 @@
 """ Imports do Projeto """
 from bot.head import CrawJUD
 
-from bot.head.Tools.PrintLogs import printtext as prt
+
 from bot.head.common.selenium_excepts import webdriver_exepts
 from bot.head.common.selenium_excepts import exeption_message
 
@@ -16,7 +16,7 @@ from datetime import datetime
 import openpyxl
 
 """Selenium Imports"""
-from bot.head.Tools.PrintLogs import printtext as prt
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
@@ -53,19 +53,19 @@ class busca_pags(CrawJUD):
             except Exception as e:
                 
                 old_message = self.message
-                self.message = getattr(e, 'msg', getattr(e, 'message', ""))
-                if self.message == "":
+                message_error = getattr(e, 'msg', getattr(e, 'message', ""))
+                if message_error == "":
                     for exept in webdriver_exepts():
                         if isinstance(e, exept):
-                            self.message = exeption_message().get(exept)
+                            message_error = exeption_message().get(exept)
                             break
                         
-                if not self.message:
-                    self.message = str(e)
+                if not message_error:
+                    message_error = str(e)
                 
                 self.type_log = "error"
-                self.message_error = f'{self.message}. | Operação: {old_message}'
-                self.prt(self)()
+                self.message_error = f'{message_error}. | Operação: {old_message}'
+                self.prt(self)
                 self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
                 self.message_error = None
             
@@ -100,7 +100,7 @@ class busca_pags(CrawJUD):
                  
                 self.message = "Extraindo dados..."
                 self.type_log = "log"
-                self.prt(self)()
+                self.prt(self)
                  
                 find_table_pgmt = divcorreta.find_element(By. CSS_SELECTOR, 'table[class="spwTabelaGrid"]')
                 
@@ -177,7 +177,7 @@ class busca_pags(CrawJUD):
 
         self.message = 'Processo {} adicionado com sucesso'.format(data_append[0])
         self.type_log = "log"
-        self.prt(self)()
+        self.prt(self)
     
     def append_error_on_output(self, motivo_erro):
         

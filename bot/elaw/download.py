@@ -11,7 +11,7 @@ from contextlib import suppress
 """ Imports do Projeto """
 from bot.head import CrawJUD
 
-from bot.head.Tools.PrintLogs import printtext as prt
+
 from bot.head.common.exceptions import ErroDeExecucao
 from bot.head.common.selenium_excepts import webdriver_exepts
 from bot.head.common.selenium_excepts import exeption_message
@@ -56,19 +56,19 @@ class download(CrawJUD):
             except Exception as e:
                 
                 old_message = self.message
-                self.message = getattr(e, 'msg', getattr(e, 'message', ""))
-                if self.message == "":
+                message_error = getattr(e, 'msg', getattr(e, 'message', ""))
+                if message_error == "":
                     for exept in webdriver_exepts():
                         if isinstance(e, exept):
-                            self.message = exeption_message().get(exept)
+                            message_error = exeption_message().get(exept)
                             break
                         
-                if not self.message:
-                    self.message = str(e)
+                if not message_error:
+                    message_error = str(e)
                 
                 self.type_log = "error"
-                self.message_error = f'{self.message}. | Operação: {old_message}'
-                self.prt(self)()
+                self.message_error = f'{message_error}. | Operação: {old_message}'
+                self.prt(self)
                 self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
                 self.message_error = None
             
@@ -78,7 +78,7 @@ class download(CrawJUD):
 
     def queue(self) -> None:
         
-        check_cadastro = self.search(self.bot_data, self.prt)
+        check_cadastro = self.search(self)
         if check_cadastro is True:
         
             self.prt.print_log('log', 'Processo encontrado!')
@@ -96,14 +96,14 @@ class download(CrawJUD):
           
         self.message = "Acessando página de anexos"
         self.type_log = "log"
-        self.prt(self)()
+        self.prt(self)
         anexosbutton_css = 'a[href="#tabViewProcesso:files"]'
         anexosbutton: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, anexosbutton_css)))
         anexosbutton.click()
         sleep(1.5)
         self.message = "Acessando tabela de documentos"
         self.type_log = "log"
-        self.prt(self)()      
+        self.prt(self)      
     
     def download_docs(self):
         
@@ -119,7 +119,7 @@ class download(CrawJUD):
         
         self.message = f'Buscando documentos que contenham "{self.bot_data.get("TERMOS").__str__().replace(",", ", ")}"'
         self.type_log = "log"
-        self.prt(self)()
+        self.prt(self)
         
         for item in table_doc:
             
@@ -133,7 +133,7 @@ class download(CrawJUD):
                     
                     self.message = f'Arquivo com termo de busca "{termo}" encontrado!'
                     self.type_log = "log"
-                    self.prt(self)()
+                    self.prt(self)
                     
                     baixar = item.find_elements(By.TAG_NAME, 'td')[13].find_element(By.CSS_SELECTOR, 'button[title="Baixar"]')
                     baixar.click()
@@ -141,7 +141,7 @@ class download(CrawJUD):
                     self.rename_doc(get_name_file)
                     self.message = f'Arquivo baixado com sucesso!'
                     self.type_log = "log"
-        self.prt(self)()
+        self.prt(self)
     
     def rename_doc(self, namefile: str):
         
