@@ -356,7 +356,6 @@ class CrawJUD(WorkerThread):
             
             if not os.getlogin() == "root" or platform.system() != "Linux":
                 self.list_args.remove("--no-sandbox")
-                self.list_args.remove("--display=:99")
             
             if platform.system() == "Windows" and self.login_method == "cert":
                 state = str(self.state)
