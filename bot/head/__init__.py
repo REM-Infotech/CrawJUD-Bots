@@ -310,13 +310,12 @@ class CrawJUD(WorkerThread):
                     dict_itens.update({key: {"0": value}})
             
             new_data = pd.DataFrame(dict_itens)
-            new_data.to_excel(self.path, index=False)
+            new_data.to_excel(self.path_erro, index=False)
             
         elif motivo_erro:
+            
             wb = openpyxl.load_workbook(filename=self.path_erro)
             sheet = wb.active
-            
-            sheet.column()
 
             sheet.append(motivo_erro)
             wb.save(self.path_erro)

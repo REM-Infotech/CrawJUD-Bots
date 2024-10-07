@@ -84,7 +84,8 @@ class emissao(CrawJUD):
                 self.type_log = "error"
                 self.message_error = f'{message_error}. | Operação: {old_message}'
                 self.prt(self)
-                self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
+                self.bot_data.update({'MOTIVO_ERRO': self.message_error})
+                self.append_error(data=self.bot_data)
                 self.message_error = None
             
             self.row += 1
