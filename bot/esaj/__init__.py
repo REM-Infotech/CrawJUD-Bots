@@ -1,7 +1,7 @@
 
 
 class esaj:
-
+    
     bot = ""
     Master = ""
     
@@ -11,11 +11,8 @@ class esaj:
     
     def __call__(self):
         try:
-            
-            self.execution: emissao | capa | protocolo \
-                | movimentacao | busca_pags = globals().get(
-                self.bot)(self.Master)
-                
+            self.execution: capa | protocolo | movimentacao | \
+                emissao | busca_pags = globals().get(self.bot)(self.Master)
             self.execution.execution()
             
         except Exception as e:

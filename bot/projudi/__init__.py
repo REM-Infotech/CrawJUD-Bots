@@ -1,6 +1,5 @@
 class projudi:
     
-    
     bot = ""
     Master = ""
     
