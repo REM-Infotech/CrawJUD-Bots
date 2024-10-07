@@ -50,10 +50,6 @@ class CrawJUD(WorkerThread):
         
     def setup(self, app: Flask, path_args: str = None):
         
-        self.message = str('Inicializando robô')
-        self.type_log = str("log")
-        self.prt(self)
-        
         self.driver = None
         with open(path_args, "rb") as f:
             arguments_bot: dict[str, str | int] = json.load(f)
@@ -64,6 +60,11 @@ class CrawJUD(WorkerThread):
         ## Definição de variaveis utilizadas pelos robôs
         self.argbot = arguments_bot
         self.pid = arguments_bot['pid']
+        
+        self.message = str('Inicializando robô')
+        self.type_log = str("log")
+        self.prt(self)()
+        
         self.app = app
         self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve(), arguments_bot['xlsx'])
         self.output_dir_path = pathlib.Path(self.input_file).parent.resolve().__str__()
@@ -87,7 +88,7 @@ class CrawJUD(WorkerThread):
             
             self.message = 'Criando planilha de output'
             self.type_log = "log"
-            self.prt(self)
+            self.prt(self)()
             
             namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
             self.path = f"{self.output_dir_path}/{namefile}"
@@ -99,7 +100,7 @@ class CrawJUD(WorkerThread):
             
             self.message = 'Planilhas criadas!'
             self.type_log = "log"
-            self.prt(self)
+            self.prt(self)()
             
             ## Carrega elementos do bot
             self.elementos = elements_bot(self.system, self.state)
@@ -109,7 +110,7 @@ class CrawJUD(WorkerThread):
                 
                 self.message = "Erro ao inicializar WebDriver"
                 self.type_log = "error"
-                self.prt(self)
+                self.prt(self)()
                 return
             
             self.login_method = self.argbot.get("login_method", None)
@@ -124,7 +125,7 @@ class CrawJUD(WorkerThread):
                 
                 self.message = 'Login efetuado com sucesso!'
                 self.type_log = "log"
-                self.prt(self)
+                self.prt(self)()
 
             elif Get_Login is False:
 
@@ -132,7 +133,7 @@ class CrawJUD(WorkerThread):
                 
                 self.message = 'Erro ao realizar login'
                 self.type_log = "error"
-                self.prt(self)
+                self.prt(self)()
                 
                 with app.app_context():
                     SetStatus(status='Falha ao iniciar', pid=self.pid, 
@@ -140,7 +141,7 @@ class CrawJUD(WorkerThread):
                 
                 return
 
-            self.search = SeachBot()
+            self.search = SeachBot(self)
             
             bot = master_bots(self.system, self.type, self)
             bot()
@@ -158,7 +159,7 @@ class CrawJUD(WorkerThread):
             self.row = 0
             self.message = f'Falha ao iniciar\n Informe a mensagem de erro ao suporte\n\n{str(e)}'
             self.type_log = "error"
-            self.prt(self)
+            self.prt(self)()
             return
 
     def login(self) -> None:
@@ -174,7 +175,7 @@ class CrawJUD(WorkerThread):
                 
                 self.message = 'Usuário e senha obtidos!'
                 self.type_log = "log"
-                self.prt(self)
+                self.prt(self)()
                 
                 Get_Login = self.auth = AuthBot(self)
 

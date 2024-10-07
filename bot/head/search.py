@@ -22,7 +22,9 @@ class SeachBot(CrawJUD):
         
     def __call__(self) -> None:
         
-        self.prt.print_log('log', f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}')
+        self.type_log = 'log'
+        self.message = f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}'
+        self.prt(self)()
         self.metodo()
 
     def elaw(self) -> bool:
