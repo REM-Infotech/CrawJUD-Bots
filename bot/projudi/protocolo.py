@@ -72,9 +72,10 @@ class protocolo:
                     self.message = str(e)
                 
                 self.type_log = "error"
-                self.message = f'{self.message}. | Operação: {old_message}'
+                self.message_error = f'{self.message}. | Operação: {old_message}'
                 self.prt(self)()
                 self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
+                self.message_error = None
             
             self.row += 1
             

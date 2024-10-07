@@ -20,7 +20,12 @@ class printtext(CrawJUD):
         self.__dict__ = Head.__dict__.copy()
         
     def log_message(self) -> None:
-        self.prompt = f"({self.pid}, {self.type_log}, pos:{self.row}, {datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%H:%M:%S')}) {self.message}"
+        
+        log = self.message
+        if self.message_error:
+            log = self.message_error
+            
+        self.prompt = f"({self.pid}, {self.type_log}, pos:{self.row}, {datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%H:%M:%S')}) {log}"
         tqdm.write(self.prompt)
         
         self.socket_message()

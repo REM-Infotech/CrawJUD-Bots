@@ -15,13 +15,14 @@ from bot.head import CrawJUD
 
 class SeachBot(CrawJUD):
     
-    def __init__(self, Head: CrawJUD):
+    def __init__(self):
         
-        self.__dict__ = Head.__dict__.copy()
+        
         self.metodo = getattr(self, f"{self.system.lower()}_search", None)
         
-    def __call__(self) -> None:
+    def __call__(self, Head: CrawJUD) -> None:
         
+        self.__dict__ = Head.__dict__.copy()
         self.type_log = 'log'
         self.message = f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}'
         self.prt(self)()
