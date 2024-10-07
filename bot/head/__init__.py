@@ -59,7 +59,9 @@ class CrawJUD(WorkerThread):
 
         ## Definição de variaveis utilizadas pelos robôs
         self.argbot = arguments_bot
+        self.url_socket = arguments_bot["url_socket"]
         self.pid = arguments_bot['pid']
+        self.row = int(0)
         
         self.message = str('Inicializando robô')
         self.type_log = str("log")
@@ -77,7 +79,7 @@ class CrawJUD(WorkerThread):
         self.rows = int(arguments_bot.get("total_rows"))
         
         ## Abertura da planilha de input
-        self.row = int(0)
+        
         self.ws: Type[Worksheet] = openpyxl.load_workbook(self.input_file).active
         
             
