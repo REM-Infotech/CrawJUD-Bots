@@ -81,7 +81,8 @@ class movimentacao(CrawJUD):
         self.search(self.bot_data, self.prt)
         
         self.message = 'Buscando movimentações'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         
         if self.bot_data.get("DATA_LIMITE"):
             self.extract_with_rangedata()

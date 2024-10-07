@@ -92,7 +92,8 @@ class cadastro(CrawJUD):
         else:
         
             self.message = "Processo não encontrado, inicializando cadastro..."
-            self.prt.print_log("log", self.message)
+            self.type_log = "log"
+            self.prt(self)()
 
             btn_newproc = self.driver.find_element(By.CSS_SELECTOR, 'button[id="btnNovo"]')
             btn_newproc.click()
@@ -127,8 +128,10 @@ class cadastro(CrawJUD):
             minutes = int(splitcalc[0])
             seconds = int(float(f"0.{splitcalc[1]}") * 60)
 
-            self.prt.print_log("log", f"Formulário preenchido em {minutes} minutos e {seconds} segundos")
-
+            self.message = f"Formulário preenchido em {minutes} minutos e {seconds} segundos"
+            self.type_log = "log"
+            self.prt(self)()
+            
             self.salvar_tudo()
             
             if self.confirm_save() is True:
@@ -141,7 +144,8 @@ class cadastro(CrawJUD):
         elemento = 'div[id="comboArea_panel"]'
         
         self.message = "Informando área do direito"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         
         label_area:WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_label_area)), message="Erro ao encontrar elemento")
         label_area.click()
@@ -152,7 +156,8 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3w"]')
         
         self.message = 'Área do direito selecionada!'
-        self.prt.print_log('log', self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
     def subarea_direito(self) -> None:
 
@@ -161,7 +166,8 @@ class cadastro(CrawJUD):
         elemento = 'div[id="comboAreaSub_panel"]'
         
         self.message = "Informando sub-área do direito"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         
         expand_areasub: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboAreaSub_css)), message="Erro ao encontrar elemento")
         expand_areasub.click()
@@ -171,7 +177,8 @@ class cadastro(CrawJUD):
         self.interact.select_item(elemento, text)
         self.interact.sleep_load('div[id="j_id_3x"]')
         self.message = 'Sub-Área do direito selecionada!'
-        self.prt.print_log('log', self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
     def next_page(self) -> None:
 
@@ -185,7 +192,8 @@ class cadastro(CrawJUD):
         elemento = 'div[id="j_id_3k_1:j_id_3k_4_2_2_1_9_u_1:comboRito_panel"]'
         
         self.message = 'Informando esfera do processo'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         
         set_esfera_judge: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_esfera_judge)), message="Erro ao encontrar elemento")
         set_esfera_judge.click()
@@ -195,7 +203,8 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = 'Esfera Informada!'
-        self.prt.print_log('log', self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
     def informa_estado(self) -> None:
 
@@ -206,7 +215,8 @@ class cadastro(CrawJUD):
         elemento = self.elements.estado_panel
         
         self.message = 'Informando estado do processo'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         
         set_estado: WebElement = self.wait.until(
             EC.presence_of_element_located((
@@ -221,7 +231,8 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
             
         self.message = 'Estado do processo informado!'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
     def informa_comarca(self) -> None:
 
@@ -233,7 +244,8 @@ class cadastro(CrawJUD):
         elemento = self.elements.comarca_panel
         
         self.message = 'Informando comarca do processo'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
         comarca: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboComarcaVara)), message="Erro ao encontrar elemento")
         comarca.click()
@@ -244,7 +256,8 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = 'Comarca do processo informado!'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
     def informa_foro(self) -> None:
 
@@ -256,7 +269,8 @@ class cadastro(CrawJUD):
         elemento = self.elements.foro_panel
         
         self.message = 'Informando foro do processo'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         
         foro: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboForoTribunal)), message="Erro ao encontrar elemento")
         foro.click()
@@ -267,7 +281,8 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = 'Foro do processo informado!'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
     def informa_vara(self) -> None:
 
@@ -278,7 +293,8 @@ class cadastro(CrawJUD):
         elemento = self.elements.vara_panel
         
         self.message = 'Informando vara do processo'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         
         vara: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboVara)), message="Erro ao encontrar elemento")
         vara.click()
@@ -288,7 +304,8 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = 'Vara do processo informado!'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
     def informa_proceso(self) -> None:
         
@@ -296,7 +313,8 @@ class cadastro(CrawJUD):
         css_campo_processo = self.elements.numero_processo
         
         self.message = 'Informando número do processo'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         
         campo_processo: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_campo_processo)), message="Erro ao encontrar elemento")
         campo_processo.click()
@@ -307,7 +325,8 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = f'Número do processo informado!'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
     def informa_empresa(self) -> None:
         
@@ -318,7 +337,8 @@ class cadastro(CrawJUD):
         elemento = self.elements.empresa_panel
         
         self.message = "Informando Empresa"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
         empresa_selector: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboClientProcessoParte)), message="Erro ao encontrar elemento")
         empresa_selector.click()
@@ -334,7 +354,8 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = "Empresa informada!"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
     def set_classe_empresa(self) -> None:
         
@@ -345,7 +366,8 @@ class cadastro(CrawJUD):
         elemento = self.elements.tipo_empresa_panel
         
         self.message = "Informando classificação da Empresa"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
         empresa_selector: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboClientProcessoParte)), message="Erro ao encontrar elemento")
         empresa_selector.click()
@@ -358,13 +380,15 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = "Classificação da Empresa informada"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
     
     def parte_contraria(self) -> None:
 
         
         self.message = 'Preechendo informações da parte contrária'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
         self.interact.sleep_load('div[id="j_id_3x"]')
         
@@ -459,7 +483,8 @@ class cadastro(CrawJUD):
         elemento = 'input[id="j_id_3k_1:comboProcessoTipo_filter"]'
         
         self.message = "Informando ação do processo"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         
         div_comboProcessoTipo: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboProcessoTipo)), message="Erro ao encontrar elemento")
         div_comboProcessoTipo.click()
@@ -473,13 +498,15 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = "Ação informada!"
-        self.prt.print_log('log', self.message)
+        self.type_log = "log"
+        self.prt(self)()
     
     def data_distribuicao(self) -> None:
 
         self.interact.sleep_load('div[id="j_id_3x"]')
         self.message = 'Informando data de distribuição'
-        self.prt.print_log('log', self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
         self.interact.sleep_load('div[id="j_id_3x"]')
         css_data_distribuicao = 'input[id="j_id_3k_1:dataDistribuicao_input"]'
@@ -493,12 +520,14 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = 'Data de distribuição informada!'
-        self.prt.print_log("log", self.message)  
+        self.type_log = "log"
+        self.prt(self)()  
 
     def advogado_responsavel(self) -> None:
 
         self.message = 'informando advogado interno'
-        self.prt.print_log('log', self.message)
+        self.type_log = "log"
+        self.prt(self)()
         css_adv_responsavel = 'input[id="j_id_3k_1:autoCompleteLawyer_input"]'
 
         input_adv_responsavel: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_adv_responsavel)))
@@ -540,7 +569,8 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = 'Advogado interno informado!'
-        self.prt.print_log('log', self.message)
+        self.type_log = "log"
+        self.prt(self)()
     
     def adv_parte_contraria(self) -> None:
 
@@ -578,7 +608,8 @@ class cadastro(CrawJUD):
     def info_valor_causa(self) -> None:
 
         self.message = "Informando valor da causa"
-        self.prt.print_log('log', self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
         css_valor_causa = 'input[id="j_id_3k_1:amountCase_input"]'
 
@@ -596,7 +627,8 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = "Valor da causa informado!"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         
     def escritorio_externo(self) -> None:
 
@@ -605,7 +637,8 @@ class cadastro(CrawJUD):
         elemento = 'div[id="j_id_3k_1:comboEscritorio_panel"]'
         
         self.message = 'Informando Escritório Externo'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
         
         div_escritrorioexterno: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, escritrorioexterno)), message="Erro ao encontrar elemento")
@@ -617,7 +650,8 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = "Escritório externo informado!"
-        self.prt.print_log("log", self.message) 
+        self.type_log = "log"
+        self.prt(self)() 
 
     def tipo_contingencia(self) -> None:
 
@@ -630,7 +664,8 @@ class cadastro(CrawJUD):
             text = "Ativa"
         
         self.message = 'Informando contingenciamento'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         
         div_contingencia: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, contingencia)), message="Erro ao encontrar elemento")
         div_contingencia.click()
@@ -640,13 +675,15 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = "Contingenciamento informado!"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
     def cad_adv(self) -> None:
 
         try:
             self.message = "Cadastrando advogado"
-            self.prt.print_log('log', self.message)
+            self.type_log = "log"
+            self.prt(self)()
 
             css_add_adv = 'button[id="j_id_3k_1:lawyerOutraParteNovoButtom"]'
             add_parte: WebElement = self.wait.until(EC.presence_of_element_located(
@@ -704,7 +741,8 @@ class cadastro(CrawJUD):
 
         try:
             self.message = 'Cadastrando parte'
-            self.prt.print_log('log', self.message)
+            self.type_log = "log"
+            self.prt(self)()
 
             add_parte: WebElement = self.wait.until(EC.presence_of_element_located(
                 (By.CSS_SELECTOR, 'button[id="j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:parteContrariaMainGridBtnNovo"]')), message="Erro ao encontrar elemento")
@@ -780,7 +818,10 @@ class cadastro(CrawJUD):
             css_save_button = 'button[id="parteContrariaButtom"]'
             save_parte: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_save_button)), message="Erro ao encontrar elemento")
             save_parte.click()
-            self.prt.print_log("log", "Parte cadastrada!")
+            
+            self.message = "Parte cadastrada!"
+            self.type_log = "log"
+            self.prt(self)()
             
         except Exception as e:
             raise ErroDeExecucao(str(e))
@@ -791,7 +832,11 @@ class cadastro(CrawJUD):
         css_salvar_proc = 'button[id="btnSalvarOpen"]'
         salvartudo: WebElement = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, css_salvar_proc)), message="Erro ao encontrar elemento")
-        self.prt.print_log("log", "Salvando processo novo")
+        
+        self.message = "Salvando processo novo"
+        self.type_log = "log"
+        self.prt(self)()
+        
         salvartudo.click()
 
     def print_comprovante(self) -> None:
@@ -830,7 +875,7 @@ class cadastro(CrawJUD):
         else:
             div_messageerro_css = 'div[id="messages"]'
             try:
-                message: WebElement = self.wait.until(EC.presence_of_element_located(
+                self.message: WebElement = self.wait.until(EC.presence_of_element_located(
                     (By.CSS_SELECTOR, div_messageerro_css)), message="Erro ao encontrar elemento").find_element(By.TAG_NAME, "ul").text
 
             except Exception as e:

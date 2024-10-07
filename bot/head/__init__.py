@@ -280,7 +280,9 @@ class CrawJUD(WorkerThread):
         if not message:
             message = f'Execução do processo Nº{data[0]} efetuada com sucesso!'
 
-        self.prt.print_log('success', message)
+        self.type_log = "success"
+        self.message = message
+        self.prt(self)()
 
     def append_error(self, motivo_erro: list):
 
@@ -310,7 +312,9 @@ class CrawJUD(WorkerThread):
             SetStatus(status='Finalizado', pid=self.pid, 
                     system=self.system, type=self.type).botstop()
             
-        self.prt.print_log("success", f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos")
+        self.type_log = "success"
+        self.message = f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos"
+        self.prt(self)()
 
     def DriverLaunch(self) -> list[WebDriver, WebDriverWait]:
         

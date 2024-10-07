@@ -87,8 +87,9 @@ class complement(CrawJUD):
         
         if search is True:
                 
-            self.prt.print_log("log", "Inicializando complemento de cadastro")
-            
+            self.message = "Inicializando complemento de cadastro"
+            self.type_log = "log"
+            self.prt(self)()
             edit_proc_button = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'button[id="dtProcessoResults:0:btnEditar"]')))
             edit_proc_button.click()
             
@@ -125,15 +126,17 @@ class complement(CrawJUD):
         
             self.append_success([self.bot_data.get("NUMERO_PROCESSO"), self.message, name_comprovante], self.message)
             
-        else:
+        elif not search is True:
             self.message = "Processo não encontrado!"
-            self.prt.print_log("error", self.message)
+            self.type_log = "error"
+            self.prt(self)()
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
 
     def unidade_consumidora(self) -> None:
 
         self.message = "Informando unidade consumidora"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
         css_input_uc = 'textarea[id="j_id_3k_1:j_id_3k_4_2_2_6_9_44_2:j_id_3k_4_2_2_6_9_44_3_1_2_2_1_1:j_id_3k_4_2_2_6_9_44_3_1_2_2_1_13"]'
 
@@ -146,14 +149,16 @@ class complement(CrawJUD):
         self.interact.send_key(input_uc, self.bot_data.get("UNIDADE_CONSUMIDORA"))
 
         self.message = "Unidade consumidora informada!"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
     def divisao(self) -> None:
 
         css_set_divisao = 'div[id="j_id_3k_1:j_id_3k_4_2_2_a_9_44_2:j_id_3k_4_2_2_a_9_44_3_1_2_2_1_1:fieldid_9241typeSelectField1CombosCombo"]'
         elemento = 'input[id="j_id_3k_1:j_id_3k_4_2_2_a_9_44_2:j_id_3k_4_2_2_a_9_44_3_1_2_2_1_1:fieldid_9241typeSelectField1CombosCombo_filter"]'
         self.message = "Informando divisão"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         
         div_divisao: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_set_divisao)))
         div_divisao.click()
@@ -171,7 +176,8 @@ class complement(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = "Divisão informada!"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
     def data_citacao(self) -> None:
 
@@ -233,7 +239,8 @@ class complement(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = "Provimento antecipatório informado!"
-        self.prt.print_log("log", self.message)    
+        self.type_log = "log"
+        self.prt(self)()    
 
     def fato_gerador(self) -> None:
 
@@ -242,7 +249,8 @@ class complement(CrawJUD):
         elemento = 'div[id="j_id_3k_1:j_id_3k_4_2_2_m_9_44_2:j_id_3k_4_2_2_m_9_44_3_1_2_2_1_1:fieldid_9239typeSelectField1CombosCombo_panel"]'
         
         self.message = "Informando fato gerador"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
         
         div_fatogerador: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, fatogeradorCombo)))
@@ -254,7 +262,8 @@ class complement(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = "Fato gerador informado!"
-        self.prt.print_log("log", self.message)    
+        self.type_log = "log"
+        self.prt(self)()    
     
     def desc_objeto(self) -> None:
         
@@ -276,7 +285,8 @@ class complement(CrawJUD):
         elemento = 'input[id="j_id_3k_1:j_id_3k_4_2_2_n_9_44_2:j_id_3k_4_2_2_n_9_44_3_1_2_2_1_1:fieldid_8405typeSelectField1CombosCombo_filter"]'
         
         self.message = "Informando objeto do processo"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         
         div_objeto: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, objetoCombo)))
         div_objeto.click()
@@ -290,7 +300,8 @@ class complement(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = "Objeto do processo informado!"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
 
     def salvar_tudo(self) -> None:
 

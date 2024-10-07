@@ -94,13 +94,15 @@ class download(CrawJUD):
     def buscar_doc(self):
           
         self.message = "Acessando página de anexos"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         anexosbutton_css = 'a[href="#tabViewProcesso:files"]'
         anexosbutton: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, anexosbutton_css)))
         anexosbutton.click()
         sleep(1.5)
         self.message = "Acessando tabela de documentos"
-        self.prt.print_log("log", self.message)      
+        self.type_log = "log"
+        self.prt(self)()      
     
     def download_docs(self):
         
@@ -115,7 +117,8 @@ class download(CrawJUD):
             termos = [str(self.bot_data.get("TERMOS"))]
         
         self.message = f'Buscando documentos que contenham "{self.bot_data.get("TERMOS").__str__().replace(",", ", ")}"'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         
         for item in table_doc:
             
@@ -128,14 +131,16 @@ class download(CrawJUD):
                     sleep(1)
                     
                     self.message = f'Arquivo com termo de busca "{termo}" encontrado!'
-                    self.prt.print_log("log", self.message)
+                    self.type_log = "log"
+                    self.prt(self)()
                     
                     baixar = item.find_elements(By.TAG_NAME, 'td')[13].find_element(By.CSS_SELECTOR, 'button[title="Baixar"]')
                     baixar.click()
                               
                     self.rename_doc(get_name_file)
                     self.message = f'Arquivo baixado com sucesso!'
-                    self.prt.print_log("log", self.message)
+                    self.type_log = "log"
+        self.prt(self)()
     
     def rename_doc(self, namefile: str):
         

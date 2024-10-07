@@ -175,7 +175,8 @@ class provisao(CrawJUD):
             editar_pedido.click()
             
             self.message = "Informando valores"
-            self.prt.print_log("log", self.message)
+            self.type_log = "log"
+            self.prt(self)()
             css_val_inpt = 'input[id="j_id_2m:j_id_2p_2e:processoAmountObjetoDt:0:amountValor_input"][type="text"]'
             campo_valor_dml = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_val_inpt)))
                 
@@ -202,7 +203,8 @@ class provisao(CrawJUD):
             filter_risk = div_filter_risk.find_elements(By.TAG_NAME, 'li')
             
             self.message = "Alterando risco"
-            self.prt.print_log("log", self.message)
+            self.type_log = "log"
+            self.prt(self)()
             for item in filter_risk:
                 
                 # label_risco = self.driver.find_element(By.CSS_SELECTOR, 'label[id="j_id_2m:j_id_2p_2e:processoAmountObjetoDt:0:j_id_2p_2i_5_1_6_5_k_2_2_1_label"]').text.lower()
@@ -224,7 +226,8 @@ class provisao(CrawJUD):
             if str(self.bot_data.get("PROVISAO")).lower() != "possível":
                 
                 self.message = "Alterando datas de correção base e juros"
-                self.prt.print_log("log", self.message)
+                self.type_log = "log"
+                self.prt(self)()
                 if self.bot_data.get("DATA_ATUALIZACAO") is not None or self.bot_data.get("DATA_ATUALIZACAO") != "":
                     
                     DataCorrecaoCss = 'input[id="j_id_2m:j_id_2p_2e:processoAmountObjetoDt:0:amountDataCorrecao_input"]'
@@ -250,7 +253,8 @@ class provisao(CrawJUD):
             self.interact.sleep_load('div[id="j_id_2z"]')
             
             self.message = "Informando justificativa"
-            self.prt.print_log("log", self.message)
+            self.type_log = "log"
+            self.prt(self)()
             informar_motivo: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'textarea[id="j_id_2m:j_id_2p_2e:j_id_2p_2i_8:j_id_2p_2i_j"]')))
             informar_motivo.send_keys(f"Atualização de provisão - {self.bot_data.get('OBSERVACAO')}")
             id_informar_motivo = informar_motivo.get_attribute("id")

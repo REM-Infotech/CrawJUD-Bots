@@ -72,7 +72,7 @@ class capa(CrawJUD):
         
     def queue(self):
         
-        self.search(self.bot_data, self.prt)
+        self.search()
         self.driver.refresh()
         self.append_success(self.get_process_informations())
 

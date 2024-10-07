@@ -98,7 +98,8 @@ class busca_pags(CrawJUD):
             if "Lista de custas pagas" in nomediv:
                  
                 self.message = "Extraindo dados..."
-                self.prt.print_log("log", self.message) 
+                self.type_log = "log"
+                self.prt(self)()
                  
                 find_table_pgmt = divcorreta.find_element(By. CSS_SELECTOR, 'table[class="spwTabelaGrid"]')
                 
@@ -174,7 +175,8 @@ class busca_pags(CrawJUD):
         wb.save(output_filename)
 
         self.message = 'Processo {} adicionado com sucesso'.format(data_append[0])
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
     
     def append_error_on_output(self, motivo_erro):
         

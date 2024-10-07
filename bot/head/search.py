@@ -107,7 +107,8 @@ class SeachBot(CrawJUD):
             if enterproc:
                 enterproc.click()
                 self.message = "Processo encontrado!"
-                self.prt.print_log("log", self.message)
+                self.type_log = "log"
+                self.prt(self)()
                 
                 with suppress(TimeoutException, NoSuchElementException):
                 

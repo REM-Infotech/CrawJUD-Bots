@@ -144,7 +144,8 @@ class protocolo:
     
             self.driver.switch_to.frame(self.driver.find_element(By.CSS_SELECTOR, 'iframe[frameborder="0"][id]'))
             self.message = f"Enviando arquivo '{file}'"
-            self.prt.print_log("log", self.message)
+            self.type_log = "log"
+            self.prt(self)()
             
             css_inptfile = 'input[id="conteudo"]'
             input_file_element:WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, css_inptfile)))
@@ -158,7 +159,8 @@ class protocolo:
             self.wait_progressbar()
 
             self.message = "Arquivo enviado com sucesso!"
-            self.prt.print_log("log", self.message)       
+            self.type_log = "log"
+            self.prt(self)()       
 
             sleep(1)
             type_file: WebElement = self.wait.until(EC.presence_of_element_located((By.ID, f'tipo0')))
@@ -197,12 +199,14 @@ class protocolo:
                 
                 self.message = f"Enviando arquivo '{file}'"
                 file_to_upload = "".join([c for c in unicodedata.normalize('NFKD', file.replace(" ", "").replace("_","")) if not unicodedata.combining(c)])
-                self.prt.print_log("log", self.message)
+                self.type_log = "log"
+                self.prt(self)()
                 input_file_element:WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="conteudo"]')))
                 input_file_element.send_keys(f'{os.path.join(pathlib.Path(self.input_file).parent.resolve())}/{file_to_upload}')
                 self.wait_progressbar()
                 self.message = f"Arquivo '{file}' enviado com sucesso!"
-                self.prt.print_log("log", self.message)
+                self.type_log = "log"
+            self.prt(self)()
             
             sleep(3)
             tablefiles : WebElement = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'resultTable')))
@@ -271,7 +275,8 @@ class protocolo:
             
             self.message = f'Peticionamento do processo Nº{self.bot_data.get("NUMERO_PROCESSO")} concluído com sucesso!'
             
-            self.prt.print_log("log", self.message)
+            self.type_log = "log"
+            self.prt(self)()
 
             self.append_success([self.bot_data.get("NUMERO_PROCESSO"), self.message, filename])
 

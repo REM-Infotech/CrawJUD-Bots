@@ -92,17 +92,19 @@ class andamentos(CrawJUD):
 
             self.save_andamento()
             
-        else:
+        elif not search is True:
             self.message = "Processo não encontrado!"
-            self.prt.print_log("error", self.message)
+            self.type_log = "error"
+            self.prt(self)()
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
-
   
     def info_data(self):
 
         try:
             
-            self.prt.print_log("log", "Informando data")
+            self.message = "Informando data"
+            self.type_log = "log"
+            self.prt(self)()
             css_Data = 'input[id="j_id_2n:j_id_2r_2_9_input"]'
             campo_data: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_Data)))
             campo_data.click()

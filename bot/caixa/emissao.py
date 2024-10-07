@@ -98,7 +98,9 @@ class CaixaMaster(CrawJUD):
     def get_site(self) -> None:
         
         self.message = "Acessando página de emissão"
-        self.prt.print_log("log", self.message)        
+        self.type_log = "log"
+        self.prt(self)()
+        
         self.driver.get("https://depositojudicial.caixa.gov.br/sigsj_internet/depositos-judiciais/justica-estadual/")
         list_opt: WebElement = self.wait.until(EC.presence_of_element_located((By. CSS_SELECTOR, 'select[id="j_id5:filtroView:j_id6:tpDeposito"]')))
         list_options = list_opt.find_elements(By.TAG_NAME, 'option')
@@ -124,8 +126,11 @@ class CaixaMaster(CrawJUD):
     def locale_proc(self) -> None:
 
         self.interact.wait_caixa()
+        
         self.message = "Informando tribunal"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
+        
         lista_tribunal: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'select[id="j_id5:filtroView:formFormulario:coTribunal"]'))).find_elements(By.TAG_NAME, 'option')
         for item in lista_tribunal:
             item: WebElement = item
@@ -134,8 +139,11 @@ class CaixaMaster(CrawJUD):
                 break
 
         self.interact.wait_caixa() 
+        
         self.message = "Informando comarca"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
+        
         lista_comarca: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'select[id="j_id5:filtroView:formFormulario:coComarca"]'))).find_elements(By.TAG_NAME, 'option')
         for item in lista_comarca:
             item: Type[WebElement] = item
@@ -146,7 +154,8 @@ class CaixaMaster(CrawJUD):
         
         self.interact.wait_caixa() 
         self.message = "Informando vara"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         lista_vara: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'select[id="j_id5:filtroView:formFormulario:coVara"]'))).find_elements(By.TAG_NAME, 'option')
         for item in lista_vara:
             item: WebElement = item
@@ -157,7 +166,8 @@ class CaixaMaster(CrawJUD):
         
         self.interact.wait_caixa()
         self.message = 'Informando agencia'
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         lista_agencia: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'select[id="j_id5:filtroView:formFormulario:coAgencia"]'))).find_elements(By.TAG_NAME, 'option')
         for item in lista_agencia:
             item: WebElement = item
@@ -172,13 +182,15 @@ class CaixaMaster(CrawJUD):
 
         self.interact.wait_caixa()
         self.message = "Informando numero do processo"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         num_process: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[id="j_id5:filtroView:formFormulario:nuProcessoCNJ"]')))
         num_process.send_keys(numproc_formated)
 
         self.interact.wait_caixa()
         self.message = "Informando tipo da ação do processo"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         list_type_acao_process = self.driver.find_element(By.CSS_SELECTOR, 'select[id="j_id5:filtroView:formFormulario:idOrigemAcao"]').find_elements(By.TAG_NAME, 'option')
         for item in list_type_acao_process:
             item: WebElement = item
@@ -188,7 +200,8 @@ class CaixaMaster(CrawJUD):
 
         self.interact.wait_caixa() 
         self.message = "Informando natureza tributaria"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         natureza_tributaria = self.driver.find_element(By.CSS_SELECTOR, 'select[id="j_id5:filtroView:formFormulario:naturezaAcao"]').find_elements(By.TAG_NAME, 'option')[2]
         natureza_tributaria.click()
     
@@ -196,14 +209,16 @@ class CaixaMaster(CrawJUD):
             
         self.interact.wait_caixa()
         self.message = "Informando nome do autor"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         campo_nome_autor = self.driver.find_element(By.CSS_SELECTOR, 'input[id="j_id5:filtroView:formFormulario:nomeAutor"]')
         campo_nome_autor.send_keys(self.bot_data.get("AUTOR"))
         
         
         self.interact.wait_caixa()
         self.message = "Informando tipo de documento do autor"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         doct_type = count_doc(self.bot_data.get("CPF_CNPJ_AUTOR"))
         
         if not doct_type:
@@ -219,7 +234,8 @@ class CaixaMaster(CrawJUD):
             
         self.interact.wait_caixa()
         self.message = "Informando documento do autor"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         
         self.interact.wait_caixa()
         campo_doc_autor = self.driver.find_element(By.CSS_SELECTOR, 'input[id="j_id5:filtroView:formFormulario:codDocAutor"]')
@@ -228,7 +244,8 @@ class CaixaMaster(CrawJUD):
 
         self.interact.wait_caixa()
         meesage = "Informando réu"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         campo_nome_reu = self.driver.find_element(By.CSS_SELECTOR, 'input[id="j_id5:filtroView:formFormulario:nomeReu"]')
         
         contraria = None
@@ -251,7 +268,8 @@ class CaixaMaster(CrawJUD):
 
         self.interact.wait_caixa()
         self.message = "Informando tipo de documento réu"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         campo_doc_reu = self.driver.find_element(By.CSS_SELECTOR, 'input[id="j_id5:filtroView:formFormulario:codDocReu"]')
         doc_reu = str(self.bot_data.get("CPF_CNPJ_REU")).replace(".","").replace("-","").replace("/","")
         campo_doc_reu.send_keys(doc_reu)
@@ -260,7 +278,8 @@ class CaixaMaster(CrawJUD):
         
         self.interact.wait_caixa()
         self.message = "Informando indicador depositante"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         indicador_depositante = self.driver.find_element(By.CSS_SELECTOR, 'select[id="j_id5:filtroView:formFormulario:idDepositante"]').find_elements(By.TAG_NAME, 'option')
         
         for item in indicador_depositante:
@@ -271,7 +290,8 @@ class CaixaMaster(CrawJUD):
 
         self.interact.wait_caixa()
         self.message = "Informando valor do depósito"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         campo_val_deposito = self.driver.find_element(By.CSS_SELECTOR, 'input[id="j_id5:filtroView:formFormulario:valorDeposito"]')
         
         val_deposito = str(self.bot_data.get("VALOR_CALCULADO"))
@@ -284,13 +304,15 @@ class CaixaMaster(CrawJUD):
     
         self.interact.wait_caixa()
         self.message = "Gerando documento"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         make_id = self.driver.find_element(By.CSS_SELECTOR, 'input[id="j_id5:filtroView:formFormulario:j_id248"]')
         make_id.click()
 
         self.interact.wait_caixa()
         self.message = "Baixando documento"
-        self.prt.print_log("log", self.message)
+        self.type_log = "log"
+        self.prt(self)()
         download_pdf = self.driver.find_element(By.CSS_SELECTOR, 'a[id="j_id5:filtroView:formFormulario:j_id554"]')
         download_pdf.click()
 
