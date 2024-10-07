@@ -160,8 +160,10 @@ class CrawJUD(WorkerThread):
                         system=self.system, type=self.type).botstop()
 
             self.row = 0
-            self.message = f'Falha ao iniciar\n Informe a mensagem de erro ao suporte\n\n{str(e)}'
+            self.message = f'Falha ao iniciar. Informe a mensagem de erro ao suporte'
             self.type_log = "error"
+            self.prt(self)
+            self.message_error = str(e)
             self.prt(self)
             return
 

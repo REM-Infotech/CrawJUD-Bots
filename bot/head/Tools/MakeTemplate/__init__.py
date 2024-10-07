@@ -6,12 +6,7 @@ from datetime import datetime
 from openpyxl.styles import Font
 from openpyxl.styles import PatternFill
 
-from bot.head.Tools.MakeTemplate.appends import capa_sucesso
-from bot.head.Tools.MakeTemplate.appends import sucesso, erro
-from bot.head.Tools.MakeTemplate.appends import cadastro_erro
-from bot.head.Tools.MakeTemplate.appends import movimentacao_sucesso
-from bot.head.Tools.MakeTemplate.appends import esaj_guias_emissao_sucesso
-from bot.head.Tools.MakeTemplate.appends import caixa_guias_emissao_sucesso
+from bot.head.Tools.MakeTemplate.appends import listas
 
 
 class MakeXlsx:
@@ -20,13 +15,12 @@ class MakeXlsx:
         """
         
         #### type: Tipo da planilha (sucesso, erro)
-        #### bot: o sistema que está sendo executado a automação
-            > Ex.: PROJUDI, ESAJ, ELAW, ETC.
+        #### bot: o sistema que está sendo executado a automação Ex.: PROJUDI, ESAJ, ELAW, ETC.
             
         """
         self.bot = bot
         self.type = type
-        
+        self.listas = listas()
         pass
     
     def make_output(self, path_template: str):
@@ -39,25 +33,15 @@ class MakeXlsx:
         # Cabeçalhos iniciais
         cabecalhos = ["NUMERO_PROCESSO"]
         list_to_append = []
-
-        for name, func in globals().items():
-            
-            if "_" in name:
-                name_search = f"{self.bot}_{self.type}"
-                if callable(func) and name_search == name:
-                    list_to_append.extend(func())
-                    break  # Sai do loop após encontrar a primeira correspondência
-                    
-        if len(list_to_append) == 0:
-
-            for name, func in globals().items():
-                if callable(func) and name == self.type:
-                    list_to_append.extend(func())
-                    break # Sai do loop após encontrar a primeira correspondência
         
-        # Adicionar os itens da lista aos cabeçalhos
-        if list_to_append:
-            cabecalhos.extend(list_to_append)
+        itens_append = self.listas(f"{self.bot}_{self.type}")
+        if itens_append:
+            list_to_append.extend(itens_append)
+        
+        elif not itens_append:
+            itens_append = self.listas(self.type)
+            if itens_append:
+                list_to_append.extend(itens_append)
 
         # Definir estilo
         my_red = openpyxl.styles.colors.Color(rgb='A6A6A6')

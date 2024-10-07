@@ -36,8 +36,9 @@ class andamentos(CrawJUD):
     def execution(self):
         
         while not self.thread._is_stopped:
+            
             if self.row == self.ws.max_row+1:
-                self.row = self.ws.max_row
+                self.row = self.ws.max_row+1
                 break
             
             self.bot_data = {}
@@ -177,7 +178,7 @@ class andamentos(CrawJUD):
             if check_save:
                 sleep(3)
 
-                self.append_success([self.numproc, "", 'Andamento salvo com sucesso!'], 'Andamento salvo com sucesso!')
+                self.append_success([self.numproc, 'Andamento salvo com sucesso!', ""], 'Andamento salvo com sucesso!')
                 
         except:
             raise ErroDeExecucao("Aviso: não foi possivel validar salvamento de andamento")

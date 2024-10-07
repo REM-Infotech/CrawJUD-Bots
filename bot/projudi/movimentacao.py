@@ -36,7 +36,7 @@ class movimentacao(CrawJUD):
                 self.auth(self)
             
             if self.row == self.ws.max_row+1:
-                self.row = self.ws.max_row
+                self.row = self.ws.max_row+1
                 break
             
             self.appends = []

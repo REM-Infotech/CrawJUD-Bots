@@ -29,8 +29,9 @@ class movimentacao(CrawJUD):
     def execution(self):
         
         while not self.thread._is_stopped:
+            
             if self.row == self.ws.max_row+1:
-                self.row = self.ws.max_row
+                self.row = self.ws.max_row+1
                 break
             
             self.appends = []

@@ -31,7 +31,7 @@ class capa(CrawJUD):
                 self.auth(self)
             
             if self.row == self.ws.max_row+1:
-                self.row = self.ws.max_row
+                self.row = self.ws.max_row+1
                 break
             
             self.bot_data = {}
@@ -73,7 +73,14 @@ class capa(CrawJUD):
         
     def queue(self):
         
-        self.search(self)
+        search = self.search(self)
+        
+        if not search is True:
+            
+            self.message = "Processo não encontrado!"
+            self.prt.print_log("error", self.message)
+            self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
+            
         self.driver.refresh()
         self.append_success(self.get_process_informations(), "Informações do processo extraidas com sucesso!")
 

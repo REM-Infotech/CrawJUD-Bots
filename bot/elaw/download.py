@@ -36,11 +36,12 @@ class download(CrawJUD):
     def execution(self):
         
         while not self.thread._is_stopped:
-            self.list_docs = None
+            
             if self.row == self.ws.max_row+1:
-                self.row = self.ws.max_row
+                self.row = self.ws.max_row+1
                 break
             
+            self.list_docs = None
             self.bot_data = {}
             for index in range(1, self.ws.max_column + 1):
                 self.index = index

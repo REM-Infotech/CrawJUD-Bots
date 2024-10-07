@@ -42,6 +42,7 @@ class cadastro(CrawJUD):
         while not self.thread._is_stopped:
             
             if self.row == self.ws.max_row+1:
+                self.row = self.ws.max_row+1
                 break
             
             
@@ -90,7 +91,7 @@ class cadastro(CrawJUD):
             self.prt.print_log("error", self.message)
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
             
-        else:
+        elif not search is True:
         
             self.message = "Processo não encontrado, inicializando cadastro..."
             self.type_log = "log"
