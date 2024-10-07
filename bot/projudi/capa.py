@@ -51,8 +51,8 @@ class capa(CrawJUD):
                 
             except Exception as e:
                 
-                old_message = str(self.message)
-                self.message = str(getattr(e, 'msg', getattr(e, 'message', "")))
+                old_message = self.message
+                self.message = getattr(e, 'msg', getattr(e, 'message', ""))
                 if self.message == "":
                     for exept in webdriver_exepts():
                         if isinstance(e, exept):
@@ -61,9 +61,10 @@ class capa(CrawJUD):
                         
                 if not self.message:
                     self.message = str(e)
-                    
-                error_message = f'{self.message}. | Operação: {old_message}'
-                self.prt.print_log("error", error_message)
+                
+                self.type_log = "error"
+                self.message = f'{self.message}. | Operação: {old_message}'
+                self.prt(self)()
                 self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
             
             self.row += 1

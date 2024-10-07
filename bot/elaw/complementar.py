@@ -72,9 +72,10 @@ class complement(CrawJUD):
                         
                 if not self.message:
                     self.message = str(e)
-                    
-                error_message = f'{self.message}. | Operação: {old_message}'
-                self.prt.print_log("error", error_message)
+                
+                self.type_log = "error"
+                self.message = f'{self.message}. | Operação: {old_message}'
+                self.prt(self)()
                 self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
             
             self.row += 1

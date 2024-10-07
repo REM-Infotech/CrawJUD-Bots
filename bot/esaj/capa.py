@@ -43,7 +43,6 @@ class capa(CrawJUD):
             try:
                 
                 if not len(self.bot_data) == 0:
-                    self.prt = prt(self.pid, self.row-1, url_socket=self.argbot['url_socket'])
                     self.queue()
                 
             except Exception as e:
@@ -58,9 +57,10 @@ class capa(CrawJUD):
                         
                 if not self.message:
                     self.message = str(e)
-                    
+                
+                self.type_log = "error"
                 self.message = f'{self.message}. | Operação: {old_message}'
-                self.prt(self)
+                self.prt(self)()
                 self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
             
             self.row += 1
