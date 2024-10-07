@@ -117,6 +117,7 @@ class printtext(CrawJUD):
                         log_pid.remaining = 0
 
                 if "fim da execução" in data["message"].lower():
+                    log_pid.remaining = 0
                     log_pid.status = "Finalizado"
             
             db.session.commit()
