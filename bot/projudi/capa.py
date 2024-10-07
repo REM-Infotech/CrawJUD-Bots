@@ -28,7 +28,7 @@ class capa(CrawJUD):
         while not self.thread._is_stopped:
             
             if self.driver.title.lower() == "a sessao expirou":
-                self.auth
+                self.auth(self)
             
             if self.row == self.ws.max_row+1:
                 self.row = self.ws.max_row

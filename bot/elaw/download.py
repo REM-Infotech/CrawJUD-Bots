@@ -81,7 +81,9 @@ class download(CrawJUD):
         check_cadastro = self.search(self)
         if check_cadastro is True:
         
-            self.prt.print_log('log', 'Processo encontrado!')
+            self.message = 'Processo encontrado!'
+            self.type_log = "log"
+            self.prt(self)
             self.buscar_doc()
             self.download_docs()
             self.message = 'Arquivos salvos com sucesso!'

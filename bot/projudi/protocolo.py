@@ -26,11 +26,12 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import  NoSuchElementException, TimeoutException, StaleElementReferenceException
 
+from bot.head import CrawJUD
 
 
-class protocolo:
+class protocolo(CrawJUD):
 
-    def __init__(self, Initbot) -> None:
+    def __init__(self, Initbot: CrawJUD) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
@@ -40,7 +41,7 @@ class protocolo:
         while not self.thread._is_stopped:
             
             if self.driver.title.lower() == "a sessao expirou":
-                self.auth
+                self.auth(self)()
                 
             if self.row == self.ws.max_row+1:
                 self.row = self.ws.max_row
@@ -106,7 +107,8 @@ class protocolo:
 
         try:
             self.message = 'Inicializando peticionamento...'
-            self.prt.print_log('log', self.message)
+            self.type_log = "log"
+            self.prt(self)
             button_add_move = self.driver.find_element(By.ID, 'peticionarButton')
             button_add_move.click()
             
@@ -137,7 +139,8 @@ class protocolo:
         try:
             file = str(self.bot_data.get("PETICAO_PRINCIPAL"))
             self.message = "Inserindo Petição/Anexos..."
-            self.prt.print_log('log', self.message)
+            self.type_log = "log"
+            self.prt(self)
             button_new_file = self.driver.find_element(By.CSS_SELECTOR, 'input#editButton[value="Adicionar"]')
             button_new_file.click()
             

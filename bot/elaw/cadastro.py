@@ -454,7 +454,8 @@ class cadastro(CrawJUD):
                 raise ErroDeExecucao("Não foi possível cadastrar parte")
 
         messsage = 'Parte adicionada!'
-        self.prt.print_log('log', messsage)
+        self.type_log = "log"
+        self.prt(self)
 
     def uf_proc(self) -> None:
 
@@ -732,7 +733,9 @@ class cadastro(CrawJUD):
             salvar: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, salvarcss)), message="Erro ao encontrar elemento")
             salvar.click()
 
-            self.prt.print_log('log', f'Advogado cadastrado!')
+            self.message = 'Advogado cadastrado!'
+            self.type_log = "log"
+            self.prt(self)
             self.interact.sleep_load('div[id="j_id_3x"]')
 
         except Exception as e:
@@ -870,7 +873,9 @@ class cadastro(CrawJUD):
 
         if wait_confirm_save:
 
-            self.prt.print_log('log', 'Processo salvo com sucesso!')
+            self.message = 'Processo salvo com sucesso!'
+            self.type_log = "log"
+            self.prt(self)
             return True
 
         else:

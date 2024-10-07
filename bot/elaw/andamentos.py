@@ -123,8 +123,9 @@ class andamentos(CrawJUD):
     def info_ocorrencia(self):
         
         try:
-            self.prt.print_log('log', "Informando ocorrência")
-            
+            self.message = "Informando ocorrência"
+            self.type_log = "log"
+            self.prt(self)
             inpt_ocorrencia = 'textarea[id="j_id_2n:txtOcorrenciaAndamento"]'
             
             ocorrencia = self.driver.find_element(By.CSS_SELECTOR, inpt_ocorrencia)
@@ -138,7 +139,9 @@ class andamentos(CrawJUD):
     def info_observacao(self):
         
         try:
-            self.prt.print_log('log', "Informando observação")
+            self.message = "Informando observação"
+            self.type_log = "log"
+            self.prt(self)
             
             inpt_obs = 'textarea[id="j_id_2n:txtObsAndamento"]'
             
@@ -157,7 +160,9 @@ class andamentos(CrawJUD):
     def save_andamento(self):
         
         try:
-            self.prt.print_log('log', 'Salvando andamento...')
+            self.message = 'Salvando andamento...'
+            self.type_log = "log"
+            self.prt(self)
             sleep(1)
             self.link = self.driver.current_url
             save_button = self.driver.find_element(By.ID, 'btnSalvarAndamentoProcesso')
@@ -165,16 +170,14 @@ class andamentos(CrawJUD):
             
             
         except Exception  as e:
-            self.message = f'Não foi possivel salvar andamento'
-            raise ErroDeExecucao(self.message)
+            raise ErroDeExecucao(f'Não foi possivel salvar andamento')
  
         try:
             check_save:WebElement = WebDriverWait(self.driver, 10).until(EC.url_to_be('https://amazonas.elaw.com.br/processoView.elaw'))
             if check_save:
                 sleep(3)
-                self.prt.print_log('log', 'Andamento salvo com sucesso!')
-                self.append_sucess(numprocesso=[self.numproc])
+
+                self.append_success([self.numproc, "", 'Andamento salvo com sucesso!'], 'Andamento salvo com sucesso!')
                 
         except:
-            self.message = "Aviso: não foi possivel validar salvamento de andamento"
-            raise ErroDeExecucao(self.message)
+            raise ErroDeExecucao("Aviso: não foi possivel validar salvamento de andamento")

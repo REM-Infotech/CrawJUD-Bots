@@ -31,7 +31,9 @@ class AuthBot(CrawJUD):
         self.__dict__ = Head.__dict__.copy()
         self.metodo: self.esaj | self.projudi | self.elaw = getattr(self, self.system.lower())
     
-    def __call__(self) -> bool:
+    def __call__(self, Head: CrawJUD) -> bool:
+        
+        self.__dict__ = Head.__dict__.copy()
         return self.metodo()    
     
     def esaj(self):

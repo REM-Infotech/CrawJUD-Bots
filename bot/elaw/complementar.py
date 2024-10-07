@@ -183,7 +183,8 @@ class complement(CrawJUD):
     def data_citacao(self) -> None:
 
         self.message = "Informando data de citação"
-        self.prt.print_log('log', self.message)
+        self.type_log = "log"
+        self.prt(self)
 
         css_data_citacao = 'input[id="j_id_3k_1:dataRecebimento_input"]'
 
@@ -196,7 +197,8 @@ class complement(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = "Data de citação informada!"
-        self.prt.print_log('log', self.message)
+        self.type_log = "log"
+        self.prt(self)
     
     def fase(self) -> None:
 
@@ -205,7 +207,8 @@ class complement(CrawJUD):
         elemento = 'div[id="j_id_3k_1:processoFaseCombo_panel"]'
         
         self.message = "Informando fase do processo"
-        self.prt.print_log('log', self.message)
+        self.type_log = "log"
+        self.prt(self)
         
         div_fase: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, processoFaseCombo)))
         self.interact.double_click(div_fase)
@@ -216,7 +219,8 @@ class complement(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = "Fase informada!"
-        self.prt.print_log('log', self.message) 
+        self.type_log = "log"
+        self.prt(self) 
 
     def provimento(self) -> None:
 
@@ -225,7 +229,8 @@ class complement(CrawJUD):
         elemento = 'div[id="j_id_3k_1:j_id_3k_4_2_2_g_9_44_2:j_id_3k_4_2_2_g_9_44_3_1_2_2_1_1:fieldid_8401typeSelectField1CombosCombo_panel"]'
         
         self.message = "Informando provimento antecipatório"
-        self.prt.print_log('log', self.message)
+        self.type_log = "log"
+        self.prt(self)
         
         tipo_entrada_Css = 'div[id="j_id_3k_1:j_id_3k_4_2_2_e_9_44_2:j_id_3k_4_2_2_e_9_44_3_1_2_2_1_1:fieldid_9242typeSelectField1CombosCombo"]'
         tipo_entrada = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, tipo_entrada_Css)))
