@@ -180,7 +180,8 @@ class CrawJUD(WorkerThread):
                 self.type_log = "log"
                 self.prt(self)()
                 
-                Get_Login = AuthBot(self)()
+                self.auth = AuthBot(self)
+                Get_Login = self.auth()
 
         except Exception as e:
             print(e)

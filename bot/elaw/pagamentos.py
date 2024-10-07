@@ -54,7 +54,6 @@ class sol_pags(CrawJUD):
             try:
                 
                 if not len(self.bot_data) == 0:
-                    self.prt = prt(self.pid, self.row-1, url_socket=self.argbot['url_socket'])
                     self.queue()
                 
             except Exception as e:

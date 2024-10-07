@@ -38,6 +38,10 @@ class protocolo:
     def execution(self):
         
         while not self.thread._is_stopped:
+            
+            if self.driver.title.lower() == "a sessao expirou":
+                self.auth
+                
             if self.row == self.ws.max_row+1:
                 self.row = self.ws.max_row
                 break
@@ -52,7 +56,6 @@ class protocolo:
             try:
                 
                 if not len(self.bot_data) == 0:
-                    self.prt = prt(self.pid, self.row-1, url_socket=self.argbot['url_socket'])
                     self.queue()
                 
             except Exception as e:
