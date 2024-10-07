@@ -167,7 +167,6 @@ class elements_esaj:
         botao_confirmar = 'div.popover-content button.confirm-button'
         botao_recibo = 'button[ng-click="consultarReciboPeticao(peticao)"]'
         
-    
     def __init__(self, state: str) -> None:
         
         # Mapeia os estados às classes correspondentes

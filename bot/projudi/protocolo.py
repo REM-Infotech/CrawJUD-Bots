@@ -38,6 +38,7 @@ class protocolo(CrawJUD):
         
     def execution(self):
         
+        self.row = 2
         while not self.thread._is_stopped:
             
             if self.driver.title.lower() == "a sessao expirou":
@@ -75,7 +76,8 @@ class protocolo(CrawJUD):
                 self.type_log = "error"
                 self.message_error = f'{message_error}. | Operação: {old_message}'
                 self.prt(self)
-                self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
+                self.bot_data.update({'MOTIVO_ERRO': self.message_error})
+                self.append_error(data=self.bot_data)
                 self.message_error = None
             
             self.row += 1
@@ -84,7 +86,10 @@ class protocolo(CrawJUD):
     
     def queue(self):
         
-        self.search(self)
+        search = self.search(self)
+        
+        if not search is True:
+            raise ErroDeExecucao("Processo não encontrado!")
         
         self.detect_intimacao()
         

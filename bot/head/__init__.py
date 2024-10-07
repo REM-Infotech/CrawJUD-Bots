@@ -45,7 +45,6 @@ class CrawJUD(WorkerThread):
     def __init__(self, worker_thread: WorkerThread):
             
         self.__dict__ = worker_thread.__dict__.copy()
-        time.sleep(5)
         self.prt: Type[printtext] = printtext(self)
         
     def setup(self, app: Flask, path_args: str = None):
@@ -53,7 +52,8 @@ class CrawJUD(WorkerThread):
         self.driver = None
         with open(path_args, "rb") as f:
             arguments_bot: dict[str, str | int] = json.load(f)
-            
+        
+        time.sleep(5)
         self.list_args = ['--ignore-ssl-errors=yes', '--ignore-certificate-errors', "--display=:99", "--window-size=1600,900", 
                  "--no-sandbox", "--disable-blink-features=AutomationControlled", '--kiosk-printing']    
 
@@ -262,13 +262,17 @@ class CrawJUD(WorkerThread):
         try:
             # Carrega a planilha existente
             existing_data = pd.read_excel(self.path)
+            
         except FileNotFoundError:
             # Se a planilha não existir, cria uma nova
             existing_data = pd.DataFrame()
+            
+        
         # Converte a nova data em DataFrame e nomeia as colunas
         columns = existing_data.columns
         if isinstance(data[0], list):
             new_data = pd.DataFrame(data, columns=columns)
+            
         elif not isinstance(data[0], list):
             new_data = pd.DataFrame([data], columns=columns)
 
@@ -286,13 +290,36 @@ class CrawJUD(WorkerThread):
         self.message = message
         self.prt(self)
 
-    def append_error(self, motivo_erro: list):
+    def append_error(self, motivo_erro: list = None, data: dict[str, str] = None):
 
-        wb = openpyxl.load_workbook(filename=self.path_erro)
-        sheet = wb.active
+        if data:
+            try:
+                # Carrega a planilha existente
+                df = pd.read_excel(self.path_erro)
+                
+            except FileNotFoundError:
+                # Se a planilha não existir, cria uma nova
+                df = pd.DataFrame()
+                
+            dict_itens = df.to_dict()
+            for key, value in list(dict_itens.items()):
+                dict_itens.update({key: {str(len(list(value))): data.get(key, "sem informação")}})
+            
+            for key, value in data.items():
+                if not dict_itens.get(key):
+                    dict_itens.update({key: {"0": value}})
+            
+            new_data = pd.DataFrame(dict_itens)
+            new_data.to_excel(self.path, index=False)
+            
+        elif motivo_erro:
+            wb = openpyxl.load_workbook(filename=self.path_erro)
+            sheet = wb.active
+            
+            sheet.column()
 
-        sheet.append(motivo_erro)
-        wb.save(self.path_erro)
+            sheet.append(motivo_erro)
+            wb.save(self.path_erro)
 
     def format_String(self, string: str) -> str:
 
@@ -330,6 +357,7 @@ class CrawJUD(WorkerThread):
             
             if not os.getlogin() == "root" or platform.system() != "Linux":
                 self.list_args.remove("--no-sandbox")
+                self.list_args.remove("--display=:99")
             
             if platform.system() == "Windows" and self.login_method == "cert":
                 state = str(self.state)

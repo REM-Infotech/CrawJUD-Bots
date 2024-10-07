@@ -79,7 +79,10 @@ class movimentacao(CrawJUD):
         
         self.table_moves = None
         
-        self.search(self)
+        search = self.search(self)
+        
+        if not search is True:
+            raise ErroDeExecucao("Processo não encontrado!")
         
         self.message = 'Buscando movimentações'
         self.type_log = "log"

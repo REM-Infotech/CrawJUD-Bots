@@ -9,6 +9,7 @@ from datetime import datetime
 
 from bot.head.common.selenium_excepts import webdriver_exepts
 from bot.head.common.selenium_excepts import exeption_message
+from bot.head.common.exceptions import ErroDeExecucao
 
 # Selenium Imports
 from selenium.webdriver.common.by import By
@@ -76,12 +77,7 @@ class capa(CrawJUD):
         search = self.search(self)
         
         if not search is True:
-            
-            self.message = "Processo não encontrado!"
-            self.type_log = "error"
-            self.prt(self)
-            self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
-            return
+            raise ErroDeExecucao("Processo não encontrado!")
         
         self.driver.refresh()
         data = self.get_process_informations()

@@ -14,15 +14,6 @@ class listas:
             list = self.lista()
             
         return list
-    
-    def cadastro_erro(self) -> list[str]:
-        return ["Erro", "AREA_DIREITO", "SUBAREA_DIREITO", "ESTADO", "COMARCA", "FORO",
-                "VARA", "DATA_DISTRIBUICAO", "PARTE_CONTRARIA", "TIPO_PARTE_CONTRARIA", "DOC_PARTE_CONTRARIA",
-                "EMPRESA", "TIPO_EMPRESA", "DOC_EMPRESA", "UNIDADE_CONSUMIDORA", "CAPITAL_INTERIOR",
-                "DIVISAO", "ACAO", "DATA_CITACAO", "OBJETO", "PROVIMENTO", "ADVOGADO_INTERNO",
-                "ADV_PARTE_CONTRARIA", "FATO_GERADOR", "ESCRITORIO_EXTERNO", "VALOR_CAUSA", "FASE"
-                ]
-
 
     def caixa_guias_emissao_sucesso(self) -> list[str]:
         return ['Descrição do Prazo', 'Valor do documento', "Data para pagamento",
@@ -51,4 +42,4 @@ class listas:
 
     def erro(self) -> list[str]:
 
-        return ['Motivo Erro']
+        return ['MOTIVO_ERRO']
