@@ -11,29 +11,19 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import  NoSuchElementException, TimeoutException
 from bot.head.interator import Interact
+from bot.head import CrawJUD
 
-
-class SeachBot:
+class SeachBot(CrawJUD):
     
-    def __init__(self, elementos, driver: Type[WebDriver], wait: Type[WebDriverWait], portal, bot: str = None) -> None:
+    def __init__(self, Head: CrawJUD):
         
-        self.elementos = elementos
-        self.driver = driver
-        self.wait = wait
-        self.bot = bot
+        self.__dict__ = Head.__dict__.copy()
+        self.metodo = getattr(self, self.system, None)
         
-        self.interact = Interact(self.driver, self.wait)
-        
-        metodo = getattr(self, portal, None)
-        self.metodo = metodo
-        
-    def search(self, bot_data: dict, prt: Type[prt]) -> None:
-        
-        self.bot_data = bot_data
-        self.prt = prt
+    def __call__(self) -> None:
         
         self.prt.print_log('log', f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}')
-        return self.metodo()
+        self.metodo()
 
     def elaw(self) -> bool:
         

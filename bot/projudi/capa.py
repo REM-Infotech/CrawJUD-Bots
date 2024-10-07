@@ -24,6 +24,7 @@ class capa(CrawJUD):
     
     def execution(self):
         
+        self.row = 2
         while not self.thread._is_stopped:
             
             if self.driver.title.lower() == "a sessao expirou":

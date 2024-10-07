@@ -1,12 +1,13 @@
 from bot.head.common.exceptions import ItemNaoEcontrado
 from bot.head.Tools.PrintLogs import printtext as prt
+from bot.head import CrawJUD
 
 from time import sleep
 from typing import Type
 from contextlib import suppress
 
-from selenium.webdriver.common.by import By
 from selenium.webdriver import Keys
+from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
@@ -15,12 +16,10 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 
-class Interact():
+class Interact(CrawJUD):
 
-    def __init__(self, driver: Type[WebDriver], wait: Type[WebDriverWait]) -> None:
-
-        self.driver = driver
-        self.wait = wait
+    def __init__(self, Head: CrawJUD):
+        self.__dict__ = Head.__dict__.copy()
 
     def send_key(self, element: WebElement, word: any) -> None:
 

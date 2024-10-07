@@ -1,9 +1,10 @@
-from bot.projudi.capa import capa
-from bot.projudi.protocolo import protocolo
-from bot.projudi.movimentacao import movimentacao
+
 
 class projudi:
     
+    from bot.projudi.capa import capa
+    from bot.projudi.protocolo import protocolo
+    from bot.projudi.movimentacao import movimentacao
     bot = ""
     Master = ""
     

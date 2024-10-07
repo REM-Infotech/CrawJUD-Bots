@@ -1,15 +1,5 @@
 """ Inicia """
 from flask import Flask
-from bot.head.auth import AuthBot
-from bot.head.search import SeachBot
-from bot.head.interator import Interact
-from bot.head.nome_colunas import nomes_colunas
-from bot.head.Tools.MakeTemplate import MakeXlsx
-from bot.head.Tools.PrintLogs import printtext as prt
-from bot.head.Tools.dicionarios import cities_Amazonas
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeption_message
-from bot.head.Tools.StartStop_Notify import SetStatus
 
 import os
 import time
@@ -55,8 +45,15 @@ class CrawJUD(WorkerThread):
     def __init__(self, worker_thread: WorkerThread):
             
         self.__dict__ = worker_thread.__dict__.copy()
+        time.sleep(5)
+        self.prt: Type[printtext] = printtext
         
     def setup(self, app: Flask, path_args: str = None):
+        
+        self.message = str('Inicializando robô')
+        self.type_log = str("log")
+        self.prt(self)
+        
         self.driver = None
         with open(path_args, "rb") as f:
             arguments_bot: dict[str, str | int] = json.load(f)
@@ -65,7 +62,6 @@ class CrawJUD(WorkerThread):
                  "--no-sandbox", "--disable-blink-features=AutomationControlled", '--kiosk-printing']    
 
         ## Definição de variaveis utilizadas pelos robôs
-        self.message = None
         self.argbot = arguments_bot
         self.pid = arguments_bot['pid']
         self.app = app
@@ -76,20 +72,22 @@ class CrawJUD(WorkerThread):
         self.system: str = arguments_bot.get("system")
         self.type: str = arguments_bot.get("type")
         
-        
         self.state: str = arguments_bot.get("state")
         self.rows = int(arguments_bot.get("total_rows"))
         
         ## Abertura da planilha de input
+        self.row = int(0)
         self.ws: Type[Worksheet] = openpyxl.load_workbook(self.input_file).active
-        self.prt = prt(pid=self.pid, url_socket=arguments_bot['url_socket'])
-        self.row = 2
+        
             
         try:
             
             ## Criação das planilhas de output
             time_xlsx = datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%d-%m-%y')
-            self.prt.print_log('log', 'Criando planilha de output')
+            
+            self.message = 'Criando planilha de output'
+            self.type_log = "log"
+            self.prt(self)
             
             namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
             self.path = f"{self.output_dir_path}/{namefile}"
@@ -99,27 +97,43 @@ class CrawJUD(WorkerThread):
             self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
             MakeXlsx("erro", self.type).make_output(self.path_erro)
             
+            self.message = 'Planilhas criadas!'
+            self.type_log = "log"
+            self.prt(self)
+            
             ## Carrega elementos do bot
             self.elementos = elements_bot(self.system, self.state)
-
+            
             args = self.DriverLaunch()
             if not args:
+                
+                self.message = "Erro ao inicializar WebDriver"
+                self.type_log = "error"
+                self.prt(self)
                 return
             
             self.login_method = self.argbot.get("login_method", None)
             self.driver: Type[WebDriver] = args[0]
             self.wait: Type[WebDriverWait] = args[1]
+            self.interact = Interact(self)
             
             Get_Login = self.login()
             if Get_Login is True:
-
+                
                 self.senhacert = self.argbot.get("token", None)
-                self.prt.print_log('log', 'Login efetuado com sucesso!')
+                
+                self.message = 'Login efetuado com sucesso!'
+                self.type_log = "log"
+                self.prt(self)
 
             elif Get_Login is False:
 
                 self.driver.quit()
-                self.prt.print_log('error', 'Erro ao realizar login')
+                
+                self.message = 'Erro ao realizar login'
+                self.type_log = "error"
+                self.prt(self)
+                
                 with app.app_context():
                     SetStatus(status='Falha ao iniciar', pid=self.pid, 
                             system=self.system, type=self.type).botstop()
@@ -127,6 +141,7 @@ class CrawJUD(WorkerThread):
                 return
 
             self.search = SeachBot(self.elementos, self.driver, self.wait, self.system).search
+            
             bot = master_bots(self.system, self.type, self)
             bot()
             
@@ -139,11 +154,11 @@ class CrawJUD(WorkerThread):
             with app.app_context():
                 SetStatus(status='Falha ao iniciar', pid=self.pid, 
                         system=self.system, type=self.type).botstop()
-            
-            if self.row > 2:
-                self.prt = prt(self.pid, self.row, self.argbot['url_socket'])
-                
-            self.prt.print_log('error', str(e))
+
+            self.row = 0
+            self.message = f'Falha ao iniciar\n Informe a mensagem de erro ao suporte\n\n{str(e)}'
+            self.type_log = "error"
+            self.prt(self)
             return
 
     def login(self) -> None:
@@ -152,21 +167,16 @@ class CrawJUD(WorkerThread):
 
             Get_Login = True
             
-            login = self.argbot.get("login", None)
-            password = self.argbot.get("password", None)
+            self.login = self.argbot.get("login", None)
+            self.password = self.argbot.get("password", None)
             
-            if login:
-
-                self.bot = self.argbot.get("bot")
-                self.prt.print_log('log', 'Usuário e senha obtidos!')
-                self.auth = AuthBot(
-                    self.elementos,
-                    prt=self.prt,
-                    driver=self.driver, wait=self.wait,
-                    info_creds=[login, password],
-                    method=self.login_method, bot=self.system, pid=self.pid)
-
-                Get_Login = self.auth.set_portal()
+            if self.login:
+                
+                self.message = 'Usuário e senha obtidos!'
+                self.type_log = "log"
+                self.prt(self)
+                
+                Get_Login = self.auth = AuthBot(self)
 
         except Exception as e:
             print(e)
@@ -300,7 +310,10 @@ class CrawJUD(WorkerThread):
     def DriverLaunch(self) -> list[WebDriver, WebDriverWait]:
         
         try:
-
+            self.message = 'Inicializando WebDriver'
+            self.type_log = "log"
+            self.prt(self)
+            
             chrome_options = Options()
             user_data_dir = os.path.join(os.getcwd(), 'Temp', self.pid, 'chrome')
             
@@ -358,6 +371,11 @@ class CrawJUD(WorkerThread):
             wait = WebDriverWait(driver, 20, 0.01)
             args = [driver, wait]
             driver.delete_all_cookies()
+            
+            self.message = "WebDriver inicializado"
+            self.type_log = "log"
+            self.prt(self)
+            
             return args
 
         except Exception as e:
@@ -373,3 +391,14 @@ def master_bots(system: str, type_bot: str, master: CrawJUD) -> projudi | esaj |
         
 def elements_bot(system: str, state: str) -> elements_projudi | elements_esaj | elements_elaw:
     return globals().get(f"elements_{system.lower()}")(state)
+
+from bot.head.auth import AuthBot
+from bot.head.search import SeachBot
+from bot.head.interator import Interact
+from bot.head.nome_colunas import nomes_colunas
+from bot.head.Tools.MakeTemplate import MakeXlsx
+from bot.head.Tools.PrintLogs import printtext
+from bot.head.Tools.dicionarios import cities_Amazonas
+from bot.head.common.selenium_excepts import webdriver_exepts
+from bot.head.common.selenium_excepts import exeption_message
+from bot.head.Tools.StartStop_Notify import SetStatus

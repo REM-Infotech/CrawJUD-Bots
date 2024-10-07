@@ -16,32 +16,23 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import TimeoutException
 
+from initbot import WorkerThread
+
 if platform.system() == "Windows":
     from pywinauto.application import WindowSpecification
     from pywinauto import Application
     
 from bot.head.Tools.PrintLogs import printtext as prt
+from bot.head import CrawJUD
 
-
-class AuthBot:
+class AuthBot(CrawJUD):
     
-    def __init__(self, elements, prt: Type[prt], 
-                 driver: WebDriver, wait: WebDriverWait, 
-                 info_creds: list, pid:str, method: str =  None, bot: str = None):
-        
-        self.driver  = driver
-        self.wait = wait
-        self.info_creds = info_creds
-        self.method = method
-        self.bot = bot
-        self.pid = pid
-        self.prt = prt
-        self.elements = elements
-        
-    def set_portal(self) -> bool:
-        
-        metodo = getattr(self, self.bot)
-        return metodo()
+    def __init__(self, Head: CrawJUD):
+        self.__dict__ = Head.__dict__.copy()
+        self.metodo: self.esaj | self.projudi | self.elaw = getattr(self, self.system)
+    
+    def __call__(self) -> bool:
+        self.metodo()    
     
     def esaj(self):
 
@@ -52,7 +43,7 @@ class AuthBot:
 
             if self.method == "cert":
 
-                self.driver.get(self.elements.url_login)
+                self.driver.get(self.elements.url_login_cert)
                 logincert: WebElement = self.wait.until(EC.presence_of_all_elements_located((By.XPATH, '//*[@id="certificados"]')))
                 sleep(3)
 

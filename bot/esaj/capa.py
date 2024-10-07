@@ -27,6 +27,7 @@ class capa(CrawJUD):
         
     def execution(self):
         
+        self.row = 2
         while not self.thread._is_stopped:
             if self.row == self.ws.max_row+1:
                 self.prt = prt(self.pid, self.row)
@@ -58,8 +59,8 @@ class capa(CrawJUD):
                 if not self.message:
                     self.message = str(e)
                     
-                error_message = f'{self.message}. | Operação: {old_message}'
-                self.prt.print_log("error", error_message)
+                self.message = f'{self.message}. | Operação: {old_message}'
+                self.prt(self)
                 self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
             
             self.row += 1
@@ -75,7 +76,7 @@ class capa(CrawJUD):
     def get_process_informations(self) -> list:
         
         self.message = f"Extraindo informações do processo nº{self.bot_data.get('NUMERO_PROCESSO')}"
-        self.prt.print_log("log", self.message)
+        self.prt()
         
         grau = int(str(self.bot_data.get("GRAU")).replace("º", ""))
         if grau == 1:

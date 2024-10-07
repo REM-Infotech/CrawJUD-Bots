@@ -6,9 +6,14 @@ class esaj:
     from bot.esaj.protocolo import protocolo
     from bot.esaj.busca_pags import busca_pags
     from bot.esaj.movimentacao import movimentacao
-    def __init__(self, bot: str, Master) -> (capa | emissao | protocolo | busca_pags | movimentacao):
-        
-        func = globals().get(bot)
-        return func(Master)
+    bot = ""
+    Master = ""
+    
+    def __init__(self, bot: str, Master):
+        self.bot = bot
+        self.Master = Master
+    
+    def __call__(self) -> capa | protocolo | movimentacao | busca_pags | emissao:
+        self.execution = globals().get(self.bot)(self.Master).execution()
         
 from bot.esaj.common.elements import elements_esaj

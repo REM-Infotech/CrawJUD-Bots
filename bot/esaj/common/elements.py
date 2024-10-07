@@ -20,7 +20,8 @@ class elements_esaj:
     class AM:
         get_page_custas_pagas = 'button[class="btn btn-secondary btn-space linkConsultaSG"]'
         
-        url_login = ""
+        url_login = "https://consultasaj.tjam.jus.br/sajcas/login"
+        url_login_cert = "https://consultasaj.tjam.jus.br/sajcas/login#aba-certificado"
         campo_username = ''
         campo_passwd = ''
         btn_entrar = ''

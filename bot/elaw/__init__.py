@@ -1,4 +1,4 @@
-class esaj:
+class elaw:
     
     from bot.elaw.download import download
     from bot.elaw.cadastro import cadastro
