@@ -125,5 +125,8 @@ class SeachBot(CrawJUD):
 
                     save = self.driver.find_element(By. CSS_SELECTOR, '#saveButton')
                     save.click()
-            else:
-                raise ErroDeExecucao("Processo não encontrado!")
+                    
+                return True
+            
+            elif not enterproc:
+                return False

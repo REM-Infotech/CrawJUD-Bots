@@ -199,7 +199,7 @@ class CrawlerCalculoTJ(CrawJUD):
             if juros_percent == "1":
                 self.interact.click(self.driver.find_element(By.CSS_SELECTOR, 'input[id="juros_percent1"]'))
                 
-            else:
+            elif juros_percent != "1":
                 
                 percent = juros_percent
                 percent = f'{percent},00' if not "," in percent else percent

@@ -24,7 +24,7 @@ def makezip(pid: str) -> str:
                     file_path = os.path.join("Temp", pid, other_folder, file)
                     file_paths.append(file_path)
                     
-                else:
+                elif len(other_folder) == 1:
                     file_path = os.path.join("Temp", pid, file)
                     file_paths.append(file_path)
     

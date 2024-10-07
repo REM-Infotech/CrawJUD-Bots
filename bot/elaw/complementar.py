@@ -337,7 +337,7 @@ class complement(CrawJUD):
         if wait_confirm_save:
             return True
 
-        else:
+        elif not wait_confirm_save:
             div_messageerro_css = 'div[id="messages"]'
             try:
                 message: WebElement = self.wait.until(EC.presence_of_element_located(

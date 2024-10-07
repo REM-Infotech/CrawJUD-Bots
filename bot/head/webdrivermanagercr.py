@@ -54,10 +54,9 @@ v_chrome_version = chrome_version.replace(".","_")
 
 filename = ''
 
+filename = f"chromedriver{v_chrome_version}"
 if platform.system() == "Windows":
     filename = f"chromedriver{v_chrome_version}.exe"
-else:
-    filename = f"chromedriver{v_chrome_version}"
     
 chromdriver_path = os.path.join(os.getcwd(), 'webdriver', filename)
 

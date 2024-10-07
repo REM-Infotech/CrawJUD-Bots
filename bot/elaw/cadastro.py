@@ -88,7 +88,8 @@ class cadastro(CrawJUD):
         if search is True:
             
             self.message = "Processo já cadastrado!"
-            self.prt.print_log("error", self.message)
+            self.type_log = "error"
+            self.prt(self)
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
             
         elif not search is True:
@@ -547,7 +548,7 @@ class cadastro(CrawJUD):
 
         if wait_adv:
             wait_adv.click()
-        else:
+        elif not wait_adv:
             raise ErroDeExecucao(message="Advogado interno não encontrado")
         
         self.interact.sleep_load('div[id="j_id_3x"]')
@@ -879,7 +880,7 @@ class cadastro(CrawJUD):
             self.prt(self)
             return True
 
-        else:
+        elif not wait_confirm_save:
             div_messageerro_css = 'div[id="messages"]'
             try:
                 self.message: WebElement = self.wait.until(EC.presence_of_element_located(
@@ -888,7 +889,8 @@ class cadastro(CrawJUD):
             except Exception as e:
                 self.message = "Processo Não cadastrado"
 
-            self.prt.print_log("error", self.message)
+            self.type_log = "error"
+            self.prt(self)
             self.append_error(
                 [self.bot_data.get("NUMERO_PROCESSO"), self.message])
             

@@ -19,7 +19,7 @@ class elements_pje:
             for attr_name, attr_value in state_class.__dict__.items():
                 if not attr_name.startswith('__'):  # Ignora atributos internos
                     setattr(self, attr_name, attr_value)
-        else:
+        elif not state in state_classes:
             raise ValueError(f"Estado '{state}' não é válido.")
 
     # Classes internas para diferentes estados

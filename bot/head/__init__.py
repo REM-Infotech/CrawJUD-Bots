@@ -254,7 +254,7 @@ class CrawJUD(WorkerThread):
             self.append_success(
                 self.appends, f'Movimentação salva na planilha com sucesso!!')
 
-        else:
+        elif len(self.appends) == 0:
             raise ErroDeExecucao("Nenhuma Movimentação encontrada")
 
     def append_success(self, data: list, message: str = None):
@@ -269,7 +269,7 @@ class CrawJUD(WorkerThread):
         columns = existing_data.columns
         if isinstance(data[0], list):
             new_data = pd.DataFrame(data, columns=columns)
-        else:
+        elif not isinstance(data[0], list):
             new_data = pd.DataFrame([data], columns=columns)
 
         # Concatena os dados existentes com os novos dados

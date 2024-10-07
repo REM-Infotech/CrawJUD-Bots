@@ -212,7 +212,7 @@ class protocolo(CrawJUD):
                         sleep(0.3)
                         break   
                         
-                    else:
+                    if parte_name != parte_peticao:
                         partes = self.driver.find_elements(By.CSS_SELECTOR, parte_view)
                         for parte in partes:
                             parte_name = parte.find_element(By.CSS_SELECTOR, nome).text.lower()
@@ -221,7 +221,7 @@ class protocolo(CrawJUD):
                                 sleep(0.3)
                                 break
 
-            else: 
+            elif not partes:
                 raise ErroDeExecucao("Não foi possivel vincular parte a petição") 
                 
         except:

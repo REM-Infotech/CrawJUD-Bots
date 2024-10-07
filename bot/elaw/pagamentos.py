@@ -95,9 +95,10 @@ class sol_pags(CrawJUD):
             self.save_changes()
             self.check_sucess()
             
-        else:
+        elif not search is True:
             self.message = "Processo não encontrado!"
-            self.prt.print_log("error", self.message)
+            self.type_log = "error"
+            self.prt(self)
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
             
     def new_payment(self):
@@ -534,7 +535,7 @@ class sol_pags(CrawJUD):
                 if item.text == 'Nenhum registro encontrado!':
                     self.prt.print_log('error', "Pagamento não solicitado")
                     return
-                else:
+                elif item.text != 'Nenhum registro encontrado!':
                     
                     tipo_pgto = str(self.bot_data.get("TIPO_PAGAMENTO"))
                     check_tipo_solicitacao = item.find_elements(By.TAG_NAME, 'td')[5].text

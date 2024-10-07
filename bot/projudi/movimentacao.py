@@ -85,14 +85,14 @@ class movimentacao(CrawJUD):
         self.type_log = "log"
         self.prt(self)
         
+        if not self.bot_data.get("DATA_LIMITE", None) and not self.bot_data.get("NOME_MOV", None):
+            self.get_moves()
+        
         if self.bot_data.get("DATA_LIMITE"):
             self.extract_with_rangedata()
             
         elif self.bot_data.get("NOME_MOV"):
             self.get_textodoc()
-            
-        else:
-            self.get_moves()
             
         self.append_moves()
 

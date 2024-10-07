@@ -78,9 +78,11 @@ class capa(CrawJUD):
         if not search is True:
             
             self.message = "Processo não encontrado!"
-            self.prt.print_log("error", self.message)
+            self.type_log = "error"
+            self.prt(self)
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
-            
+            return
+        
         self.driver.refresh()
         self.append_success(self.get_process_informations(), "Informações do processo extraidas com sucesso!")
 
@@ -204,7 +206,7 @@ class capa(CrawJUD):
                     parts = value.split('.')
                     if len(parts[-1]) == 2:
                         value = value.replace(',', '')
-                    else:
+                    elif not len(parts[-1]) == 2:
                         value = value.replace('.', '').replace(',', '.')
                 elif ',' in value:
                     # Assumir formato BRL
@@ -217,14 +219,10 @@ class capa(CrawJUD):
             
             valorDaCausa = convert_to_float(matches[0])
         
+        vara = foro.split(" ")[0]
         if "vara única" in foro.lower():
-            
             vara = foro.split(" da ")[0]
             
-        else:
-            
-            vara = foro.split(" ")[0]
-        
         if " - " in advPoloAtivo:
             
             get_oab = advPoloAtivo.split(" - ")[0]

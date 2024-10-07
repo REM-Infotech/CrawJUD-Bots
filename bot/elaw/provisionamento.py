@@ -110,15 +110,17 @@ class provisao(CrawJUD):
                 self.set_valores()
                 self.save_changes()
 
-            else:
+            elif get_valores == "Contém valores" and provisao == "possível":
                 
                 self.message = 'Provisão "Possível" já inserida'
-                self.prt.print_log("error", self.message)
+                self.type_log = "error"
+                self.prt(self)
                 self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
 
-        else:
+        if not check_cadastro is True:
             self.message = "Processo não encontrado!"
-            self.prt.print_log("error", self.message)
+            self.type_log = "error"
+            self.prt(self)
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
                    
     def get_valores_proc(self) -> str:
@@ -190,7 +192,7 @@ class provisao(CrawJUD):
             if "," in valor_informar:
                 sleep(0.25)
                 campo_valor_dml.send_keys(f"{valor_informar}")
-            else:
+            elif not "," in valor_informar:
                 sleep(0.25)
                 campo_valor_dml.send_keys(f"{valor_informar}{','}")
                 

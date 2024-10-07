@@ -59,7 +59,7 @@ class Interact(CrawJUD):
         if not text.isupper():
             itens = list(filter(lambda item: not item.text.isupper(), itens.find_element(By.CSS_SELECTOR, 'ul').find_elements(By.TAG_NAME, "li")))
             
-        else:
+        elif text.isupper():
             itens = itens.find_element(By.TAG_NAME, 'ul').find_elements(By.TAG_NAME, 'li')
             
         item = next(filter(lambda item: text == item.text, itens), None)

@@ -90,9 +90,10 @@ class download(CrawJUD):
             self.message = 'Arquivos salvos com sucesso!'
             self.append_success([self.bot_data.get("NUMERO_PROCESSO"), self.message, self.list_docs], 'Arquivos salvos com sucesso!')
             
-        else:
+        elif not check_cadastro:
             self.message = "Processo não encontrado!"
-            self.prt.print_log("error", self.message)
+            self.type_log = "error"
+            self.prt(self)
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
         
     def buscar_doc(self):
@@ -117,7 +118,7 @@ class download(CrawJUD):
         if "," in self.bot_data.get("TERMOS"):
             termos = str(self.bot_data.get("TERMOS")).replace(", ", ",").replace(" ,", ",").split(",")
             
-        else: 
+        elif not "," in self.bot_data.get("TERMOS"):
             termos = [str(self.bot_data.get("TERMOS"))]
         
         self.message = f'Buscando documentos que contenham "{self.bot_data.get("TERMOS").__str__().replace(",", ", ")}"'
@@ -177,5 +178,5 @@ class download(CrawJUD):
         if not self.list_docs:
             self.list_docs = filename_replaced
             
-        else:
+        elif self.list_docs:
             self.list_docs = self.list_docs + "," + filename_replaced

@@ -145,10 +145,11 @@ class emissao(CrawJUD):
                        
     def preparo_ri(self):
         
-        if str(self.bot_data.get("PORTAL")).lower() == 'esaj':
+        portal = self.bot_data.get("PORTAL", "não informado") 
+        if str(portal).lower() == 'esaj':
             self.driver.get("https://consultasaj.tjam.jus.br/ccpweb/iniciarCalculoDeCustas.do?cdTipoCusta=9&flTipoCusta=1&&cdServicoCalculoCusta=690019")
             
-        elif str(self.bot_data.get("PORTAL")).lower() == "projudi":
+        elif str(portal).lower() == "projudi":
             self.driver.get("https://consultasaj.tjam.jus.br/ccpweb/iniciarCalculoDeCustas.do?cdTipoCusta=21&flTipoCusta=5&&cdServicoCalculoCusta=690007")
             
             set_foro: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, nome_foro)))
@@ -183,7 +184,7 @@ class emissao(CrawJUD):
             css_val_doc = 'body > table:nth-child(4) > tbody > tr > td > table:nth-child(10) > tbody > tr:nth-child(3) > td:nth-child(3) > strong'
             self.valor_doc: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_val_doc))).text                  
             
-        else:
+        elif portal == "não informado":
             self.prt.print_log(self.pid, 'error', 'Informar portal do processo na planilha (PROJUDI ou ESAJ)', self.row)
             errodata = [self.bot_data.get('NUMERO_PROCESSO'),'Informar portal do processo na planilha (PROJUDI ou ESAJ)']
             self.append_error(errodata)
@@ -225,7 +226,7 @@ class emissao(CrawJUD):
             sleep(0.7)
             self.driver.switch_to.window(original_window)
             self.prt.print_log(self.pid, 'error', 'Esaj não gerou a guia', self.row)
-        else:
+        elif not check:
             return f"https://consultasaj.tjam.jus.br{url}"
               
     def downloadpdf(self, link_pdf):

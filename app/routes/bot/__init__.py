@@ -46,7 +46,7 @@ def stop_bot(user: str, pid: str):
         
             return jsonify({'Encerrado!': 'Sucesso'}), set_stop
         
-        else:
+        elif set_stop != 200:
             return jsonify({'mensagem': 'erro'}), set_stop
 
 def stop_execution(user: str, pid: str) -> int:

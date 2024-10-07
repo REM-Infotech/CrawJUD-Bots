@@ -336,7 +336,8 @@ class protocolo(CrawJUD):
                 
                 if get_style != '':
                     sleep(1)
-                else:
+                    
+                elif get_style == '':
                     break
                 
             except:

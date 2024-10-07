@@ -136,8 +136,9 @@ class busca_pags(CrawJUD):
                             self.roleta = self.roleta+1
                             data = [self.bot_data.get('NUMERO_PROCESSO'), tipo_custa, emissor, data_calculo, valor_custa, cód_guia, parcelaguia, data_pagamento]
                             self.append_success()
-                        else:
+                        elif not checkifclass == '':
                             continue
+                        
                     except Exception as e:
                         tipo_custa = rows.find_elements(By.TAG_NAME, 'td')[0].text
                         emissor = rows.find_elements(By.TAG_NAME, 'td')[1].text
@@ -160,7 +161,7 @@ class busca_pags(CrawJUD):
                         data = [self.bot_data.get('NUMERO_PROCESSO'), tipo_custa, emissor, data_calculo, valor_custa, cód_guia, parcelaguia, data_pagamento]
                         self.append_success(data)
                         
-            else: 
+            elif not "Lista de custas pagas" in nomediv:
                 continue 
             
             self.append_total_on_output([self.bot_data.get('NUMERO_PROCESSO'), total])
