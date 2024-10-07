@@ -84,7 +84,8 @@ class capa(CrawJUD):
             return
         
         self.driver.refresh()
-        self.append_success(self.get_process_informations(), "Informações do processo extraidas com sucesso!")
+        data = self.get_process_informations()
+        self.append_success(data, "Informações do processo extraidas com sucesso!")
 
     def get_process_informations(self) -> list:
 

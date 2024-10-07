@@ -33,7 +33,11 @@ class AuthBot(CrawJUD):
     def __call__(self, Head: CrawJUD) -> bool:
         
         self.__dict__ = Head.__dict__.copy()
-        return getattr(self, self.system.lower()) 
+        to_call = getattr(self, self.system.lower())
+        if to_call:
+            return to_call()
+        
+        return 
     
     def esaj(self):
 

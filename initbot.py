@@ -60,6 +60,7 @@ class WorkerThread:
                 thread = thread
                 thread._is_stopped = True  # Aciona o evento para parar a execução
                 if thread is not None:
+                    thread.join()
                     print(f"Thread {self.thread_id} finalizada")
                 break
 def install_cert(data: dict, path_cert: str):

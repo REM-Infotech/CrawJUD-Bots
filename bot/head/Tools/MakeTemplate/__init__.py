@@ -43,6 +43,7 @@ class MakeXlsx:
             if itens_append:
                 list_to_append.extend(itens_append)
 
+        cabecalhos.extend(list_to_append)
         # Definir estilo
         my_red = openpyxl.styles.colors.Color(rgb='A6A6A6')
         my_fill = PatternFill(patternType='solid', fgColor=my_red)

@@ -25,7 +25,8 @@ class SeachBot(CrawJUD):
         self.type_log = 'log'
         self.message = f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}'
         self.prt(self)
-        return getattr(self, f"{self.system.lower()}_search", None)()
+        src: bool = getattr(self, f"{self.system.lower()}_search", None)()
+        return src
 
     def elaw_search(self) -> bool:
         
