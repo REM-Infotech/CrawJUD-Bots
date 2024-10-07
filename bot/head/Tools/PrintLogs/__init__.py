@@ -16,11 +16,13 @@ mensagens = []
 
 class printtext(CrawJUD):
     
-    def __init__(self, Head: CrawJUD, message: str):
+    def __init__(self, Head: CrawJUD):
         self.__dict__ = Head.__dict__.copy()
         
     def __call__(self) -> str:
+        self.log_message()
         
+    def log_message(self) -> None:
         prompt = f"({self.pid}, {self.type_log}, pos:{self.row}, {datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%H:%M:%S')}) {self.message}"
         tqdm.write(prompt)
         socket_message(self.pid, prompt, self.url_socket, self.type_log, self.row)

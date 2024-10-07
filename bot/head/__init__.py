@@ -140,7 +140,7 @@ class CrawJUD(WorkerThread):
                 
                 return
 
-            self.search = SeachBot(self.elementos, self.driver, self.wait, self.system).search
+            self.search = SeachBot()
             
             bot = master_bots(self.system, self.type, self)
             bot()
