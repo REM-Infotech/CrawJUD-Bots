@@ -1,0 +1,1 @@
+g++ -O3 -Wall -std=c++17 -shared -o nicholassilva.h -fpic example.cpp -I C:\Users\nicholas.silva\Documents\Github\8.0\CrawJUD-Bots\pybind11\include\ -I C:\'Program Files'\Python312\include -L C:\'Program Files'\Python312\libs -lcrypt32 -lpython312
