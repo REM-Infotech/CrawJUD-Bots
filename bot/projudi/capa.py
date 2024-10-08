@@ -89,18 +89,18 @@ class capa(CrawJUD):
         self.type_log = "log"
         self.prt(self)
         
-        navegar = self.driver.find_element(By.CSS_SELECTOR, '#tabItemprefix2')
-        navegar.click()
+        btn_partes = self.driver.find_element(By.CSS_SELECTOR, self.elements.btn_partes)
+        btn_partes.click()
 
         try:
-            form = self.driver.find_element(By.ID, "includeContent")
+            includeContent = self.driver.find_element(By.ID, self.elements.includeContent)
         except:
             time.sleep(3)
             self.driver.refresh()
             time.sleep(1)
-            form = self.driver.find_element(By.ID, "includeContent")
+            includeContent = self.driver.find_element(By.ID, self.elements.includeContent)
 
-        tablePoloAtivo = form.find_elements(By.CLASS_NAME, "resultTable")[0]
+        tablePoloAtivo = includeContent.find_elements(By.CLASS_NAME, self.elements.resulttable)[0]
         nomePoloAtivo = tablePoloAtivo.find_element(By.XPATH, ".//tbody").find_elements(By.XPATH, ".//tr")[0].find_elements(By.XPATH, ".//td")[1].text.replace('(citação online)', '')
         
         if " representado" in nomePoloAtivo:
@@ -109,30 +109,30 @@ class capa(CrawJUD):
         cpfPoloAtivo = tablePoloAtivo.find_element(By.XPATH, ".//tbody").find_elements(By.XPATH, ".//tr")[0].find_elements(By.XPATH, ".//td")[3].text
         advPoloAtivo = tablePoloAtivo.find_element(By.XPATH, ".//tbody").find_elements(By.XPATH, ".//tr")[0].find_elements(By.XPATH, ".//td")[5].text
 
-        tablePoloPassivo = form.find_elements(By.CLASS_NAME, "resultTable")[1]
+        tablePoloPassivo = includeContent.find_elements(By.CLASS_NAME, self.elements.resulttable)[1]
         nomePoloPassivo = tablePoloPassivo.find_element(By.XPATH, ".//tbody").find_elements(By.XPATH, ".//tr")[0].find_elements(By.XPATH, ".//td")[1].text.replace('(citação online)', '')
         cpfPoloPassivo = tablePoloPassivo.find_element(By.XPATH, ".//tbody").find_elements(By.XPATH, ".//tr")[0].find_elements(By.XPATH, ".//td")[3].text
 
-        navegar2 = self.driver.find_element(By.CSS_SELECTOR, '#tabItemprefix0')
-        navegar2.click()
+        btn_infogeral = self.driver.find_element(By.CSS_SELECTOR, self.elements.btn_infogeral)
+        btn_infogeral.click()
 
         try:
-            form = self.driver.find_element(By.ID, "includeContent")
+            includeContent = self.driver.find_element(By.ID, self.elements.includeContent)
         except:
             time.sleep(3)
             self.driver.refresh()
             time.sleep(1)
-            form = self.driver.find_element(By.ID, "includeContent")
+            includeContent = self.driver.find_element(By.ID, self.elements.includeContent)
 
-        form = form.find_element(By.CLASS_NAME, "form")
+        includeContent = includeContent.find_element(By.CLASS_NAME, "form")
 
-        area_direito = str(form.find_elements(By.XPATH, ".//tr")[0].find_elements(By.XPATH, ".//td")[4].text)
+        area_direito = str(includeContent.find_elements(By.XPATH, ".//tr")[0].find_elements(By.XPATH, ".//td")[4].text)
         
         if area_direito.lower() == "juizado especial cível":
             
             area_direito = area_direito.lower().replace("juizado especial cível", "juizado especial").capitalize()
         
-        foro = str(form.find_elements(By.XPATH, ".//tr")[1].find_elements(By.XPATH, ".//td")[4].text)
+        foro = str(includeContent.find_elements(By.XPATH, ".//tr")[1].find_elements(By.XPATH, ".//td")[4].text)
         
         comarca = foro
         
@@ -147,14 +147,14 @@ class capa(CrawJUD):
             
             comarca = comarca.split(" - ")[0].capitalize()
         
-        data_distribuicao = form.find_elements(By.XPATH, ".//tr")[2].find_elements(By.XPATH, ".//td")[1].text
+        data_distribuicao = includeContent.find_elements(By.XPATH, ".//tr")[2].find_elements(By.XPATH, ".//td")[1].text
         
         if " às " in data_distribuicao:
             data_distribuicao = data_distribuicao.split(" às ")[0]
             data_distribuicao = datetime.strptime(data_distribuicao, "%d/%m/%Y")
         
         
-        infoproc = self.driver.find_element(By.CSS_SELECTOR,'table[id="informacoesProcessuais"]')
+        infoproc = self.driver.find_element(By.CSS_SELECTOR, self.elements.infoproc)
         tablestatusproc = infoproc.find_element(By.TAG_NAME, 'tbody').find_elements(By.TAG_NAME,'tr')[0]
         
         try:
@@ -162,21 +162,21 @@ class capa(CrawJUD):
         except:
             statusproc = 'Não Consta'
         try:
-            juizproc = form.find_elements(By.XPATH, ".//tr")[2].find_elements(By.XPATH, ".//td")[4].text
+            juizproc = includeContent.find_elements(By.XPATH, ".//tr")[2].find_elements(By.XPATH, ".//td")[4].text
         except:
             juizproc = 'Não Consta'
         
         try:
-            form = self.driver.find_element(By.ID, "includeContent")
+            includeContent = self.driver.find_element(By.ID, self.elements.includeContent)
         except:
             time.sleep(3)
             self.driver.refresh()
             time.sleep(1)
-            form = self.driver.find_element(By.ID, "includeContent")
+            includeContent = self.driver.find_element(By.ID, self.elements.includeContent)
         
-        form = form.find_element(By.CLASS_NAME, "form").find_elements(By.TAG_NAME, "tr")
+        includeContent = includeContent.find_element(By.CLASS_NAME, "form").find_elements(By.TAG_NAME, "tr")
         
-        for it in form:
+        for it in includeContent:
             
             get_label = it.find_elements(By.TAG_NAME, "td")[0].text
             
@@ -185,7 +185,7 @@ class capa(CrawJUD):
                 valorDaCausa = str(it.find_elements(By.TAG_NAME, "td")[1].text)
                 break
                 
-        assunto = self.driver.find_element(By.CSS_SELECTOR, 'a[class="definitionAssuntoPrincipal"]').text.split(" - ")[1]
+        assunto_proc = self.driver.find_element(By.CSS_SELECTOR, self.elements.assunto_proc).text.split(" - ")[1]
         
         if "¤" in valorDaCausa:
             valorDaCausa = valorDaCausa.replace("¤", "")

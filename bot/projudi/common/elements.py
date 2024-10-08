@@ -1,12 +1,6 @@
+from typing import Any
+
 class elements_projudi:
-    
-    url_login: str = ""
-    campo_username: str = ''
-    campo_passwd: str = ''
-    btn_entrar: str = ""
-    
-    url_busca: str = ""
-    btn_busca: str = ""
     
     class SP:
         url_login = ""
@@ -31,11 +25,19 @@ class elements_projudi:
         
         url_busca = "https://projudi.tjam.jus.br/projudi/processo/buscaProcessosQualquerInstancia.do?actionType=pesquisar"
         btn_busca = ""
-    
+        
+        btn_partes = '#tabItemprefix2'
+        btn_infogeral = '#tabItemprefix0'
+        includeContent = "includeContent"
+
+        infoproc = 'table[id="informacoesProcessuais"]'
+        assunto_proc = 'a[class="definitionAssuntoPrincipal"]'
+        resulttable = "resultTable"
+        
     def __init__(self, state: str) -> None:
         
         # Mapeia os estados às classes correspondentes
-        state_classes: dict[str, self.AC | self.AM | self.SP] = {
+        state_classes: dict[str, Any] = {
             "SP": self.SP,
             "AC": self.AC,
             "AM": self.AM
