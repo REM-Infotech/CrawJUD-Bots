@@ -9,7 +9,8 @@ class projudi:
     
     def __call__(self):
         try:
-            self.execution: capa | protocolo | movimentacao = globals().get(self.bot)(self.Master)
+            self.execution: capa | protocolo | movimentacao = globals().\
+                get(self.bot)(self.Master)
             self.execution.execution()
             
         except Exception as e:

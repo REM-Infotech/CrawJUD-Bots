@@ -95,9 +95,9 @@ class capa(CrawJUD):
             if "Fórum de " in comarca:
                 comarca = str(comarca).replace("Fórum de ", "")
                 
-            vara: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, vara_processual))).text.split(" ")[0]
-            foro: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, vara_processual))).text.replace(f"{vara} ", "")
-            table_partes = self.driver.find_element(By.ID, area_selecao)
+            vara: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.vara_processual))).text.split(" ")[0]
+            foro: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.vara_processual))).text.replace(f"{vara} ", "")
+            table_partes = self.driver.find_element(By.ID, self.elements.area_selecao)
             polo_ativo = table_partes.find_elements(By.TAG_NAME, 'tr')[0].find_elements(By.TAG_NAME, 'td')[1].text.split('\n')[0]
             tipo_parte = "Autor"
             cpf_polo_ativo = 'Não consta'
@@ -112,7 +112,7 @@ class capa(CrawJUD):
             fase = "inicial"
             valor = ""
             with suppress(TimeoutException):
-                valor:WebElement = WebDriverWait(self.driver, 1, 0.01).until(EC.presence_of_element_located((By.ID, id_valor))).text
+                valor:WebElement = WebDriverWait(self.driver, 1, 0.01).until(EC.presence_of_element_located((By.ID, self.elements.id_valor))).text
             
             def converte_valor_causa(valor_causa) -> str:
                 if "R$" in valor_causa:
@@ -128,7 +128,7 @@ class capa(CrawJUD):
                 valorDaCausa = converte_valor_causa(valor)  
             
             sleep(0.5)
-            distnotformated: WebElement = self.wait.until(EC.presence_of_element_located((By.ID, data_processual))).text.replace(' às ', '|').replace(' - ', '|')
+            distnotformated: WebElement = self.wait.until(EC.presence_of_element_located((By.ID, self.elements.data_processual))).text.replace(' às ', '|').replace(' - ', '|')
             distdata = distnotformated.split('|')[0]
             processo_data = [self.bot_data.get('NUMERO_PROCESSO'), area_do_direito, subarea_direito, estado, comarca, foro, vara, 
                              distdata, polo_ativo, tipo_parte, cpf_polo_ativo, polo_passivo, tipo_passivo,
@@ -137,15 +137,15 @@ class capa(CrawJUD):
                             
         elif grau == 2:
             
-            classe: WebElement = self.wait.until(EC.presence_of_element_located(((By.XPATH, classe_processual)))).text
-            seção: WebElement = self.wait.until(EC.presence_of_element_located(((By.XPATH, selecao_processual)))).text
-            julgador: WebElement = self.wait.until(EC.presence_of_element_located(((By.XPATH, orgao_processual)))).text
+            classe: WebElement = self.wait.until(EC.presence_of_element_located(((By.XPATH, self.elements.classe_processual)))).text
+            seção: WebElement = self.wait.until(EC.presence_of_element_located(((By.XPATH, self.elements.selecao_processual)))).text
+            julgador: WebElement = self.wait.until(EC.presence_of_element_located(((By.XPATH, self.elements.orgao_processual)))).text
             try:
-                situaçãoproc = self.driver.find_element(By.CSS_SELECTOR, status_processual).text
+                situaçãoproc = self.driver.find_element(By.CSS_SELECTOR, self.elements.status_processual).text
             except:
                 situaçãoproc = 'Não Consta'
             relator: WebElement = self.wait.until(EC.presence_of_element_located(((By.XPATH, relator)))).text
-            table_partes = self.driver.find_element(By.ID, area_selecao)
+            table_partes = self.driver.find_element(By.ID, self.elements.area_selecao)
             polo_ativo = table_partes.find_elements(By.TAG_NAME, 'tr')[0].find_elements(By.TAG_NAME, 'td')[1].text.split('\n')[0]
             cpf_polo_ativo = 'Não consta'
             try:

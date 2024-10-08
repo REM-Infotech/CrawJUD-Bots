@@ -89,6 +89,7 @@ class capa(CrawJUD):
         self.type_log = "log"
         self.prt(self)
         
+
         btn_partes = self.driver.find_element(By.CSS_SELECTOR, self.elements.btn_partes)
         btn_partes.click()
 

@@ -72,6 +72,15 @@ class CrawJUD(WorkerThread):
         self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve(), arguments_bot['xlsx'])
         self.output_dir_path = pathlib.Path(self.input_file).parent.resolve().__str__()
         
+        self.username = self.argbot.get("login", None)
+        self.password = self.argbot.get("password", None)
+        self.senhacert = self.argbot.get("token", None)
+        self.name_cert = self.argbot.get("name_cert", None)
+        
+        if self.name_cert:
+            
+            self.install_cert()
+        
         self.login_method = arguments_bot['login_method']
         self.system: str = arguments_bot.get("system")
         self.type: str = arguments_bot.get("type")
@@ -124,8 +133,6 @@ class CrawJUD(WorkerThread):
             Get_Login = self.login()
             if Get_Login is True:
                 
-                self.senhacert = self.argbot.get("token", None)
-                
                 self.message = 'Login efetuado com sucesso!'
                 self.type_log = "log"
                 self.prt(self)
@@ -172,10 +179,6 @@ class CrawJUD(WorkerThread):
         try:
 
             Get_Login = True
-            
-            self.username = self.argbot.get("login", None)
-            self.password = self.argbot.get("password", None)
-            
             if self.login:
                 
                 self.message = 'Usuário e senha obtidos!'
@@ -418,6 +421,20 @@ class CrawJUD(WorkerThread):
         except Exception as e:
             raise e
 
+    def install_cert(self):
+
+        path_cert = str(os.path.join(self.output_dir_path, self.name_cert))
+        comando = ["certutil", "-importpfx", "-user", "-f", "-p", self.senhacert, "-silent", path_cert]
+        try:
+            # Quando você passa uma lista, você geralmente não deve usar shell=True
+            resultado = subprocess.run(comando, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            
+            self.message = str(resultado.stdout)
+            self.type_log = str("log")
+            self.prt(self)
+            
+        except subprocess.CalledProcessError as e:
+            raise e
 
 from bot.esaj import esaj, elements_esaj
 from bot.elaw import elaw, elements_elaw
