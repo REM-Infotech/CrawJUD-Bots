@@ -185,7 +185,12 @@ class elements_esaj:
 
                 
     def __call__(self, *args, **kwds) -> Union[SP, AC, AM]:
-        """"""
+        """
+        ### Retorna self.state_class
+        
+        #### self.state_class: Union[SP, AC, AM]
+        
+        """
         return self.state_class
         
     def __getattr__(self, nome_do_atributo: str) -> Any:
