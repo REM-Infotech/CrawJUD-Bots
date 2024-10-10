@@ -1,3 +1,0 @@
-import InstallCertificate
-
-InstallCertificate()
