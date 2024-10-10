@@ -28,6 +28,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.core.driver_cache import DriverCacheManager
 
+from cert import InstallCert
 from bot.head.common.exceptions import ErroDeExecucao
 from initbot import WorkerThread
 
@@ -423,17 +424,11 @@ class CrawJUD(WorkerThread):
     def install_cert(self):
 
         path_cert = str(os.path.join(self.output_dir_path, self.name_cert))
-        comando = ["certutil", "-importpfx", "-user", "-f", "-p", self.senhacert, "-silent", path_cert]
-        try:
-            # Quando você passa uma lista, você geralmente não deve usar shell=True
-            resultado = subprocess.run(comando, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            
-            self.message = str(resultado.stdout)
-            self.type_log = str("log")
-            self.prt(self)
-            
-        except subprocess.CalledProcessError as e:
-            raise e
+        installer = InstallCert.InstallCertificate(path_cert, self.senhacert)
+        
+        if not installer:
+            raise
+
 
 from bot.esaj import esaj, elements_esaj
 from bot.elaw import elaw, elements_elaw
