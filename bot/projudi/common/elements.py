@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Union, Any
 
 class elements_projudi:
     
@@ -34,23 +34,27 @@ class elements_projudi:
         assunto_proc = 'a[class="definitionAssuntoPrincipal"]'
         resulttable = "resultTable"
         
-    def __init__(self, state: str) -> None:
-        
-        # Mapeia os estados às classes correspondentes
-        state_classes: dict[str, Any] = {
-            "SP": self.SP,
-            "AC": self.AC,
-            "AM": self.AM
-        }
+    classes: dict[str, Union[SP, AC, AM]] = {
+        "SP": SP,
+        "AC": AC,
+        "AM": AM
+    }    
+    
+    def __init__(self, state: str) -> Union[SP, AC, AM]:
         
         # Se o estado passado existir no dicionário, atualiza as variáveis
-        state_class = state_classes[state]
+        self.state_class: Union[elements_projudi.SP,\
+            elements_projudi.AC, elements_projudi.AM] = self.classes[state]
 
-        for func, name in state_class.__dict__.items():
-            if not func.startswith('__'):
-                setattr(self, func, name)
-
-    # Classes internas para diferentes estados
+                
+    def __call__(self, *args, **kwds) -> Union[SP, AC, AM]:
+        return self.state_class
+        
+    def __getattr__(self, nome_do_atributo: str) -> Any:
+        item = getattr(self.state_class, nome_do_atributo, None)
+        if not item:
+            raise AttributeError(f"Atributo '{nome_do_atributo}' não encontrado na classe '{self.state_class.__name__}'")
+        return item
     
         
         

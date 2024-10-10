@@ -12,7 +12,7 @@ import subprocess
 import unicodedata
 import pandas as pd
 from tqdm import tqdm
-from typing import Type
+from typing import Type, Union
 from datetime import datetime
 from openpyxl.worksheet.worksheet import Worksheet
 from webdriver_manager.chrome import ChromeDriverManager
@@ -71,7 +71,7 @@ class CrawJUD(WorkerThread):
         
         self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve(), arguments_bot['xlsx'])
         self.output_dir_path = pathlib.Path(self.input_file).parent.resolve().__str__()
-        
+        self.bot_data: dict[str, str | int | datetime] = {}
         self.username = self.argbot.get("login", None)
         self.password = self.argbot.get("password", None)
         self.senhacert = self.argbot.get("token", None)
@@ -355,30 +355,30 @@ class CrawJUD(WorkerThread):
             self.prt(self)
             
             chrome_options = Options()
-            user_data_dir = os.path.join(os.getcwd(), 'Temp', self.pid, 'chrome')
+            self.user_data_dir = str(os.path.join(os.getcwd(), 'Temp', self.pid, 'chrome'))
             
             if not os.getlogin() == "root" or platform.system() != "Linux":
                 self.list_args.remove("--no-sandbox")
             
             if platform.system() == "Windows" and self.login_method == "cert":
                 state = str(self.state)
-                path_accepted = str(os.path.join(os.getcwd(), "Browser", state, self.argbot['login'], "chrome"))
-                path_exist =  os.path.exists(path_accepted)
+                self.path_accepted = str(os.path.join(os.getcwd(), "Browser", state, self.argbot['login'], "chrome"))
+                path_exist =  os.path.exists(self.path_accepted)
                 if path_exist:
                     try:
-                        resultados = subprocess.run(["xcopy", path_accepted, user_data_dir, "/E", "/H", "/C", "/I"],
+                        resultados = subprocess.run(["xcopy", self.path_accepted, self.user_data_dir, "/E", "/H", "/C", "/I"],
                         check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.splitlines()
                         
                         for item in resultados:
-                            self.prt.print_log("log", item)
+                            print(item)
                         
                     except subprocess.CalledProcessError as e:
                         raise e
 
                 elif not path_exist:
-                    os.makedirs(path_accepted, exist_ok=True)
+                    os.makedirs(self.path_accepted, exist_ok=True)
 
-            chrome_options.add_argument(f"user-data-dir={user_data_dir}")
+            chrome_options.add_argument(f"user-data-dir={self.user_data_dir}")
             for argument in self.list_args:
                 chrome_options.add_argument(argument)
 
@@ -407,7 +407,6 @@ class CrawJUD(WorkerThread):
                 path = path.replace(".exe", "")
             
             driver = webdriver.Chrome(service=Service(path), options=chrome_options)
-
             wait = WebDriverWait(driver, 20, 0.01)
             args = [driver, wait]
             driver.delete_all_cookies()
@@ -443,8 +442,13 @@ from bot.projudi import projudi, elements_projudi
 def master_bots(system: str, type_bot: str, master: CrawJUD) -> projudi | esaj | elaw:
     return globals().get(system.lower())(type_bot, master)
         
-def elements_bot(system: str, state: str) -> elements_projudi | elements_esaj | elements_elaw:
-    return globals().get(f"elements_{system.lower()}")(state)
+def elements_bot(system: str, state: str) -> Union[
+    Union[elements_projudi.AM, elements_projudi.AC, elements_projudi.SP],
+    Union[elements_esaj.AM, elements_esaj.AC, elements_esaj.SP]]:
+    
+    return globals().get(f"elements_{system.lower()}")(state)()
+
+
 
 from bot.head.auth import AuthBot
 from bot.head.search import SeachBot

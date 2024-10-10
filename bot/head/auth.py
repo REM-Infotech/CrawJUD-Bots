@@ -41,47 +41,71 @@ class AuthBot(CrawJUD):
     
     def esaj(self):
 
-            loginuser = ''.join(
-                filter(lambda x: x not in string.punctuation, self.username))
-            passuser = self.password
-            sleep(3)
+            try:
+                loginuser = ''.join(
+                    filter(lambda x: x not in string.punctuation, self.username))
+                passuser = self.password
+                if self.login_method == "cert":
 
-            if self.method == "cert":
+                    self.driver.get(self.elements.url_login_cert)
+                    sleep(3)
+                    loginopt: WebElement = self.wait.until(EC.\
+                        presence_of_element_located((By.\
+                            CSS_SELECTOR, 'select[id="certificados"]'))).\
+                                find_elements(By.TAG_NAME, "option")
+                    
+                    try:        
+                        item = next(filter(lambda item: loginuser in item.text, loginopt), None)
+                    except Exception as e:
+                        print(e)
+                    if item:
+                        try:
+                            
+                            sencert = item.get_attribute("value")
+                            select = Select(self.driver.find_element(
+                                By.CSS_SELECTOR, 'select[id="certificados"]'))
+                            select.select_by_value(sencert)
+                            entrar = self.driver.find_element(
+                                By.XPATH, '//*[@id="submitCertificado"]')
+                            entrar.click()
+                            sleep(2)
 
-                self.driver.get(self.elements.url_login_cert)
-                logincert: WebElement = self.wait.until(EC.presence_of_all_elements_located((By.XPATH, '//*[@id="certificados"]')))
+                            user_accept_cert_dir = os.path.join(self.path_accepted, "ACCEPTED")
+                            if not os.path.exists(user_accept_cert_dir):
+                                self.accept_cert(user_accept_cert_dir)
+
+                        except Exception as e:
+                            raise e
+
+                    elif not item:
+                        return False
+                    
+                    checkloged = None
+                    with suppress(TimeoutException):
+                    
+                        checkloged = WebDriverWait(self.driver, 15).until(EC.presence_of_element_located(
+                            (By.CSS_SELECTOR, '#esajConteudoHome > table:nth-child(4) > tbody > tr > td.esajCelulaDescricaoServicos')))
+                        
+                    if not checkloged:
+                        return False
+                        
+                    return True
+
+
+                self.driver.get(self.elements.url_login)
                 sleep(3)
-
-                for cert in logincert:
-                    loginopt = cert.find_elements(By.TAG_NAME, "option")
-
-                    for option in loginopt:
-                        if loginuser in option.text.lower():
-                            try:
-                                sencert = option.get_attribute("value")
-                                select = Select(self.driver.find_element(
-                                    By.CSS_SELECTOR, 'select[id="certificados"]'))
-                                select.select_by_value(sencert)
-                                entrar = self.driver.find_element(
-                                    By.XPATH, '//*[@id="submitCertificado"]')
-                                entrar.click()
-                                sleep(2)
-
-                                user_accept_cert_dir = os.path.join(
-                                    os.getcwd(), "Browser", self.bot.split("_")[2], loginuser, "ACCEPTED")
-
-                                user_data_dir = os.path.join(
-                                    os.getcwd(), 'Temp', self.pid, 'chrome')
-
-                                if not os.path.exists(user_accept_cert_dir):
-
-                                    self.accept_cert(user_accept_cert_dir,
-                                                user_data_dir)
-
-                                break
-                            except Exception as e:
-                                return False
                 
+                userlogin = self.driver.find_element(By. CSS_SELECTOR, self.elements.campo_username)
+                userlogin.click()
+                userlogin.send_keys(loginuser)
+
+                userpass = self.driver.find_element(By. CSS_SELECTOR, self.elements.campo_passwd)
+                userpass.click()
+                userpass.send_keys(passuser)
+                entrar = self.driver.find_element(By.XPATH, self.elements.btn_entrar)
+                entrar.click()
+                sleep(2)
+
                 checkloged = None
                 with suppress(TimeoutException):
                 
@@ -93,53 +117,36 @@ class AuthBot(CrawJUD):
                     
                 return True
 
-
-            self.driver.get(self.elements.url_login)
-
-            userlogin = self.driver.find_element(By. CSS_SELECTOR, self.elements.campo_username)
-            userlogin.click()
-            userlogin.send_keys(loginuser)
-
-            userpass = self.driver.find_element(By. CSS_SELECTOR, self.elements.campo_passwd)
-            userpass.click()
-            userpass.send_keys(passuser)
-            entrar = self.driver.find_element(By.XPATH, self.elements.btn_entrar)
-            entrar.click()
-            sleep(2)
-
-            checkloged = None
-            with suppress(TimeoutException):
-            
-                checkloged = WebDriverWait(self.driver, 15).until(EC.presence_of_element_located(
-                    (By.CSS_SELECTOR, '#esajConteudoHome > table:nth-child(4) > tbody > tr > td.esajCelulaDescricaoServicos')))
-                
-            if not checkloged:
-                return False
-                
-            return True
+            except Exception as e:
+                print(e)
+                raise e
 
     def projudi(self):
         
-        self.driver.get(self.elements.url_login)
+        try:
+            self.driver.get(self.elements.url_login)
 
-        username: WebElement = self.wait.until(EC.presence_of_element_located ((By.CSS_SELECTOR, self.elements.campo_username)))
-        username.send_keys(self.username)
+            username: WebElement = self.wait.until(EC.presence_of_element_located ((By.CSS_SELECTOR, self.elements.campo_username)))
+            username.send_keys(self.username)
 
-        password = self.driver.find_element(By.CSS_SELECTOR, self.elements.campo_passwd)
-        password.send_keys(self.password)
+            password = self.driver.find_element(By.CSS_SELECTOR, self.elements.campo_passwd)
+            password.send_keys(self.password)
 
-        entrar = self.driver.find_element(By.CSS_SELECTOR, self.elements.btn_entrar)
-        entrar.click()
-        
-        check_login = None
-        
-        with suppress(TimeoutException):
-            check_login = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.chk_login)))
-        
-        if check_login:
-            return True
+            entrar = self.driver.find_element(By.CSS_SELECTOR, self.elements.btn_entrar)
+            entrar.click()
             
-        return False
+            check_login = None
+            
+            with suppress(TimeoutException):
+                check_login = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.chk_login)))
+            
+            if check_login:
+                return True
+                
+            return False
+        
+        except Exception as e:
+            raise e
             
     def elaw(self):
 
@@ -166,9 +173,9 @@ class AuthBot(CrawJUD):
             return True
         
         except Exception as e:
-            return False
+            raise e
 
-    def accept_cert(self, path_accepted, path_chrome):
+    def accept_cert(self, accepted_dir: str):
         
         try:
             
@@ -187,31 +194,25 @@ class AuthBot(CrawJUD):
             sleep(0.5)
             button[1].click_input()
             
-            target_directory = os.path.join(pathlib.Path(path_accepted).parent.resolve(), "chrome")
-            
+            target_directory = os.path.join(pathlib.Path(accepted_dir).parent.resolve(), "chrome")
             os.makedirs(target_directory, exist_ok=True)
-            
-            source_directory = str(path_chrome)
+            source_directory = self.user_data_dir
             
             try:
 
                 comando = ["xcopy", source_directory, target_directory, "/E", "/H", "/C", "/I"]
-
-                resultados = subprocess.run(comando, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.splitlines()
-                
+                resultados = subprocess.run(comando, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 try:
                     print(resultados.stdout)
-                    
                 except:
                     pass
                 
             except subprocess.CalledProcessError as e:
-                tqdm.write(e.stderr)
-                tqdm.write(e.stdout)
+                raise e
             
-            with open(path_accepted.encode("utf-8"), "w") as f:
+            with open(accepted_dir.encode("utf-8"), "w") as f:
                 f.write("")
         
         except Exception as e:
-            print(e)
+            raise e
 

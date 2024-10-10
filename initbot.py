@@ -63,15 +63,3 @@ class WorkerThread:
                     thread.join()
                     print(f"Thread {self.thread_id} finalizada")
                 break
-def install_cert(data: dict, path_cert: str):
-
-    comando = ["certutil", "-importpfx", "-user", "-f", "-p", data.get("senha_token"), "-silent", path_cert]
-    try:
-        # Quando você passa uma lista, você geralmente não deve usar shell=True
-        resultado = subprocess.run(comando, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        # print("Certificado importado com sucesso.")
-        # print("Saída:", resultado.stdout)
-        
-    except subprocess.CalledProcessError as e:
-        print("Erro ao importar o certificado:")
-        print(e.stdout)

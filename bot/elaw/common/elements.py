@@ -1,6 +1,14 @@
+from typing import Union, Any
 class elements_elaw:
     
     class AME:
+        
+        class condenacao:
+            string = ""
+            
+        class custas:
+            
+            string = ""
         
         numero_processo = "input[id='j_id_3k_1:j_id_3k_4_2_2_2_9_f_2:txtNumeroMask']"
         
@@ -42,16 +50,20 @@ class elements_elaw:
         url_busca = ""
         btn_busca = ""
     
+    classes: dict[str, Union[AME]] = {
+        "AME": AME
+    }    
+    
     def __init__(self, state: str) -> None:
         
-        # Mapeia os estados às classes correspondentes
-        state_classes: dict[str, self.AME] = {
-            "AME": self.AME
-        }
-        
         # Se o estado passado existir no dicionário, atualiza as variáveis
-        state_class = state_classes[state]
-        for func, name in state_class.__dict__.items():
-            if not func.startswith('__'):
-                setattr(self, func, name)
-                print(f"{func}: {name}")
+        self.state_class: Union[elements_elaw.AME] = self.classes[state]
+                
+    def __call__(self, *args, **kwds) -> Union[AME, Union[str, AME.condenacao, AME.custas]]:
+        return self.state_class
+        
+    def __getattr__(self, nome_do_atributo: str) -> Any:
+        item = getattr(self.state_class, nome_do_atributo, None)
+        if not item:
+            raise AttributeError(f"Atributo '{nome_do_atributo}' não encontrado na classe '{self.state_class.__name__}'")
+        return item

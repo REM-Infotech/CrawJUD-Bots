@@ -59,16 +59,20 @@ class SeachBot(CrawJUD):
         
     def esaj_search(self):
         
-        grau = int(str(self.bot_data.get("GRAU")).replace("º", ""))
+        grau = int(self.bot_data.get("GRAU").replace("º", ""))
         if grau == 1:
             
-            self.driver.get('https://consultasaj.tjam.jus.br/cpopg/open.do')
+            self.driver.get(self.elements.consultaproc_grau1)
             id_consultar = 'botaoConsultarProcessos'
             
         elif grau == 2:
-
-            self.driver.get('https://consultasaj.tjam.jus.br/cposgcr/')
+            
+            self.driver.get(self.elements.consultaproc_grau2)
             id_consultar = 'pbConsultar'
+            
+        elif not grau or grau != 1 or grau !=2:
+            
+            raise ErroDeExecucao("Informar instancia!")
         
         sleep(1)
         ## Coloca o campo em formato "Outros" para inserir o número do processo

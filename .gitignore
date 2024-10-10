@@ -5,6 +5,7 @@ __pycache__/
 Temp/
 # C extensions
 *.so
+Browser/
 Archives/
 # Distribution / packaging
 .Python
