@@ -175,6 +175,27 @@ class AuthBot(CrawJUD):
         except Exception as e:
             raise e
 
+    def pje(self):
+        
+        self.driver.get("https://pje.trt11.jus.br/primeirograu/login.seam")
+        
+        login = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.login_input)))
+        password = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.password_input)))
+        entrar = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.btn_entrar)))
+        
+        login.send_keys(self.login)
+        sleep(0.5)
+        password.send_keys(self.password)
+        sleep(0.5)
+        entrar.click()
+        
+        logado = None
+        with suppress(TimeoutException):
+            logado = self.wait.until(EC.url_to_be("https://pje.trt11.jus.br/pjekz/painel/usuario-externo"))
+            
+        if not logado:
+            raise
+    
     def accept_cert(self, accepted_dir: str):
         
         try:
