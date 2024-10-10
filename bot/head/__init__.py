@@ -27,8 +27,6 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.core.driver_cache import DriverCacheManager
-
-from cert import InstallCert
 from bot.head.common.exceptions import ErroDeExecucao
 from initbot import WorkerThread
 

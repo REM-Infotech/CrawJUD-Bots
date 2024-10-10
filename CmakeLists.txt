@@ -14,10 +14,11 @@ FetchContent_Declare(
   GIT_TAG v2.13.6 # Use a versão mais recente do pybind11
 )
 
+
 FetchContent_MakeAvailable(pybind11)
 
 # Adicionar o executável da extensão Python
-pybind11_add_module(InstallCert certinstall.cpp)
+pybind11_add_module(example certinstall.cpp)
 
 # Linkar a biblioteca Crypt32 do Windows
-target_link_libraries(InstallCert PRIVATE crypt32)
+target_link_libraries(example PRIVATE crypt32)
