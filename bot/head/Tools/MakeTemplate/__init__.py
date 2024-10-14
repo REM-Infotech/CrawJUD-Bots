@@ -11,7 +11,7 @@ from bot.head.Tools.MakeTemplate.appends import listas
 
 class MakeXlsx:
 
-    def __init__(self, type: str, bot: str):
+    def __init__(self, typebot: str, bot: str):
         """
         
         #### type: Tipo da planilha (sucesso, erro)
@@ -19,7 +19,7 @@ class MakeXlsx:
             
         """
         self.bot = bot
-        self.type = type
+        self.typebot = typebot
         self.listas = listas()
         pass
     
@@ -34,7 +34,7 @@ class MakeXlsx:
         cabecalhos = ["NUMERO_PROCESSO"]
         list_to_append = []
         
-        itens_append = self.listas(f"{self.bot}_{self.type}")
+        itens_append = self.listas(f"{self.bot}_{self.typebot}")
         if itens_append:
             list_to_append.extend(itens_append)
         

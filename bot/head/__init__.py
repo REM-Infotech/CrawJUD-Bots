@@ -82,7 +82,7 @@ class CrawJUD(WorkerThread):
         
         self.login_method = arguments_bot['login_method']
         self.system: str = arguments_bot.get("system")
-        self.type: str = arguments_bot.get("type")
+        self.typebot: str = arguments_bot.get("typebot")
         
         self.state: str = arguments_bot.get("state")
         self.rows = int(arguments_bot.get("total_rows"))
@@ -146,7 +146,7 @@ class CrawJUD(WorkerThread):
                 
                 with app.app_context():
                     SetStatus(status='Falha ao iniciar', pid=self.pid, 
-                            system=self.system, type=self.type).botstop()
+                            system=self.system, typebot=self.typebot).botstop()
                 
                 return
 
@@ -163,7 +163,7 @@ class CrawJUD(WorkerThread):
             
             with app.app_context():
                 SetStatus(status='Falha ao iniciar', pid=self.pid, 
-                        system=self.system, type=self.type).botstop()
+                        system=self.system, typebot=self.typebot).botstop()
 
             self.row = 0
             self.message = f'Falha ao iniciar. Informe a mensagem de erro ao suporte'
@@ -340,7 +340,7 @@ class CrawJUD(WorkerThread):
         
         with self.app.app_context():
             SetStatus(status='Finalizado', pid=self.pid, 
-                    system=self.system, type=self.type).botstop()
+                    system=self.system, typebot=self.typebot).botstop()
             
         self.type_log = "success"
         self.message = f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos"

@@ -1,34 +1,32 @@
-import multiprocessing.process
-from app.models import BotsCrawJUD, LicensesUsers, Users, Executions
-from flask import (Blueprint, request, url_for, redirect,
-                   session, jsonify, make_response)
+from flask import Blueprint, request, jsonify, make_response
+
 import os
 import pytz
 import json
-import psutil
 import pathlib
-import platform
 from datetime import datetime
-
-import subprocess
-from clear import clear
-from initbot import WorkerThread
 
 from app import db
 from app import app
 from app.models import ThreadBots
+from app.models import Users, Executions
 from app.misc.get_outputfile import get_file
 
+from initbot import WorkerThread
 
 path_template = os.path.join(pathlib.Path(__file__).parent.resolve(), "templates")
 bot = Blueprint("bot", __name__, template_folder=path_template)
 
-@bot.route("/bot/<id>/<system>/<type>", methods = ["POST"])
-def botlaunch(id: int, system: str, type: str):
+@bot.route("/bot/<id>/<system>/<typebot>", methods = ["POST"])
+def botlaunch(id: int, system: str, typebot: str):
     
     from bot.head.Tools.StartStop_Notify import SetStatus
     with app.app_context():
-        start_rb = SetStatus(request.form, request.files, id, system, type)
+        data_bot = json.loads(request.data)
+        if isinstance(data_bot, str):
+            data_bot = json.loads(data_bot)
+        
+        start_rb = SetStatus(data_bot, request.files, id, system, typebot)
         path_args, display_name = start_rb.start_bot()
         worker_thread = WorkerThread()
         is_started = worker_thread.start(path_args, display_name)
@@ -81,8 +79,8 @@ def stop_execution(user: str, pid: str) -> int:
             
             elif filename == "":
                 system = get_info.bot[0].system
-                type = get_info.bot[0].type
-                SetStatus(usr=user, pid=pid, system=system, type=type).botstop()
+                typebot = get_info.bot[0].type
+                SetStatus(usr=user, pid=pid, system=system, typebot=typebot).botstop()
                 return 200
             
             return 200

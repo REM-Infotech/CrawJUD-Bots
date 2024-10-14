@@ -13,16 +13,16 @@ class elements_pje:
         btn_busca = "btn_busca_AC"
         
     class AM:
-        url_login = "https://pje.trt11.jus.br/primeirograu/login.seam"
-        chk_login = "https://pje.trt11.jus.br/pjekz/painel/usuario-externo"
+        url_login: str = "https://pje.trt11.jus.br/primeirograu/login.seam"
+        chk_login: str = "https://pje.trt11.jus.br/pjekz/painel/usuario-externo"
         
-        login_input = 'input[id="username"]'
-        password_input = 'input[id="password"]'
-        btn_entrar = 'button[id="btnEntrar"]'
-        url_pautas = "https://pje.trt11.jus.br/consultaprocessual/pautas"
+        login_input: str = 'input[id="username"]'
+        password_input: str = 'input[id="password"]'
+        btn_entrar: str = 'button[id="btnEntrar"]'
+        url_pautas: str = "https://pje.trt11.jus.br/consultaprocessual/pautas"
         
-        url_busca = "url_de_busca_AC"
-        btn_busca = "btn_busca_AC"
+        url_busca: str = "url_de_busca_AC"
+        btn_busca: str = "btn_busca_AC"
         
     def __init__(self, state: str) -> Union[SP, AC, AM]:
         

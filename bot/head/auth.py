@@ -177,7 +177,7 @@ class AuthBot(CrawJUD):
 
     def pje(self):
         
-        self.driver.get("https://pje.trt11.jus.br/primeirograu/login.seam")
+        self.driver.get(self.elements.url_login)
         
         login = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.login_input)))
         password = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.password_input)))
@@ -191,7 +191,7 @@ class AuthBot(CrawJUD):
         
         logado = None
         with suppress(TimeoutException):
-            logado = self.wait.until(EC.url_to_be("https://pje.trt11.jus.br/pjekz/painel/usuario-externo"))
+            logado = self.wait.until(EC.url_to_be(self.elements.chk_login))
             
         if not logado:
             raise
