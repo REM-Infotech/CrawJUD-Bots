@@ -25,7 +25,7 @@ class SeachBot(CrawJUD):
         self.type_log = 'log'
         
         self.message = f'Buscando processos pelo nome "{self.parte_name}"'
-        if self.tyebot != "proc_parte":
+        if self.typebot != "proc_parte":
             self.message = f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}'
             
         self.prt(self)
@@ -150,14 +150,14 @@ class SeachBot(CrawJUD):
             data_inicio_formatted = self.data_inicio.strftime("%d/%m/%Y")
             data_fim_formatted = self.data_fim.strftime("%d/%m/%Y")
             
-            if self.name_court == 'TODAS AS COMARCAS':
+            if self.vara == 'TODAS AS COMARCAS':
                 alljudge = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR,'input[name="pesquisarTodos"]')))
                 alljudge.click()
                 
-            elif self.name_court != 'TODAS AS COMARCAS':
+            elif self.vara != 'TODAS AS COMARCAS':
                 search_vara = self.driver.find_element(By.ID, 'descricaoVara') #32801
                 search_vara.click()
-                search_vara.send_keys(self.name_court)
+                search_vara.send_keys(self.vara)
                 sleep(3)
                 vara_option = self.driver.find_element(By.ID, 'ajaxAuto_descricaoVara').find_elements(By.TAG_NAME, 'li')[0]
                 vara_option.click()

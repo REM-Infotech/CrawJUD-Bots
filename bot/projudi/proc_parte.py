@@ -1,3 +1,4 @@
+import os
 import re
 import time
 from typing import Type
@@ -41,7 +42,7 @@ class proc_parte(CrawJUD):
             if self.driver.title.lower() == "a sessao expirou":
                 self.auth(self)
             
-            if self.row == self.total_rows:
+            if self.row == self.total_rows+1:
                 self.row = self.total_rows+1
                 break
             
@@ -66,11 +67,13 @@ class proc_parte(CrawJUD):
                 self.type_log = "error"
                 self.message_error = f'{message_error}. | Operação: {old_message}'
                 self.prt(self)
-                self.append_error([self.parte_name, self.message])
+                self.append_error(data={"NOME_PARTE": self.parte_name,
+                                        "MOTIVO_ERRO": self.message_error })
                 self.message_error = None
                 
             self.row += 1
-
+            
+        self.append_success(data2=self.data_append, fileN=os.path.basename(self.path))
         self.finalize_execution()
         
     def queue(self) -> None:
@@ -82,21 +85,30 @@ class proc_parte(CrawJUD):
             
     def get_process_list(self) -> None:
 
-        table_processos = self.driver.find_element(By.CLASS_NAME, 'resultTable').find_element(By.TAG_NAME, 'tbody')
+        try:
+            table_processos = self.driver.find_element(By.CLASS_NAME, 'resultTable').find_element(By.TAG_NAME, 'tbody')
 
-        list_processos = None
-        with suppress(NoSuchElementException):
-            list_processos = table_processos.find_elements(By.XPATH, './/tr[contains(@class, "odd") or contains(@class, "even")]')
+            list_processos = None
+            with suppress(NoSuchElementException):
+                list_processos = table_processos.find_elements(By.XPATH, './/tr[contains(@class, "odd") or contains(@class, "even")]')
+                
+            if list_processos and not self.thread._is_stopped:
+                self.use_list_process(list_processos)
             
-        if list_processos:
-            self.use_list_process(list_processos)
+        except Exception as e:
+            raise e
 
-    def use_list_process(self, list_processos):
-
+    def use_list_process(self, list_processos: list[WebElement]):
+        
+        self.data_append.clear()
         for processo in list_processos:
             numero_processo = processo.find_elements(By.TAG_NAME, 'td')[1].text
             
-            anoref = numero_processo.split('.')[1]
+            numero = ''.join(filter(str.isdigit, numero_processo))
+            anoref = ""
+            if numero:
+                anoref = numero_processo.split('.')[1]
+                
             try:
                 polo_ativo = processo.find_elements(By.TAG_NAME, 'td')[2].find_elements(By.TAG_NAME, 'td')[1].text
             except:
@@ -119,10 +131,14 @@ class proc_parte(CrawJUD):
                  "POLO_PASSIVO": polo_passivo,
                  "JUIZO": juizo}
             )
+            self.message = f"Processo {numero_processo} salvo!"
+            self.type_log = "log"
+            self.prt(self)
 
         next_page = self.driver.find_element(By.CLASS_NAME, 'navRight').find_element(By.XPATH, './/a[@class="arrowNextOn"]')
         next_page.click()
-        self.append_success(data2=self.data_append)
+        
+        self.append_success(data2=self.data_append, fileN=os.path.basename(self.path))
         self.get_process_list()
 
 

@@ -262,28 +262,31 @@ class CrawJUD(WorkerThread):
             raise ErroDeExecucao("Nenhuma Movimentação encontrada")
 
     def append_success(self, data: list = None, message: str = None, 
-                       fileN: str = None, data2: str = None):
+                       fileN: str = None, data2: list[dict[str, str]] = None):
 
         if data2:
-            try:
-                
-                new_xlsx = os.path.join(
-                    pathlib.Path(self.path).parent.resolve(), fileN)
-                
-                df = pd.read_excel(self.path)
-                
-            except Exception as e:
-                # Se a planilha não existir, cria uma nova
-                df = pd.DataFrame()
+            new_xlsx = os.path.join(pathlib.Path(self.path).parent.resolve(), fileN)
+
+            chk_path = os.path.exists(new_xlsx)
+            if chk_path:
+                df = pd.read_excel(new_xlsx)
+            
+            elif not chk_path:
+                df = pd.DataFrame() 
                 
             dict_itens = df.to_dict()
-            for key, value in list(dict_itens.items()):
-                dict_itens.update(
-                    {key: {str(len(list(value))): data2.get(key, "sem informação")}})
             
-            for key, value in data2.items():
-                if not dict_itens.get(key):
-                    dict_itens.update({key: {"0": value}})
+            
+            for item in data2:
+                for key, value in list(dict_itens.items()):
+                    dict_itens.get(key).update(
+                        {str(len(value)): item.get(key, "sem informação")})
+            
+            if len(dict_itens) == 0:
+                for pos, item in enumerate(data2):
+                    for key, value in item.items():
+                        if not dict_itens.get(key):
+                            dict_itens.get(key).update({pos: item.get(key, "sem informação")})
             
             new_data = pd.DataFrame(dict_itens)
             new_data.to_excel(new_xlsx, index=False)
@@ -328,17 +331,17 @@ class CrawJUD(WorkerThread):
                 # Carrega a planilha existente
                 df = pd.read_excel(self.path_erro)
                 
-            except FileNotFoundError:
+            except Exception as e:
                 # Se a planilha não existir, cria uma nova
                 df = pd.DataFrame()
                 
             dict_itens = df.to_dict()
             for key, value in list(dict_itens.items()):
-                dict_itens.update({key: {str(len(list(value))): data.get(key, "sem informação")}})
+                dict_itens.get(key).update({str(len(list(value))): data.get(key, "sem informação")})
             
             for key, value in data.items():
                 if not dict_itens.get(key):
-                    dict_itens.update({key: {"0": value}})
+                    dict_itens.get(key).update({"0": value})
             
             new_data = pd.DataFrame(dict_itens)
             new_data.to_excel(self.path_erro, index=False)
@@ -463,7 +466,30 @@ class CrawJUD(WorkerThread):
         except subprocess.CalledProcessError as e:
             raise e
 
+    def group_date_all(self, data: dict[str, dict[str, str]]) -> dict[str, str]:
 
+        record = {}
+        for vara, dates in data.items():
+            for date, entries in dates.items():
+                for entry in entries:
+                    record = {'Data': date}
+                    record.update(entry)
+
+        return record
+
+    def group_keys(self, data: list[dict[str, str]]) -> dict[str, str]:
+
+        record = {}
+        
+        for pos, entry in enumerate(data):
+            for key, value in entry.items():
+                    
+                if not record.get(key):   
+                    record.update({key: {}})
+                    
+                record.get(key).update({str(pos): value})
+        return record
+    
 from bot.esaj import esaj, elements_esaj
 from bot.elaw import elaw, elements_elaw
 from bot.pje import pje, elements_pje

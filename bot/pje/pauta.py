@@ -82,7 +82,7 @@ class pauta(CrawJUD):
                 if len(self.data_append[vara][date]) == 0:
                     self.data_append[vara].pop(date)
 
-                data_append = self.group_date(self.data_append[vara], vara)
+                data_append = self.group_keys(self.data_append[vara][date])
                 if len(data_append) > 0:
                     vara = vara.replace("#", "")
                     self.append_success(data2=data_append,
@@ -176,23 +176,4 @@ class pauta(CrawJUD):
         except Exception as e:
             raise ErroDeExecucao(str(e))
 
-    def group_date_all(self, data: dict[str, dict[str, str]]) -> dict[str, str]:
-
-        record = {}
-        for vara, dates in data.items():
-            for date, entries in dates.items():
-                for entry in entries:
-                    record = {'Data': date}
-                    record.update(entry)
-
-        return record
-
-    def group_date(self, data: dict[list[str]], vara: str) -> dict[str, str]:
-
-        record = {}
-        for date, entries in data.items():
-            for entry in entries:
-                record = {'Data': date}
-                record.update(entry)
-
-        return record
+    
