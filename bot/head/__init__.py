@@ -52,7 +52,7 @@ class CrawJUD(WorkerThread):
         with open(path_args, "rb") as f:
             arguments_bot: dict[str, str | int] = json.load(f)
         
-        time.sleep(5)
+        time.sleep(10)
         self.list_args = ['--ignore-ssl-errors=yes', '--ignore-certificate-errors', "--display=:99", "--window-size=1600,900", 
                  "--no-sandbox", "--disable-blink-features=AutomationControlled", '--kiosk-printing']    
 
@@ -88,10 +88,31 @@ class CrawJUD(WorkerThread):
         ## Abertura da planilha de input
         self.path_args = path_args
         xlsx = arguments_bot.get('xlsx')
+        ## Criação das planilhas de output
+        time_xlsx = datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%d-%m-%y')
+        
+        
+        
+        namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
+        self.path = f"{self.output_dir_path}/{namefile}"
+
+        namefile_erro = f"Erros - PID {self.pid} {time_xlsx}.xlsx"
+        self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
+        
         if xlsx:
             self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve().__str__(), str(xlsx))
             self.ws: Type[Worksheet] = openpyxl.load_workbook(self.input_file).active
-        
+            
+            self.message = 'Criando planilha de output'
+            self.type_log = "log"
+            self.prt(self)
+            
+            MakeXlsx("sucesso", self.typebot).make_output(self.path)
+            MakeXlsx("erro", self.typebot).make_output(self.path_erro)
+            self.message = 'Planilhas criadas!'
+            self.type_log = "log"
+            self.prt(self)
+            
         if not xlsx:
             
             self.total_rows = arguments_bot.get('total_rows')
@@ -105,25 +126,6 @@ class CrawJUD(WorkerThread):
             self.varas: list[str] = arguments_bot.get("varas")
             
         try:
-            
-            ## Criação das planilhas de output
-            time_xlsx = datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%d-%m-%y')
-            
-            self.message = 'Criando planilha de output'
-            self.type_log = "log"
-            self.prt(self)
-            
-            namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
-            self.path = f"{self.output_dir_path}/{namefile}"
-            MakeXlsx("sucesso", self.typebot).make_output(self.path)
-
-            namefile_erro = f"Erros - PID {self.pid} {time_xlsx}.xlsx"
-            self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
-            MakeXlsx("erro", self.typebot).make_output(self.path_erro)
-            
-            self.message = 'Planilhas criadas!'
-            self.type_log = "log"
-            self.prt(self)
             
             ## Carrega elementos do bot
             self.elements = elements_bot(self.system, self.state)
@@ -280,7 +282,7 @@ class CrawJUD(WorkerThread):
                 new_xlsx = os.path.join(
                     pathlib.Path(self.path).parent.resolve(), fileN)
                 
-                df = pd.read_excel(self.path_erro)
+                df = pd.read_excel(self.path)
                 
             except Exception as e:
                 # Se a planilha não existir, cria uma nova
@@ -288,9 +290,10 @@ class CrawJUD(WorkerThread):
                 
             dict_itens = df.to_dict()
             for key, value in list(dict_itens.items()):
-                dict_itens.update({key: {str(len(list(value))): data.get(key, "sem informação")}})
+                dict_itens.update(
+                    {key: {str(len(list(value))): pauta_data.get(key, "sem informação")}})
             
-            for key, value in data.items():
+            for key, value in pauta_data.items():
                 if not dict_itens.get(key):
                     dict_itens.update({key: {"0": value}})
             
@@ -325,9 +328,10 @@ class CrawJUD(WorkerThread):
             if not message:
                 message = f'Execução do processo Nº{data[0]} efetuada com sucesso!'
 
-        self.type_log = "success"
-        self.message = message
-        self.prt(self)
+        if message:
+            self.type_log = "success"
+            self.message = message
+            self.prt(self)
 
     def append_error(self, motivo_erro: list = None, data: dict[str, str] = None):
 
