@@ -67,9 +67,7 @@ class CrawJUD(WorkerThread):
         self.type_log = str("log")
         self.prt(self)
         
-        
-        self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve(), arguments_bot['xlsx'])
-        self.output_dir_path = pathlib.Path(self.input_file).parent.resolve().__str__()
+        self.output_dir_path = pathlib.Path(path_args).parent.resolve().__str__()
         self.bot_data: dict[str, str | int | datetime] = {}
         self.username = self.argbot.get("login", None)
         self.password = self.argbot.get("password", None)
@@ -88,9 +86,23 @@ class CrawJUD(WorkerThread):
         self.rows = int(arguments_bot.get("total_rows"))
         
         ## Abertura da planilha de input
+        self.path_args = path_args
+        xlsx = arguments_bot.get('xlsx')
+        if xlsx:
+            self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve().__str__(), str(xlsx))
+            self.ws: Type[Worksheet] = openpyxl.load_workbook(self.input_file).active
         
-        self.ws: Type[Worksheet] = openpyxl.load_workbook(self.input_file).active
-        
+        if not xlsx:
+            
+            self.total_rows = arguments_bot.get('total_rows')
+            self.varas: list[str] = arguments_bot.get("varas")
+            self.data_inicio = datetime.strptime(
+                arguments_bot.get("data_inicio"), "%Y-%m-%d")
+            
+            self.data_fim = datetime.strptime(
+                arguments_bot.get("data_fim"), "%Y-%m-%d")
+            
+            self.varas: list[str] = arguments_bot.get("varas")
             
         try:
             
@@ -103,11 +115,11 @@ class CrawJUD(WorkerThread):
             
             namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
             self.path = f"{self.output_dir_path}/{namefile}"
-            MakeXlsx("sucesso", self.type).make_output(self.path)
+            MakeXlsx("sucesso", self.typebot).make_output(self.path)
 
             namefile_erro = f"Erros - PID {self.pid} {time_xlsx}.xlsx"
             self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
-            MakeXlsx("erro", self.type).make_output(self.path_erro)
+            MakeXlsx("erro", self.typebot).make_output(self.path_erro)
             
             self.message = 'Planilhas criadas!'
             self.type_log = "log"
@@ -152,7 +164,7 @@ class CrawJUD(WorkerThread):
 
             self.search = SeachBot(self)
             
-            bot = master_bots(self.system, self.type, self)
+            bot = master_bots(self.system, self.typebot, self)
             bot()
             
         except Exception as e:
@@ -259,34 +271,59 @@ class CrawJUD(WorkerThread):
         elif len(self.appends) == 0:
             raise ErroDeExecucao("Nenhuma Movimentação encontrada")
 
-    def append_success(self, data: list, message: str = None):
+    def append_success(self, data: list = None, message: str = None, 
+                       fileN: str = None, pauta_data: str = None):
 
-        try:
-            # Carrega a planilha existente
-            existing_data = pd.read_excel(self.path)
+        if pauta_data:
+            try:
+                
+                new_xlsx = os.path.join(
+                    pathlib.Path(self.path).parent.resolve(), fileN)
+                
+                df = pd.read_excel(self.path_erro)
+                
+            except Exception as e:
+                # Se a planilha não existir, cria uma nova
+                df = pd.DataFrame()
+                
+            dict_itens = df.to_dict()
+            for key, value in list(dict_itens.items()):
+                dict_itens.update({key: {str(len(list(value))): data.get(key, "sem informação")}})
             
-        except FileNotFoundError:
-            # Se a planilha não existir, cria uma nova
-            existing_data = pd.DataFrame()
+            for key, value in data.items():
+                if not dict_itens.get(key):
+                    dict_itens.update({key: {"0": value}})
             
+            new_data = pd.DataFrame(dict_itens)
+            new_data.to_excel(new_xlsx, index=False)
         
-        # Converte a nova data em DataFrame e nomeia as colunas
-        columns = existing_data.columns
-        if isinstance(data[0], list):
-            new_data = pd.DataFrame(data, columns=columns)
+        elif not pauta_data:
+            try:
+                # Carrega a planilha existente
+                existing_data = pd.read_excel(self.path)
+                
+            except FileNotFoundError:
+                # Se a planilha não existir, cria uma nova
+                existing_data = pd.DataFrame()
+                
             
-        elif not isinstance(data[0], list):
-            new_data = pd.DataFrame([data], columns=columns)
+            # Converte a nova data em DataFrame e nomeia as colunas
+            columns = existing_data.columns
+            if isinstance(data[0], list):
+                new_data = pd.DataFrame(data, columns=columns)
+                
+            elif not isinstance(data[0], list):
+                new_data = pd.DataFrame([data], columns=columns)
 
-        # Concatena os dados existentes com os novos dados
-        updated_data = pd.concat(df.dropna(axis=1, how='all')
-                                 for df in [existing_data, new_data])
+            # Concatena os dados existentes com os novos dados
+            updated_data = pd.concat(df.dropna(axis=1, how='all')
+                                    for df in [existing_data, new_data])
 
-        # Salva os dados atualizados de volta para a planilha
-        updated_data.to_excel(self.path, index=False)
+            # Salva os dados atualizados de volta para a planilha
+            updated_data.to_excel(self.path, index=False)
 
-        if not message:
-            message = f'Execução do processo Nº{data[0]} efetuada com sucesso!'
+            if not message:
+                message = f'Execução do processo Nº{data[0]} efetuada com sucesso!'
 
         self.type_log = "success"
         self.message = message
@@ -394,7 +431,7 @@ class CrawJUD(WorkerThread):
                 "download.default_directory": "{}".format(os.path.join(self.output_dir_path))
             }
 
-            path_chrome = os.path.join(pathlib.Path(self.input_file).parent.resolve())
+            path_chrome = os.path.join(pathlib.Path(self.path_args).parent.resolve())
             driver_cache_manager = DriverCacheManager(root_dir=path_chrome)
             chrome_options.add_experimental_option("prefs", chrome_prefs)
             driverinst = ChromeDriverManager(
@@ -437,6 +474,7 @@ class CrawJUD(WorkerThread):
 
 from bot.esaj import esaj, elements_esaj
 from bot.elaw import elaw, elements_elaw
+from bot.pje import pje, elements_pje
 from bot.projudi import projudi, elements_projudi
 
 def master_bots(system: str, type_bot: str, master: CrawJUD) -> projudi | esaj | elaw:

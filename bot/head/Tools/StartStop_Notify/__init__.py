@@ -80,7 +80,7 @@ class SetStatus:
                 data.get("data_fim"), "%Y-%m-%d")
             
             diff = data_fim_formated - data_inicio_formated
-            rows = diff.days+1
+            rows = diff.days+2
             
         
         data.update({"total_rows": rows})
@@ -121,7 +121,7 @@ class SetStatus:
         try:
             srv = platform.system() in ("Windows")
             sys = self.system.lower() in ("esaj")
-            typebot = self.type.lower() in ("protocolo")
+            typebot = self.typebot.lower() in ("protocolo")
             
             if all([srv, sys, typebot]):
                 

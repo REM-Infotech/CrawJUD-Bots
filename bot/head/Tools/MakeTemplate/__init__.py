@@ -39,7 +39,7 @@ class MakeXlsx:
             list_to_append.extend(itens_append)
         
         elif not itens_append:
-            itens_append = self.listas(self.type)
+            itens_append = self.listas(self.typebot)
             if itens_append:
                 list_to_append.extend(itens_append)
 

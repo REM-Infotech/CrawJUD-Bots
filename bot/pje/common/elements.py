@@ -24,6 +24,12 @@ class elements_pje:
         url_busca: str = "url_de_busca_AC"
         btn_busca: str = "btn_busca_AC"
         
+    classes: dict[str, Union[SP, AC, AM]] = {
+        "SP": SP,
+        "AC": AC,
+        "AM": AM
+    } 
+        
     def __init__(self, state: str) -> Union[SP, AC, AM]:
         
         # Se o estado passado existir no dicionário, atualiza as variáveis

@@ -9,14 +9,14 @@ class pje:
     
     def __call__(self):
         try:
-            self.execution: capa | protocolo | movimentacao = globals().get(self.bot)(self.Master)
+            self.execution: pauta = globals().get(self.bot)(self.Master)
             self.execution.execution()
             
         except Exception as e:
             print(e)
             raise e
         
-from bot.projudi.capa import capa
-from bot.projudi.protocolo import protocolo
-from bot.projudi.movimentacao import movimentacao
-from bot.projudi.common.elements import elements_projudi
+from bot.pje.pauta import pauta
+# from bot.pje.protocolo import protocolo
+# from bot.pje.movimentacao import movimentacao
+from bot.pje.common.elements import elements_pje
