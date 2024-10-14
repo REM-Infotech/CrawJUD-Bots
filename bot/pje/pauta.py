@@ -85,14 +85,14 @@ class pauta(CrawJUD):
                 data_append = self.group_date(self.data_append[vara], vara)
                 if len(data_append) > 0:
                     vara = vara.replace("#", "")
-                    self.append_success(pauta_data=data_append,
+                    self.append_success(data2=data_append,
                     fileN=f"{vara} - {date.replace("-", ".")} - {self.pid}.xlsx")
             
             
             data_append = self.group_date_all(self.data_append)
             fileN = os.path.basename(self.path)
             if len(data_append) > 0:
-                self.append_success(pauta_data=data_append, fileN=fileN,
+                self.append_success(data2=data_append, fileN=fileN,
                                     message="Dados extraídos com sucesso!")
                 
             elif len(data_append) == 0:

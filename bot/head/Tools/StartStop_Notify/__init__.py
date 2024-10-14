@@ -72,7 +72,7 @@ class SetStatus:
                 ws: Worksheet = wb.active
                 rows = ws.max_row
         
-        elif data.get("data_inicio"):
+        elif data.get("typebot") == "pauta":
             data_inicio_formated = datetime.strptime(
                 data.get("data_inicio"), "%Y-%m-%d")
             
@@ -81,6 +81,10 @@ class SetStatus:
             
             diff = data_fim_formated - data_inicio_formated
             rows = diff.days+2
+            
+        elif data.get("typebot") == "proc_parte":
+            
+            rows = len(list(data.get("varas"))) + 1
             
         
         data.update({"total_rows": rows})

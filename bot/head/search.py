@@ -23,7 +23,11 @@ class SeachBot(CrawJUD):
         
         self.__dict__ = Head.__dict__.copy()
         self.type_log = 'log'
-        self.message = f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}'
+        
+        self.message = f'Buscando processos pelo nome "{self.parte_name}"'
+        if self.tyebot != "proc_parte":
+            self.message = f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}'
+            
         self.prt(self)
         src: bool = getattr(self, f"{self.system.lower()}_search", None)()
         return src
@@ -97,41 +101,97 @@ class SeachBot(CrawJUD):
         enterproc = None
         allowacess = None
         
-        with suppress(TimeoutException):
-            inputproc: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#numeroProcesso')))
-            
-        if inputproc:
-            self.interact.send_key(inputproc, self.bot_data.get('NUMERO_PROCESSO'))
-            consultar = self.driver.find_element(By.CSS_SELECTOR, '#pesquisar')
-            self.interact.click(consultar)
+        if self.typebot != "proc_parte":
             
             with suppress(TimeoutException):
-                enterproc: WebElement = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'link')))
+                inputproc: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#numeroProcesso')))
                 
+            if inputproc:
+                self.interact.send_key(inputproc, self.bot_data.get('NUMERO_PROCESSO'))
+                consultar = self.driver.find_element(By.CSS_SELECTOR, '#pesquisar')
+                self.interact.click(consultar)
+                
+                with suppress(TimeoutException):
+                    enterproc: WebElement = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'link')))
+                    
+                
+                if enterproc:
+                    enterproc.click()
+                    self.message = "Processo encontrado!"
+                    self.type_log = "log"
+                    self.prt(self)
+                    
+                    with suppress(TimeoutException, NoSuchElementException):
+                    
+                        allowacess = self.driver.find_element(
+                            By.CSS_SELECTOR, '#habilitacaoProvisoriaButton')
+                        
+                    if allowacess:    
+                        allowacess.click()
+                        sleep(1)
+
+                        confirmterms = self.driver.find_element(By.CSS_SELECTOR, '#termoAceito')
+                        confirmterms.click()
+                        sleep(1)
+
+                        save = self.driver.find_element(By. CSS_SELECTOR, '#saveButton')
+                        save.click()
+                        
+                    return True
+                
+                elif not enterproc:
+                    return False
+            
+        if self.typebot == "proc_parte":
+            
+            allprocess = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'input[value="qualquerAdvogado"]')))
+            allprocess.click()
+            
+            data_inicio_formatted = self.data_inicio.strftime("%d/%m/%Y")
+            data_fim_formatted = self.data_fim.strftime("%d/%m/%Y")
+            
+            if self.name_court == 'TODAS AS COMARCAS':
+                alljudge = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR,'input[name="pesquisarTodos"]')))
+                alljudge.click()
+                
+            elif self.name_court != 'TODAS AS COMARCAS':
+                search_vara = self.driver.find_element(By.ID, 'descricaoVara') #32801
+                search_vara.click()
+                search_vara.send_keys(self.name_court)
+                sleep(3)
+                vara_option = self.driver.find_element(By.ID, 'ajaxAuto_descricaoVara').find_elements(By.TAG_NAME, 'li')[0]
+                vara_option.click()
+            
+            sleep(3)
+            input_parte = self.driver.find_element(By.CSS_SELECTOR, 'input[name="nomeParte"]')
+            input_parte.send_keys(self.parte_name)
+            
+            cpfcnpj = self.driver.find_element(By.CSS_SELECTOR, 'input[name="cpfCnpj"]')
+            cpfcnpj.send_keys(self.doc_parte)
+            
+            data_inicio = self.driver.find_element(By.CSS_SELECTOR, 'input[id="dataInicio"]')
+            data_inicio.send_keys(data_inicio_formatted)
+            
+            data_fim = self.driver.find_element(By.CSS_SELECTOR, 'input[name="dataFim"]')
+            data_fim.send_keys(data_fim_formatted)
+            
+            if self.polo_parte.lower() == 'reu':
+                setréu = self.driver.find_element(By.CSS_SELECTOR, 'input[value="promovido"]')
+                setréu.click()
+                
+            elif self.polo_parte.lower() == 'autor':
+                setautor = self.driver.find_element(By. CSS_SELECTOR, 'input[value="promovente"')
+                setautor.click()
+            
+            procenter = self.driver.find_element(By.ID, 'pesquisar')
+            procenter.click()
+            sleep(3)
+                
+            with suppress(TimeoutException):
+                enterproc: WebElement = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'link')))
             
             if enterproc:
-                enterproc.click()
-                self.message = "Processo encontrado!"
-                self.type_log = "log"
-                self.prt(self)
-                
-                with suppress(TimeoutException, NoSuchElementException):
-                
-                    allowacess = self.driver.find_element(
-                        By.CSS_SELECTOR, '#habilitacaoProvisoriaButton')
-                    
-                if allowacess:    
-                    allowacess.click()
-                    sleep(1)
-
-                    confirmterms = self.driver.find_element(By.CSS_SELECTOR, '#termoAceito')
-                    confirmterms.click()
-                    sleep(1)
-
-                    save = self.driver.find_element(By. CSS_SELECTOR, '#saveButton')
-                    save.click()
-                    
                 return True
             
-            elif not enterproc:
-                return False
+            return False
+        

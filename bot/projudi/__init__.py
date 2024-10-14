@@ -19,5 +19,6 @@ class projudi:
         
 from bot.projudi.capa import capa
 from bot.projudi.protocolo import protocolo
+from bot.projudi.proc_parte import proc_parte
 from bot.projudi.movimentacao import movimentacao
 from bot.projudi.common.elements import elements_projudi

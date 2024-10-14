@@ -45,12 +45,20 @@ class CrawJUD(WorkerThread):
             
         self.__dict__ = worker_thread.__dict__.copy()
         self.prt: Type[printtext] = printtext(self)
-        
+    
+    def __getattr__(self, nome_do_atributo: str) -> str | int:
+        item = getattr(self.argbot, nome_do_atributo, None) 
+        return item
+    
+    
     def setup(self, app: Flask, path_args: str = None):
         
         self.driver = None
         with open(path_args, "rb") as f:
             arguments_bot: dict[str, str | int] = json.load(f)
+        
+        for key, value in arguments_bot.items():
+            setattr(self, key, value)
         
         time.sleep(10)
         self.list_args = ['--ignore-ssl-errors=yes', '--ignore-certificate-errors', "--display=:99", "--window-size=1600,900", 
@@ -58,8 +66,6 @@ class CrawJUD(WorkerThread):
 
         ## Definição de variaveis utilizadas pelos robôs
         self.argbot = arguments_bot
-        self.url_socket = arguments_bot["url_socket"]
-        self.pid = arguments_bot['pid']
         self.row = int(0)
         self.app = app
         self.message_error = None
@@ -69,29 +75,15 @@ class CrawJUD(WorkerThread):
         
         self.output_dir_path = pathlib.Path(path_args).parent.resolve().__str__()
         self.bot_data: dict[str, str | int | datetime] = {}
-        self.username = self.argbot.get("login", None)
-        self.password = self.argbot.get("password", None)
-        self.senhacert = self.argbot.get("token", None)
-        self.name_cert = self.argbot.get("name_cert", None)
         
         if self.name_cert:
             
             self.install_cert()
         
-        self.login_method = arguments_bot['login_method']
-        self.system: str = arguments_bot.get("system")
-        self.typebot: str = arguments_bot.get("typebot")
-        
-        self.state: str = arguments_bot.get("state")
-        self.rows = int(arguments_bot.get("total_rows"))
-        
         ## Abertura da planilha de input
         self.path_args = path_args
-        xlsx = arguments_bot.get('xlsx')
         ## Criação das planilhas de output
         time_xlsx = datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%d-%m-%y')
-        
-        
         
         namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
         self.path = f"{self.output_dir_path}/{namefile}"
@@ -99,8 +91,8 @@ class CrawJUD(WorkerThread):
         namefile_erro = f"Erros - PID {self.pid} {time_xlsx}.xlsx"
         self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
         
-        if xlsx:
-            self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve().__str__(), str(xlsx))
+        if self.xlsx:
+            self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve().__str__(), str(self.xlsx))
             self.ws: Type[Worksheet] = openpyxl.load_workbook(self.input_file).active
             
             self.message = 'Criando planilha de output'
@@ -113,17 +105,13 @@ class CrawJUD(WorkerThread):
             self.type_log = "log"
             self.prt(self)
             
-        if not xlsx:
+        elif not self.xlsx:
             
-            self.total_rows = arguments_bot.get('total_rows')
-            self.varas: list[str] = arguments_bot.get("varas")
             self.data_inicio = datetime.strptime(
                 arguments_bot.get("data_inicio"), "%Y-%m-%d")
             
             self.data_fim = datetime.strptime(
                 arguments_bot.get("data_fim"), "%Y-%m-%d")
-            
-            self.varas: list[str] = arguments_bot.get("varas")
             
         try:
             
@@ -138,7 +126,7 @@ class CrawJUD(WorkerThread):
                 self.prt(self)
                 return
             
-            self.login_method = self.argbot.get("login_method", None)
+            
             self.driver: Type[WebDriver] = args[0]
             self.wait: Type[WebDriverWait] = args[1]
             self.interact = Interact(self)
@@ -274,9 +262,9 @@ class CrawJUD(WorkerThread):
             raise ErroDeExecucao("Nenhuma Movimentação encontrada")
 
     def append_success(self, data: list = None, message: str = None, 
-                       fileN: str = None, pauta_data: str = None):
+                       fileN: str = None, data2: str = None):
 
-        if pauta_data:
+        if data2:
             try:
                 
                 new_xlsx = os.path.join(
@@ -291,16 +279,16 @@ class CrawJUD(WorkerThread):
             dict_itens = df.to_dict()
             for key, value in list(dict_itens.items()):
                 dict_itens.update(
-                    {key: {str(len(list(value))): pauta_data.get(key, "sem informação")}})
+                    {key: {str(len(list(value))): data2.get(key, "sem informação")}})
             
-            for key, value in pauta_data.items():
+            for key, value in data2.items():
                 if not dict_itens.get(key):
                     dict_itens.update({key: {"0": value}})
             
             new_data = pd.DataFrame(dict_itens)
             new_data.to_excel(new_xlsx, index=False)
         
-        elif not pauta_data:
+        elif not data2:
             try:
                 # Carrega a planilha existente
                 existing_data = pd.read_excel(self.path)
