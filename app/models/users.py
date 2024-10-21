@@ -27,8 +27,9 @@ class Users(db.Model):
     login_id = db.Column(db.String(length=64), nullable=False, default=str(uuid4()))
     filename = db.Column(db.String(length=128))
     blob_doc = db.Column(db.LargeBinary(length=(2**32)-1))
-    executions = db.relationship('Executions', secondary="execution_users",
-                                 backref=db.backref('executions', lazy=True))
+    
+    licenseus_id = db.Column(db.Integer, db.ForeignKey('licenses_users.id'))
+    licenseusr = db.relationship('LicensesUsers', backref='user')
     
     def __init__(self, login: str = None, nome_usuario: str = None,
                  email: str = None) -> None:
@@ -58,16 +59,6 @@ class LicensesUsers(db.Model):
     license_token: str = db.Column(db.String(length=512), nullable=False, unique=True)
     
     # Relacionamento de muitos para muitos com users
-    users = db.relationship('Users', secondary="licenseusr", backref='licenses')
-    admins = db.relationship('Users', secondary="admins", backref='admin')
-    
-    # Relacionamento de muitos para muitos com Credentials
-    credentials = db.relationship('Credentials', secondary="licenses_users_credentials", 
-                                  backref=db.backref('license', lazy=True))
-    
-    executions = db.relationship('Executions', secondary='execution_licenses', 
-                                 backref=db.backref('license', lazy=True))
-    
-    bots = db.relationship('BotsCrawJUD', secondary="licenses_users_bots", 
+    admins = db.relationship('Users', secondary='admins', backref='admin')
+    bots = db.relationship('BotsCrawJUD', secondary='execution_bots', 
                            backref=db.backref('license', lazy=True))
-    

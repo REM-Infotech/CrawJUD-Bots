@@ -89,12 +89,21 @@ class proc_parte(CrawJUD):
             table_processos = self.driver.find_element(By.CLASS_NAME, 'resultTable').find_element(By.TAG_NAME, 'tbody')
 
             list_processos = None
+            next_page = None
             with suppress(NoSuchElementException):
                 list_processos = table_processos.find_elements(By.XPATH, './/tr[contains(@class, "odd") or contains(@class, "even")]')
                 
             if list_processos and not self.thread._is_stopped:
                 self.use_list_process(list_processos)
-            
+                
+                with suppress(NoSuchElementException):
+                    next_page = self.driver.find_element(By.CLASS_NAME, 'navRight').find_element(By.XPATH, './/a[@class="arrowNextOn"]')
+                
+                self.append_success(data2=self.data_append, fileN=os.path.basename(self.path))
+                if next_page:
+                    next_page.click()
+                    self.get_process_list()
+                    
         except Exception as e:
             raise e
 
@@ -135,11 +144,6 @@ class proc_parte(CrawJUD):
             self.type_log = "log"
             self.prt(self)
 
-        next_page = self.driver.find_element(By.CLASS_NAME, 'navRight').find_element(By.XPATH, './/a[@class="arrowNextOn"]')
-        next_page.click()
-        
-        self.append_success(data2=self.data_append, fileN=os.path.basename(self.path))
-        self.get_process_list()
 
 
 

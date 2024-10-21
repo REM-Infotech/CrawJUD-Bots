@@ -14,14 +14,14 @@ def email_start(execution: Executions) -> None:
     
     admins: list[str] = []
     pid = execution.pid
-    usr: Users = execution.user[0]
+    usr: Users = execution.user
     url_web = dotenv_values().get("url_web")
     
-    display_name = execution.bot[0].display_name
+    display_name = execution.bot.display_name
     xlsx = execution.arquivo_xlsx
 
     try:
-        for adm in usr.licenses[0].admins:
+        for adm in usr.licenseusr.admins:
             admins.append(adm.email)
             
     except Exception as e:
@@ -56,14 +56,14 @@ def email_stop(execution: Executions) -> None:
     
     admins: list[str] = []
     pid = execution.pid
-    usr: Users = execution.user[0]
+    usr: Users = execution.user
     url_web = dotenv_values().get("url_web")
     
-    display_name = execution.bot[0].display_name
+    display_name = execution.bot.display_name
     xlsx = execution.arquivo_xlsx
 
     try:
-        for adm in usr.licenses[0].admins:
+        for adm in usr.licenseusr.admins:
             admins.append(adm.email)
             
     except Exception as e:

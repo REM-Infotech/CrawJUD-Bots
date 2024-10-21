@@ -13,7 +13,7 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
-from app.models import Users, BotsCrawJUD, Executions
+from app.models import Users, BotsCrawJUD, Executions, LicensesUsers
 from openpyxl.worksheet.worksheet import Worksheet
 
 url_cache = []
@@ -104,10 +104,13 @@ class SetStatus:
         
         usr = Users.query.filter(Users.login == self.user).first()
         bt = BotsCrawJUD.query.filter(BotsCrawJUD.id == self.id).first()
-        licenses = usr.licenses[0]
-        execut.user.append(usr)
-        execut.bot.append(bt)
-        execut.licenses.append(licenses)
+        license_ = LicensesUsers.query.\
+            filter(LicensesUsers.license_token == usr.
+                   licenseusr.license_token).first()
+            
+        execut.user = usr
+        execut.bot = bt
+        execut.license_usr = license_
         
         db.session.add(execut)
         db.session.commit()

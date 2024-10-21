@@ -2,9 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 from app import app, db
-from app.models.secondaries import(admins, execution_bots, 
-execution_licenses, execution_users, licenses_users_bots, licenseusr, 
-licenses_users_credentials)
+from app.models.secondaries import admins, execution_bots
 
 from app.models.users import Users, LicensesUsers
 from app.models.bots import BotsCrawJUD, Credentials, Executions, CacheLogs, ThreadBots

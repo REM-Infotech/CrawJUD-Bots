@@ -22,14 +22,25 @@ def botlaunch(id: int, system: str, typebot: str):
     
     from bot.head.Tools.StartStop_Notify import SetStatus
     with app.app_context():
-        data_bot = json.loads(request.data)
-        if isinstance(data_bot, str):
-            data_bot = json.loads(data_bot)
+        try:
+            
+            if request.data:
+                data_bot = json.loads(request.data)
+                
+            elif request.form:
+                data_bot = request.form
+                
+            if isinstance(data_bot, str):
+                data_bot = json.loads(data_bot)
+            
+            start_rb = SetStatus(data_bot, request.files, id, system, typebot)
+            path_args, display_name = start_rb.start_bot()
+            worker_thread = WorkerThread()
+            is_started = worker_thread.start(path_args, display_name)
+            
+        except Exception as e:
+            is_started = 500    
         
-        start_rb = SetStatus(data_bot, request.files, id, system, typebot)
-        path_args, display_name = start_rb.start_bot()
-        worker_thread = WorkerThread()
-        is_started = worker_thread.start(path_args, display_name)
     resp = make_response(jsonify({"ok": "ok"}), is_started)
     return resp
 

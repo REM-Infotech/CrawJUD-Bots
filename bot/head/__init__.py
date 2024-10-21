@@ -183,17 +183,20 @@ class CrawJUD(WorkerThread):
 
         return Get_Login
     
-    def set_data(self) -> dict[str, str | int | datetime]:
+    def dataFrame(self) -> list[dict[str, str]]:
 
         input_file = os.path.join(pathlib.Path(
             self.path_args).parent.resolve().__str__(), str(self.xlsx))
         
-        wb: Type[Workbook] = openpyxl.load_workbook(input_file)
-        df = pd.read_excel(wb)
+        df = pd.read_excel(input_file)
         
-        map(lambda col: df[col].strftime("%d/%m/%Y"), df.select_dtypes(include=["datetime"]))
-        map(lambda col: df[col].map(lambda v: "{:.2f}".format(v)), df.select_dtypes(include=["float"]))
-        
+        for col in df.select_dtypes(include=["O"]).columns.to_list():
+            df[col] = df[col].apply(lambda x: x.strftime('%d/%m/%Y') if type(x) == datetime else x)
+            
+        for col in df.select_dtypes(include=["float"]).columns.to_list():
+            df[col] = df[col].apply(lambda x: f'R${x:.2f}')
+            
+        return df.to_dict(orient="records")
         
         # returns = {}
         # for nome_coluna in nomes_colunas():
