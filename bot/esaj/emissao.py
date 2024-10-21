@@ -109,16 +109,16 @@ class emissao(CrawJUD):
         self.driver.get('https://consultasaj.tjam.jus.br/ccpweb/iniciarCalculoDeCustas.do?cdTipoCusta=7&flTipoCusta=0&&cdServicoCalculoCusta=690003')
         
         self.prt.print_log(self.pid, 'log', "Informando foro", self.row)
-        set_foro: WebElement = self.wait.until(EC.presence_of_element_located((By. CSS_SELECTOR, nome_foro)))
+        set_foro: WebElement = self.wait.until(EC.presence_of_element_located((By. CSS_SELECTOR, self.elements.ome_foro)))
         set_foro.send_keys(self.bot_data.get("FORO"))
         
-        set_classe = self.driver.find_element(By. CSS_SELECTOR, tree_selection)
+        set_classe = self.driver.find_element(By. CSS_SELECTOR, self.elements.tree_selection)
         set_classe.send_keys(self.bot_data.get("CLASSE"))
         
-        semprecível = self.driver.find_element(By.CSS_SELECTOR, civil_selector)
+        semprecível = self.driver.find_element(By.CSS_SELECTOR, self.elements.civil_selector)
         semprecível.click()
 
-        val_acao = self.driver.find_element(By.CSS_SELECTOR, valor_acao)
+        val_acao = self.driver.find_element(By.CSS_SELECTOR, self.elements.valor_acao)
         val_acao.send_keys(self.bot_data.get("VALOR_CAUSA"))
         
         nameinteressado = self.driver.find_element(By. CSS_SELECTOR, 'input[name="entity.nmInteressado"]')
@@ -132,7 +132,7 @@ class emissao(CrawJUD):
         sleep(0.5)
         setcpf_cnpj.send_keys(self.bot_data.get("CPF_CNPJ"))
         
-        avançar = self.driver.find_element(By.CSS_SELECTOR, botao_avancar)
+        avançar = self.driver.find_element(By.CSS_SELECTOR, self.elements.botao_avancar)
         avançar.click()
 
         self.valor_doc = ''
@@ -149,13 +149,13 @@ class emissao(CrawJUD):
         elif str(portal).lower() == "projudi":
             self.driver.get("https://consultasaj.tjam.jus.br/ccpweb/iniciarCalculoDeCustas.do?cdTipoCusta=21&flTipoCusta=5&&cdServicoCalculoCusta=690007")
             
-            set_foro: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, nome_foro)))
+            set_foro: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.nome_foro)))
             set_foro.send_keys(self.bot_data.get("FORO"))
 
-            val_acao = self.driver.find_element(By.CSS_SELECTOR, valor_acao)
+            val_acao = self.driver.find_element(By.CSS_SELECTOR, self.elements.valor_acao)
             val_acao.send_keys(self.bot_data.get("VALOR_CAUSA"))
                 
-            nameinteressado = self.driver.find_element(By.CSS_SELECTOR, interessado)
+            nameinteressado = self.driver.find_element(By.CSS_SELECTOR, self.elements.interessado)
             nameinteressado.send_keys(self.bot_data.get("NOME_INTERESSADO"))
 
             elements:list = type_docscss.get(self.bot_data.get("TIPO_GUIA")).get(count_doc(self.bot_data.get("CPF_CNPJ")))
@@ -166,15 +166,15 @@ class emissao(CrawJUD):
             sleep(0.5)
             setcpf_cnpj.send_keys(self.bot_data.get("CPF_CNPJ"))
 
-            avançar = self.driver.find_element(By.CSS_SELECTOR, botao_avancar)
+            avançar = self.driver.find_element(By.CSS_SELECTOR, self.elements.botao_avancar)
             avançar.click()
             
             sleep(1)
-            set_RI: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, check)))
+            set_RI: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.check)))
             set_RI.click()
             
             sleep(1)
-            last_avançar = self.driver.find_element(By.CSS_SELECTOR, botao_avancar_dois)
+            last_avançar = self.driver.find_element(By.CSS_SELECTOR, self.elements.botao_avancar_dois)
             last_avançar.click()
             
             sleep(1)
@@ -198,7 +198,7 @@ class emissao(CrawJUD):
     def generate_doc(self) -> str:
         
         self.original_window = original_window = self.driver.current_window_handle
-        generatepdf: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, boleto)))
+        generatepdf: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.boleto)))
         onclick_value =generatepdf.get_attribute("onclick")
         url_start = onclick_value.find("'") + 1
         url_end = onclick_value.find("'", url_start)
@@ -216,7 +216,7 @@ class emissao(CrawJUD):
         ## Checar se não ocorreu o erro "Boleto inexistente"
         check = None
         with suppress(TimeoutException):
-            check:WebElement = WebDriverWait(self.driver, 3).until(EC.presence_of_element_located((By.CSS_SELECTOR, mensagem_retorno))).text
+            check:WebElement = WebDriverWait(self.driver, 3).until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.mensagem_retorno))).text
         
         if check:
             self.driver.close()

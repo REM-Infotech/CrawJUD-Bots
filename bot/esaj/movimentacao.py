@@ -89,10 +89,10 @@ class movimentacao(CrawJUD):
         sleep(0.5)
         
         try: 
-            table_moves = self.driver.find_element(By.CSS_SELECTOR, movimentacoes)
+            table_moves = self.driver.find_element(By.CSS_SELECTOR, self.elements.movimentacoes)
             self.driver.execute_script('document.querySelector("#tabelaTodasMovimentacoes").style.display = "block"')
         except:
-            table_moves = self.driver.find_element(By.ID, ultimas_movimentacoes)
+            table_moves = self.driver.find_element(By.ID, self.elements.ultimas_movimentacoes)
             self.driver.execute_script('document.querySelector("#tabelaUltimasMovimentacoes").style.display = "block"')
             
         itens = table_moves.find_elements(By.TAG_NAME, "tr")

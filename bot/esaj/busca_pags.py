@@ -77,7 +77,7 @@ class busca_pags(CrawJUD):
  
     def get_page_custas_pagas(self):
         
-        generatepdf: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, get_page_custas_pagas)))
+        generatepdf: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.get_page_custas_pagas)))
         onclick_value =generatepdf.get_attribute("onclick")
         url_start = onclick_value.find("'") + 1
         url_end = onclick_value.find("'", url_start)
