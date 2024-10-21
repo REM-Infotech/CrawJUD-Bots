@@ -25,6 +25,7 @@ class capa(CrawJUD):
     
     def execution(self):
         
+        self.bot_data = {}
         self.row = 2
         while not self.thread._is_stopped:
             
@@ -35,19 +36,20 @@ class capa(CrawJUD):
                 self.row = self.ws.max_row+1
                 break
             
-            self.bot_data = {}
-            
-            for index in range(1, self.ws.max_column + 1):
-                
-                self.index = index
-                self.bot_data.update(self.set_data())
-                if index == self.ws.max_column:
-                    break
-            
             try:
+                pass
+            
+            # for index in range(1, self.ws.max_column + 1):
                 
-                if not len(self.bot_data) == 0:
-                    self.queue()
+            #     self.index = index
+            #     self.bot_data.update(self.set_data())
+            #     if index == self.ws.max_column:
+            #         break
+            
+            # try:
+                
+            #     if not len(self.bot_data) == 0:
+            #         self.queue()
                 
             except Exception as e:
                 

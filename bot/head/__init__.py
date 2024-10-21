@@ -14,7 +14,8 @@ import pandas as pd
 from tqdm import tqdm
 from typing import Type, Union
 from datetime import datetime
-from openpyxl.worksheet.worksheet import Worksheet
+# from openpyxl.worksheet.worksheet import Worksheet
+from openpyxl.workbook.workbook import Workbook
 from webdriver_manager.chrome import ChromeDriverManager
 
 # Selenium Imports
@@ -55,17 +56,18 @@ class CrawJUD(WorkerThread):
         
         self.driver = None
         with open(path_args, "rb") as f:
-            arguments_bot: dict[str, str | int] = json.load(f)
-        
-        for key, value in arguments_bot.items():
-            setattr(self, key, value)
+            json_f: dict[str, str | int] = json.load(f)
+            
+            setattr(self, "argbot", json_f)
+            
+            for key, value in json_f.items():
+                setattr(self, key, value)
         
         time.sleep(10)
         self.list_args = ['--ignore-ssl-errors=yes', '--ignore-certificate-errors', "--display=:99", "--window-size=1600,900", 
                  "--no-sandbox", "--disable-blink-features=AutomationControlled", '--kiosk-printing']    
 
         ## Definição de variaveis utilizadas pelos robôs
-        self.argbot = arguments_bot
         self.row = int(0)
         self.app = app
         self.message_error = None
@@ -91,27 +93,13 @@ class CrawJUD(WorkerThread):
         namefile_erro = f"Erros - PID {self.pid} {time_xlsx}.xlsx"
         self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
         
-        if self.xlsx:
-            self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve().__str__(), str(self.xlsx))
-            self.ws: Type[Worksheet] = openpyxl.load_workbook(self.input_file).active
+        MakeXlsx("sucesso", self.typebot).make_output(self.path)
+        MakeXlsx("erro", self.typebot).make_output(self.path_erro)
+        
+        if not self.xlsx:
             
-            self.message = 'Criando planilha de output'
-            self.type_log = "log"
-            self.prt(self)
-            
-            MakeXlsx("sucesso", self.typebot).make_output(self.path)
-            MakeXlsx("erro", self.typebot).make_output(self.path_erro)
-            self.message = 'Planilhas criadas!'
-            self.type_log = "log"
-            self.prt(self)
-            
-        elif not self.xlsx:
-            
-            self.data_inicio = datetime.strptime(
-                arguments_bot.get("data_inicio"), "%Y-%m-%d")
-            
-            self.data_fim = datetime.strptime(
-                arguments_bot.get("data_fim"), "%Y-%m-%d")
+            self.data_inicio = datetime.strptime(self.data_inicio, "%Y-%m-%d")
+            self.data_fim = datetime.strptime(self.data_fim, "%Y-%m-%d")
             
         try:
             
@@ -195,51 +183,61 @@ class CrawJUD(WorkerThread):
 
         return Get_Login
     
-    def set_data(self) -> dict:
+    def set_data(self) -> dict[str, str | int | datetime]:
 
-        returns = {}
-        for nome_coluna in nomes_colunas():
-            nome_coluna = str(nome_coluna)
-            nome_coluna_planilha = self.ws.cell(row=1, column=self.index).value
-            valor_celula = self.ws.cell(row=self.row, column=self.index).value
-            if nome_coluna_planilha and nome_coluna.upper() == str(nome_coluna_planilha).upper():
-                if valor_celula:
+        input_file = os.path.join(pathlib.Path(
+            self.path_args).parent.resolve().__str__(), str(self.xlsx))
+        
+        wb: Type[Workbook] = openpyxl.load_workbook(input_file)
+        df = pd.read_excel(wb)
+        
+        map(lambda col: df[col].strftime("%d/%m/%Y"), df.select_dtypes(include=["datetime"]))
+        map(lambda col: df[col].map(lambda v: "{:.2f}".format(v)), df.select_dtypes(include=["float"]))
+        
+        
+        # returns = {}
+        # for nome_coluna in nomes_colunas():
+        #     nome_coluna = str(nome_coluna)
+        #     nome_coluna_planilha = self.ws.cell(row=1, column=self.index).value
+        #     valor_celula = self.ws.cell(row=self.row, column=self.index).value
+        #     if nome_coluna_planilha and nome_coluna.upper() == str(nome_coluna_planilha).upper():
+        #         if valor_celula:
 
-                    if nome_coluna_planilha.upper() == "FASE":
-                        pass
+        #             if nome_coluna_planilha.upper() == "FASE":
+        #                 pass
 
-                    if isinstance(valor_celula, datetime):
-                        valor_celula = str(valor_celula.strftime("%d/%m/%Y"))
+        #             if isinstance(valor_celula, datetime):
+        #                 valor_celula = str(valor_celula.strftime("%d/%m/%Y"))
 
-                    elif str(nome_coluna_planilha).upper() == "DATA_LIMITE" and not self.bot_data.get("DATA_INICIO"):
-                        self.bot_data.update({"DATA_INICIO": valor_celula})
+        #             elif str(nome_coluna_planilha).upper() == "DATA_LIMITE" and not self.bot_data.get("DATA_INICIO"):
+        #                 self.bot_data.update({"DATA_INICIO": valor_celula})
 
-                    elif isinstance(valor_celula, float):
-                        valor_celula = "{:.2f}".format(
-                            valor_celula).replace(".", ",")
+        #             elif isinstance(valor_celula, float):
+        #                 valor_celula = "{:.2f}".format(
+        #                     valor_celula).replace(".", ",")
 
-                    elif isinstance(valor_celula, int):
-                        valor_celula = str(valor_celula)
+        #             elif isinstance(valor_celula, int):
+        #                 valor_celula = str(valor_celula)
 
-                    elif str(nome_coluna_planilha).upper() == "TIPO_EMPRESA":
+        #             elif str(nome_coluna_planilha).upper() == "TIPO_EMPRESA":
 
-                        self.bot_data.setdefault("TIPO_PARTE_CONTRARIA", "Réu")
-                        if valor_celula == "Réu":
-                            self.bot_data.update(
-                                {"TIPO_PARTE_CONTRARIA": "Autor"})
+        #                 self.bot_data.setdefault("TIPO_PARTE_CONTRARIA", "Réu")
+        #                 if valor_celula == "Réu":
+        #                     self.bot_data.update(
+        #                         {"TIPO_PARTE_CONTRARIA": "Autor"})
 
-                    elif str(nome_coluna_planilha).upper() == "COMARCA":
-                        set_locale = cities_Amazonas().get(valor_celula, None)
-                        if not set_locale:
-                            set_locale = "Outro Estado"
+        #             elif str(nome_coluna_planilha).upper() == "COMARCA":
+        #                 set_locale = cities_Amazonas().get(valor_celula, None)
+        #                 if not set_locale:
+        #                     set_locale = "Outro Estado"
 
-                        self.bot_data.setdefault(
-                            "CAPITAL_INTERIOR", set_locale)
+        #                 self.bot_data.setdefault(
+        #                     "CAPITAL_INTERIOR", set_locale)
 
-                    returns = {nome_coluna.upper(): str(valor_celula)}
-                    break
+        #             returns = {nome_coluna.upper(): str(valor_celula)}
+        #             break
 
-        return returns
+        # return returns
 
     def calc_time(self) -> list:
 
@@ -276,17 +274,17 @@ class CrawJUD(WorkerThread):
                 
             dict_itens = df.to_dict()
             
+            for k, v, in data2[0].items():
+                to_update = dict_itens.get(k)
+                if not to_update:
+                    dict_itens.update({k: {}})
             
-            for item in data2:
-                for key, value in list(dict_itens.items()):
-                    dict_itens.get(key).update(
-                        {str(len(value)): item.get(key, "sem informação")})
             
-            if len(dict_itens) == 0:
-                for pos, item in enumerate(data2):
-                    for key, value in item.items():
-                        if not dict_itens.get(key):
-                            dict_itens.get(key).update({pos: item.get(key, "sem informação")})
+            for key in list(dict_itens.keys()):
+                
+                k = dict_itens.get(key)
+                for item in data2:
+                    k.update({str(len(k)): item.get(k)})
             
             new_data = pd.DataFrame(dict_itens)
             new_data.to_excel(new_xlsx, index=False)

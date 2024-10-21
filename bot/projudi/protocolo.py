@@ -161,7 +161,7 @@ class protocolo(CrawJUD):
             
             file_to_upload = "".join([c for c in unicodedata.normalize('NFKD', file.replace(" ", "").replace("_","")) if not unicodedata.combining(c)])
             
-            path_file = os.path.join(pathlib.Path(self.input_file).parent.resolve(), file_to_upload)
+            path_file = os.path.join(pathlib.Path(self.path_args).parent.resolve(), file_to_upload)
             
             input_file_element.send_keys(path_file)
             
@@ -211,7 +211,7 @@ class protocolo(CrawJUD):
                 self.type_log = "log"
                 self.prt(self)
                 input_file_element:WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="conteudo"]')))
-                input_file_element.send_keys(f'{os.path.join(pathlib.Path(self.input_file).parent.resolve())}/{file_to_upload}')
+                input_file_element.send_keys(f'{os.path.join(pathlib.Path(self.path_args).parent.resolve())}/{file_to_upload}')
                 self.wait_progressbar()
                 self.message = f"Arquivo '{file}' enviado com sucesso!"
                 self.type_log = "log"

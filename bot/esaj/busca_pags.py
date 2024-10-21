@@ -169,7 +169,7 @@ class busca_pags(CrawJUD):
     def append_total_on_output(self, data_append):
 
         namefile = f"Total - PID {self.pid} {datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%d-%m-%y')}.xlsx"
-        output_filename = os.path.join(pathlib.Path(self.input_file).parent.resolve(), namefile)
+        output_filename = os.path.join(pathlib.Path(self.path_args).parent.resolve(), namefile)
 
         wb = openpyxl.load_workbook(filename=output_filename)
         sheet = wb.active

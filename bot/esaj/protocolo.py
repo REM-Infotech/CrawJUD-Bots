@@ -160,7 +160,7 @@ class protocolo(CrawJUD):
             input_file: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, input_documento)))
             sleep(2)
             
-            path_file = pathlib.Path(self.input_file).parent.resolve().__str__()
+            path_file = pathlib.Path(self.path_args).parent.resolve().__str__()
             file = os.path.join(path_file, self.bot_data.get('PETICAO_PRINCIPAL'))
             
             file = file.replace(" ", "")
@@ -255,7 +255,7 @@ class protocolo(CrawJUD):
             getlinkrecibo.click()
             
             path = os.path.join(self.output_dir_path, name_recibo)
-            pathpdf = os.path.join(pathlib.Path(self.input_file).parent.resolve(), 'recibo.pdf')
+            pathpdf = os.path.join(pathlib.Path(self.path_args).parent.resolve(), 'recibo.pdf')
             
             while True:
                 
