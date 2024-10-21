@@ -22,7 +22,6 @@ class capa(CrawJUD):
         
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
-    
     def execution(self):
         
         frame = self.dataFrame()
@@ -57,11 +56,12 @@ class capa(CrawJUD):
                 self.type_log = "error"
                 self.message_error = f'{message_error}. | Operação: {old_message}'
                 self.prt(self)
-                self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
+                self.bot_data.update({"MOTIVO_ERRO": self.message_error})
+                self.append_error(self.bot_data)
                 self.message_error = None
 
         self.finalize_execution()
-        
+       
     def queue(self):
         
         search = self.search(self)

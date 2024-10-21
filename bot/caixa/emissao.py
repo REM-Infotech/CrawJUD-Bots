@@ -40,31 +40,28 @@ class CaixaMaster(CrawJUD):
         self.__dict__ = Initbot.__dict__.copy()
         
         self.start_time = time.perf_counter()
-        
     def execution(self):
         
-        while not self.thread._is_stopped:
+        frame = self.dataFrame()
+        self.max_rows = len(frame)
+        
+        for pos, value in enumerate(frame):
             
-            if self.row == self.ws.max_row+1:
-                self.row = self.ws.max_row+1
+            self.row = pos+2
+            self.bot_data = value
+            if self.thread._is_stopped:
                 break
             
-            self.bot_data = {}
-            for index in range(1, self.ws.max_column + 1):
-                self.index = index
-                self.bot_data.update(self.set_data())
-                if index == self.ws.max_column:
-                    break
+            if self.driver.title.lower() == "a sessao expirou":
+                self.auth(self)
             
             try:
-                
-                if not len(self.bot_data) == 0:
-                    self.queue()
+                self.queue()
                 
             except Exception as e:
                 
                 old_message = self.message
-                message_error = getattr(e, 'msg', getattr(e, 'message', ""))
+                message_error: str = getattr(e, 'msg', getattr(e, 'message', ""))
                 if message_error == "":
                     for exept in webdriver_exepts():
                         if isinstance(e, exept):
@@ -77,13 +74,12 @@ class CaixaMaster(CrawJUD):
                 self.type_log = "error"
                 self.message_error = f'{message_error}. | Operação: {old_message}'
                 self.prt(self)
-                self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
+                self.bot_data.update({"MOTIVO_ERRO": self.message_error})
+                self.append_error(self.bot_data)
                 self.message_error = None
-            
-            self.row += 1
-            
+
         self.finalize_execution()
-        
+     
     def queue(self) -> None:
         
         nameboleto = None
