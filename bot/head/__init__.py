@@ -245,63 +245,27 @@ class CrawJUD(WorkerThread):
         elif len(self.appends) == 0:
             raise ErroDeExecucao("Nenhuma Movimentação encontrada")
 
-    def append_success(self, data: list = None, message: str = None, 
-                       fileN: str = None, data2: list[dict[str, str]] = None):
+    def append_success(self, message: str = None, fileN: str = None, 
+                       data: list[dict[str, str]] = None):
 
-        if data2:
-            new_xlsx = os.path.join(pathlib.Path(self.path).parent.resolve(), fileN)
-
-            chk_path = os.path.exists(new_xlsx)
-            if chk_path:
-                df = pd.read_excel(new_xlsx)
+        if not self.path:
+            self.path = os.path.join(pathlib.Path(self.path).parent.resolve(), fileN)
             
-            elif not chk_path:
-                df = pd.DataFrame() 
-                
-            dict_itens = df.to_dict()
-            
-            for k, v, in data2[0].items():
-                to_update = dict_itens.get(k)
-                if not to_update:
-                    dict_itens.update({k: {}})
+        if not os.path.exists(self.path):
+            df = pd.DataFrame(data)
+            df = df.to_dict(orient="records")
             
             
-            for key in list(dict_itens.keys()):
-                
-                k = dict_itens.get(key)
-                for item in data2:
-                    k.update({str(len(k)): item.get(k)})
-            
-            new_data = pd.DataFrame(dict_itens)
-            new_data.to_excel(new_xlsx, index=False)
+        elif os.path.exists(self.path):
+            df = pd.read_excel(self.path)
+            df = df.to_dict(orient="records")
+            df.extend(data)   
         
-        elif not data2:
-            try:
-                # Carrega a planilha existente
-                existing_data = pd.read_excel(self.path)
-                
-            except FileNotFoundError:
-                # Se a planilha não existir, cria uma nova
-                existing_data = pd.DataFrame()
-                
-            
-            # Converte a nova data em DataFrame e nomeia as colunas
-            columns = existing_data.columns
-            if isinstance(data[0], list):
-                new_data = pd.DataFrame(data, columns=columns)
-                
-            elif not isinstance(data[0], list):
-                new_data = pd.DataFrame([data], columns=columns)
+        new_data = pd.DataFrame(df)
+        new_data.to_excel(self.path, index=False)
 
-            # Concatena os dados existentes com os novos dados
-            updated_data = pd.concat(df.dropna(axis=1, how='all')
-                                    for df in [existing_data, new_data])
-
-            # Salva os dados atualizados de volta para a planilha
-            updated_data.to_excel(self.path, index=False)
-
-            if not message:
-                message = f'Execução do processo Nº{data[0]} efetuada com sucesso!'
+        if not message:
+            message = f'Execução do processo efetuada com sucesso!'
 
         if message:
             self.type_log = "success"
@@ -314,16 +278,13 @@ class CrawJUD(WorkerThread):
             df = pd.DataFrame(data)
             df = df.to_dict(orient="records")
             
-            
         elif os.path.exists(self.path_erro):
             df = pd.read_excel(self.path_erro)
             df = df.to_dict(orient="records")
-        
-        df.extend([data])   
+            df.extend([data])
         
         new_data = pd.DataFrame(df)
         new_data.to_excel(self.path_erro, index=False)
-
 
     def format_String(self, string: str) -> str:
 

@@ -73,7 +73,6 @@ class proc_parte(CrawJUD):
                 
             self.row += 1
             
-        self.append_success(data2=self.data_append, fileN=os.path.basename(self.path))
         self.finalize_execution()
         
     def queue(self) -> None:
