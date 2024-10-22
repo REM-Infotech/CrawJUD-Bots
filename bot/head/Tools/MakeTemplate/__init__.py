@@ -11,7 +11,7 @@ from bot.head.Tools.MakeTemplate.appends import listas
 
 class MakeXlsx:
 
-    def __init__(self, typebot: str, bot: str):
+    def __init__(self, typebot: str, bot: str) -> list[str]:
         """
         
         #### type: Tipo da planilha (sucesso, erro)
@@ -71,7 +71,7 @@ class MakeXlsx:
         # Salvar o workbook no caminho especificado
         workbook.save(path_template)
 
-        return True
+        return cabecalhos
 
 # from datetime import datetime
 # namefile = f'Busca Esaj Capa - {datetime.now(pytz.timezone('Etc/GMT+4')).strftime("%d-%m-%y")}.xlsx'

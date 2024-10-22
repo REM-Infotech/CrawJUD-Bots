@@ -93,7 +93,7 @@ class CrawJUD(WorkerThread):
         namefile_erro = f"Erros - PID {self.pid} {time_xlsx}.xlsx"
         self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
         
-        MakeXlsx("sucesso", self.typebot).make_output(self.path)
+        self.name_colunas = MakeXlsx("sucesso", self.typebot).make_output(self.path)
         MakeXlsx("erro", self.typebot).make_output(self.path_erro)
         
         if not self.xlsx:
@@ -247,22 +247,35 @@ class CrawJUD(WorkerThread):
 
     def append_success(self, message: str = None, fileN: str = None, 
                        data: list[dict[str, str]] = None):
-
-        if not self.path:
-            self.path = os.path.join(pathlib.Path(self.path).parent.resolve(), fileN)
-            
-        if not os.path.exists(self.path):
-            df = pd.DataFrame(data)
-            df = df.to_dict(orient="records")
-            
-            
-        elif os.path.exists(self.path):
-            df = pd.read_excel(self.path)
-            df = df.to_dict(orient="records")
-            df.extend(data)   
         
-        new_data = pd.DataFrame(df)
-        new_data.to_excel(self.path, index=False)
+        def save_info(data: list[dict[str, str]]):
+            if not self.path:
+                self.path = os.path.join(pathlib.Path(self.path).parent.resolve(), fileN)
+                
+            if not os.path.exists(self.path):
+                df = pd.DataFrame(data)
+                df = df.to_dict(orient="records")
+                
+                
+            elif os.path.exists(self.path):
+                
+                df = pd.read_excel(self.path)
+                df = df.to_dict(orient="records")
+                df.extend(data)   
+            
+            new_data = pd.DataFrame(df)
+            new_data.to_excel(self.path, index=False)
+            
+        if type(data) != list[dict[str, str]]:
+            
+            data2 = {}
+            data2.keys = self.name_colunas
+            data2.values = data
+            
+            data.clear()
+            data.append(data2)
+
+        save_info(data)                
 
         if not message:
             message = f'Execução do processo efetuada com sucesso!'
