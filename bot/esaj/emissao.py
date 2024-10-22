@@ -18,8 +18,6 @@ from contextlib import suppress
 from datetime import datetime
 import openpyxl
 
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeptionsBot
 from bot.head.common.exceptions import ErroDeExecucao
 
 """Selenium Imports"""

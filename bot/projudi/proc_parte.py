@@ -8,8 +8,6 @@ from contextlib import suppress
 """ Imports do Projeto """
 
 
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeptionsBot
 from bot.head.common.exceptions import ErroDeExecucao
 
 # Selenium Imports
@@ -19,8 +17,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.remote.webelement import WebElement
 from bot.head.common.exceptions import ErroDeExecucao
 from selenium.webdriver.support import expected_conditions as EC
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeptionsBot
+from bot.head.common.exceptions import ErroDeExecucao
 from selenium.common.exceptions import NoSuchElementException
 
 from bot.head import CrawJUD
@@ -32,47 +29,31 @@ class proc_parte(CrawJUD):
         
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
-        self.data_append: list[dict[str, str]] = []
-    
+        
     def execution(self) -> None:
         
-        self.row = 2
         while not self.thread._is_stopped:
             
             if self.driver.title.lower() == "a sessao expirou":
                 self.auth(self)
             
-            if self.row == self.total_rows+1:
-                self.row = self.total_rows+1
-                break
-            
             try:
-                
-                self.vara = self.varas[self.row-2]
                 self.queue()
                 
             except Exception as e:
                 
                 old_message = self.message
-                message_error: str = getattr(e, 'msg', getattr(e, 'message', ""))
-                if message_error == "":
-                    for exept in webdriver_exepts():
-                        if isinstance(e, exept):
-                            message_error = exeptionsBot().get(exept)
-                            break
-                        
-                if not message_error:
-                    message_error = str(e)
+                message_error = str(e)
                 
                 self.type_log = "error"
                 self.message_error = f'{message_error}. | Operação: {old_message}'
                 self.prt(self)
-                self.append_error(data={"NOME_PARTE": self.parte_name,
-                                        "MOTIVO_ERRO": self.message_error })
-                self.message_error = None
                 
-            self.row += 1
-            
+                self.bot_data.update({"MOTIVO_ERRO": self.message_error})
+                self.append_error(self.bot_data)
+                
+                self.message_error = None
+
         self.finalize_execution()
         
     def queue(self) -> None:

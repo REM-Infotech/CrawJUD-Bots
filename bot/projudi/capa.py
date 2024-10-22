@@ -7,8 +7,6 @@ from datetime import datetime
 """ Imports do Projeto """
 
 
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeptionsBot
 from bot.head.common.exceptions import ErroDeExecucao
 
 # Selenium Imports

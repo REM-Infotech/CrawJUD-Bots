@@ -7,8 +7,7 @@ from contextlib import suppress
 """ Imports do Projeto """
 
 
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeptionsBot
+from bot.head.common.exceptions import ErroDeExecucao
 from bot.head import CrawJUD
 
 # Selenium Imports

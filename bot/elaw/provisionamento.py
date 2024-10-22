@@ -10,8 +10,6 @@ from bot.head import CrawJUD
 
 
 from bot.head.common.exceptions import ErroDeExecucao
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeptionsBot
 
 
 # Selenium Imports

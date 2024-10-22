@@ -12,8 +12,6 @@ from bot.head import CrawJUD
 
 
 from bot.head.common.exceptions import ErroDeExecucao
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeptionsBot
 
 
 # Selenium Imports
@@ -70,7 +68,6 @@ class sol_pags(CrawJUD):
                 self.message_error = None
 
         self.finalize_execution()
-
     
     def queue(self) -> None:
         
@@ -137,25 +134,7 @@ class sol_pags(CrawJUD):
             raise ErroDeExecucao("Tipo de Pagamento não encontrado")
             
         except Exception as e:
-            
-            self.message = getattr(e, 'msg', None)
-            
-            if self.message is None:
-                self.message =  getattr(e, 'message', "")
-            
-            if self.message == "":
-            
-                for exept in webdriver_exepts():
-                    if isinstance(e, exept):
-                        self.message = exeptionsBot().get(exept)
-                        break
-
-            self.message = f'{self.message}.'
-            self.prt.print_log('error', self.message)
-
-            self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
-            
-            return
+            raise ErroDeExecucao(e=e)
     
     def condenacao(self) -> None:
         
@@ -335,7 +314,7 @@ class sol_pags(CrawJUD):
             conta_debito.click()
             
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
               
     def custas(self) -> None:
         

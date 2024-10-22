@@ -13,28 +13,29 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, StaleElementReferenceException
 
 from bot.head import CrawJUD
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeptionsBot
 from bot.head.common.exceptions import ErroDeExecucao
 
 
 class pauta(CrawJUD):
 
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
-
+        
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
-        self.data_append: list[
-            dict[str, dict[str, list[dict[str, str]]]]] = {}
-
+        
     def execution(self) -> None:
-
+        
+        frame = self.dataFrame()
+        self.max_rows = len(frame)
+        
         self.row = 2
         self.current_date = self.data_inicio
-        while not self.thread._is_stopped:
-
-            if self.current_date > self.data_fim:
-                break
+        
+        while not self.thread._is_stopped\
+            and self.current_date <= self.data_fim:
+            
+            if self.driver.title.lower() == "a sessao expirou":
+                self.auth(self)
             
             try:
                 self.queue()
@@ -42,24 +43,16 @@ class pauta(CrawJUD):
             except Exception as e:
                 
                 old_message = self.message
-                message_error: str = getattr(e, 'msg', getattr(e, 'message', ""))
-                if message_error == "":
-                    for exept in webdriver_exepts():
-                        if isinstance(e, exept):
-                            message_error = exeptionsBot().get(exept)
-                            break
-                        
-                if not message_error:
-                    message_error = str(e)
+                message_error = str(e)
                 
                 self.type_log = "error"
                 self.message_error = f'{message_error}. | Operação: {old_message}'
                 self.prt(self)
-                self.append_error([self.data_inicio, self.message])
-                self.message_error = None
                 
-            self.row += 1
-            self.current_date += timedelta(days=1)
+                self.bot_data.update({"MOTIVO_ERRO": self.message_error})
+                self.append_error(self.bot_data)
+                
+                self.message_error = None
 
         self.finalize_execution()
 
