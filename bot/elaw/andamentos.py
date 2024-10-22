@@ -12,8 +12,6 @@ from bot.head import CrawJUD
 
 
 from bot.head.common.exceptions import ErroDeExecucao
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeption_message
 
 
 # Selenium Imports
@@ -33,52 +31,43 @@ class andamentos(CrawJUD):
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
         
-    def execution(self):
+    def execution(self) -> None:
         
-        while not self.thread._is_stopped:
+        frame = self.dataFrame()
+        self.max_rows = len(frame)
+        
+        for pos, value in enumerate(frame):
             
-            if self.row == self.ws.max_row+1:
-                self.row = self.ws.max_row+1
+            self.row = pos+2
+            self.bot_data = value
+            if self.thread._is_stopped:
                 break
             
-            self.bot_data = {}
-            for index in range(1, self.ws.max_column + 1):
-                self.index = index
-                self.bot_data.update(self.set_data())
-                if index == self.ws.max_column:
-                    break
+            if self.driver.title.lower() == "a sessao expirou":
+                self.auth(self)
             
             try:
-                
-                if not len(self.bot_data) == 0:
-                    self.queue()
+                self.queue()
                 
             except Exception as e:
                 
                 old_message = self.message
-                message_error = getattr(e, 'msg', getattr(e, 'message', ""))
-                if message_error == "":
-                    for exept in webdriver_exepts():
-                        if isinstance(e, exept):
-                            message_error = exeption_message().get(exept)
-                            break
-                        
-                if not message_error:
-                    message_error = str(e)
+                message_error = str(e)
                 
                 self.type_log = "error"
                 self.message_error = f'{message_error}. | Operação: {old_message}'
                 self.prt(self)
-                self.bot_data.update({'MOTIVO_ERRO': self.message_error})
-                self.append_error(data=self.bot_data)
+                
+                self.bot_data.update({"MOTIVO_ERRO": self.message_error})
+                self.append_error(self.bot_data)
+                
                 self.message_error = None
-            
-            self.row += 1
-            
+
         self.finalize_execution()
 
+
         
-    def queue(self):
+    def queue(self) -> None:
         
         search = self.search(self)
         if search is True:
@@ -101,7 +90,7 @@ class andamentos(CrawJUD):
             self.prt(self)
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
   
-    def info_data(self):
+    def info_data(self) -> None:
 
         try:
             
@@ -120,9 +109,9 @@ class andamentos(CrawJUD):
             self.interact.sleep_load('div[id="j_id_34"]')
             
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
         
-    def info_ocorrencia(self):
+    def info_ocorrencia(self) -> None:
         
         try:
             self.message = "Informando ocorrência"
@@ -136,9 +125,9 @@ class andamentos(CrawJUD):
             self.interact.send_key(ocorrencia, text_andamento)
 
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
     
-    def info_observacao(self):
+    def info_observacao(self) -> None:
         
         try:
             self.message = "Informando observação"
@@ -153,13 +142,13 @@ class andamentos(CrawJUD):
             self.interact.send_key(observacao, text_andamento)
 
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
     
-    def add_anexo(self):
+    def add_anexo(self) -> None:
 
         pass
             
-    def save_andamento(self):
+    def save_andamento(self) -> None:
         
         try:
             self.message = 'Salvando andamento...'

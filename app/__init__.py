@@ -50,6 +50,10 @@ def init_app():
         
         age = timedelta(days=31).max.seconds
         db.init_app(app)
+        
+        from app.models import init_database
+        init_database()
+        
         mail.init_app(app)
         io.init_app(app, cors_allowed_origins=check_allowed_origin)
         tlsm.init_app(app, content_security_policy=csp(),
@@ -60,8 +64,7 @@ def init_app():
                     x_content_type_options= True,
                     x_xss_protection=True)
     
-        from app.models import init_database
-        init_database()
+        
         
 from app import routes
 init_app()

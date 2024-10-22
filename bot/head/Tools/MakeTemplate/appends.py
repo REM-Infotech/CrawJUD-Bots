@@ -38,7 +38,7 @@ class listas:
         
     def sucesso(self) -> list[str]:
         
-        return ["Mensagem de conclusão", "Nome Comprovante"]
+        return ["MENSAGEM_COMCLUSAO", "NOME_COMPROVANTE"]
 
     def erro(self) -> list[str]:
 

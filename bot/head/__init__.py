@@ -11,10 +11,11 @@ import platform
 import subprocess
 import unicodedata
 import pandas as pd
-from tqdm import tqdm
-from typing import Type, Union
+from pandas import Timestamp
+from typing import Type, Union, Callable
 from datetime import datetime
-from openpyxl.worksheet.worksheet import Worksheet
+# from openpyxl.worksheet.worksheet import Worksheet
+from openpyxl.workbook.workbook import Workbook
 from webdriver_manager.chrome import ChromeDriverManager
 
 # Selenium Imports
@@ -45,21 +46,30 @@ class CrawJUD(WorkerThread):
             
         self.__dict__ = worker_thread.__dict__.copy()
         self.prt: Type[printtext] = printtext(self)
-        
+    
+    def __getattr__(self, nome_do_atributo: str) -> Union[
+        Callable[[], None], list[dict[str, str]], list[str], 
+        str, int, datetime]:
+        item = getattr(self.argbot, nome_do_atributo, None) 
+        return item
+    
+    
     def setup(self, app: Flask, path_args: str = None):
         
         self.driver = None
         with open(path_args, "rb") as f:
-            arguments_bot: dict[str, str | int] = json.load(f)
+            json_f: dict[str, str | int] = json.load(f)
+            
+            setattr(self, "argbot", json_f)
+            
+            for key, value in json_f.items():
+                setattr(self, key, value)
         
-        time.sleep(5)
+        time.sleep(10)
         self.list_args = ['--ignore-ssl-errors=yes', '--ignore-certificate-errors', "--display=:99", "--window-size=1600,900", 
                  "--no-sandbox", "--disable-blink-features=AutomationControlled", '--kiosk-printing']    
 
         ## Definição de variaveis utilizadas pelos robôs
-        self.argbot = arguments_bot
-        self.url_socket = arguments_bot["url_socket"]
-        self.pid = arguments_bot['pid']
         self.row = int(0)
         self.app = app
         self.message_error = None
@@ -67,54 +77,40 @@ class CrawJUD(WorkerThread):
         self.type_log = str("log")
         self.prt(self)
         
-        
-        self.input_file = os.path.join(pathlib.Path(path_args).parent.resolve(), arguments_bot['xlsx'])
-        self.output_dir_path = pathlib.Path(self.input_file).parent.resolve().__str__()
+        self.output_dir_path = pathlib.Path(path_args).parent.resolve().__str__()
         self.bot_data: dict[str, str | int | datetime] = {}
-        self.username = self.argbot.get("login", None)
-        self.password = self.argbot.get("password", None)
-        self.senhacert = self.argbot.get("token", None)
-        self.name_cert = self.argbot.get("name_cert", None)
         
         if self.name_cert:
             
             self.install_cert()
         
-        self.login_method = arguments_bot['login_method']
-        self.system: str = arguments_bot.get("system")
-        self.type: str = arguments_bot.get("type")
-        
-        self.state: str = arguments_bot.get("state")
-        self.rows = int(arguments_bot.get("total_rows"))
-        
         ## Abertura da planilha de input
+        self.path_args = path_args
+        ## Criação das planilhas de output
+        time_xlsx = datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%d-%m-%y')
         
-        self.ws: Type[Worksheet] = openpyxl.load_workbook(self.input_file).active
+        namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
+        self.path = f"{self.output_dir_path}/{namefile}"
+
+        namefile_erro = f"Erros - PID {self.pid} {time_xlsx}.xlsx"
+        self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
         
+        self.name_colunas = MakeXlsx("sucesso", self.typebot).make_output(self.path)
+        MakeXlsx("erro", self.typebot).make_output(self.path_erro)
+        
+        if not self.xlsx:
+            
+            self.data_inicio = datetime.strptime(self.data_inicio, "%Y-%m-%d")
+            self.data_fim = datetime.strptime(self.data_fim, "%Y-%m-%d")
             
         try:
             
-            ## Criação das planilhas de output
-            time_xlsx = datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%d-%m-%y')
-            
-            self.message = 'Criando planilha de output'
-            self.type_log = "log"
-            self.prt(self)
-            
-            namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
-            self.path = f"{self.output_dir_path}/{namefile}"
-            MakeXlsx("sucesso", self.type).make_output(self.path)
-
-            namefile_erro = f"Erros - PID {self.pid} {time_xlsx}.xlsx"
-            self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
-            MakeXlsx("erro", self.type).make_output(self.path_erro)
-            
-            self.message = 'Planilhas criadas!'
-            self.type_log = "log"
-            self.prt(self)
-            
             ## Carrega elementos do bot
-            self.elements = elements_bot(self.system, self.state)
+            cl = self.state
+            if not cl:
+                cl = self.client.split(" ")[0]
+            
+            self.elements = elements_bot(self.system, cl)
             
             args = self.DriverLaunch()
             if not args:
@@ -123,10 +119,7 @@ class CrawJUD(WorkerThread):
                 self.type_log = "error"
                 self.prt(self)
                 return
-            
-            self.login_method = self.argbot.get("login_method", None)
-            self.driver: Type[WebDriver] = args[0]
-            self.wait: Type[WebDriverWait] = args[1]
+
             self.interact = Interact(self)
             
             Get_Login = self.login()
@@ -146,13 +139,13 @@ class CrawJUD(WorkerThread):
                 
                 with app.app_context():
                     SetStatus(status='Falha ao iniciar', pid=self.pid, 
-                            system=self.system, type=self.type).botstop()
+                            system=self.system, typebot=self.typebot).botstop()
                 
                 return
 
             self.search = SeachBot(self)
             
-            bot = master_bots(self.system, self.type, self)
+            bot = master_bots(self.system, self.typebot, self)
             bot()
             
         except Exception as e:
@@ -163,7 +156,7 @@ class CrawJUD(WorkerThread):
             
             with app.app_context():
                 SetStatus(status='Falha ao iniciar', pid=self.pid, 
-                        system=self.system, type=self.type).botstop()
+                        system=self.system, typebot=self.typebot).botstop()
 
             self.row = 0
             self.message = f'Falha ao iniciar. Informe a mensagem de erro ao suporte'
@@ -193,51 +186,44 @@ class CrawJUD(WorkerThread):
 
         return Get_Login
     
-    def set_data(self) -> dict:
+    def dataFrame(self) -> list[dict[str, str]]:
 
-        returns = {}
-        for nome_coluna in nomes_colunas():
-            nome_coluna = str(nome_coluna)
-            nome_coluna_planilha = self.ws.cell(row=1, column=self.index).value
-            valor_celula = self.ws.cell(row=self.row, column=self.index).value
-            if nome_coluna_planilha and nome_coluna.upper() == str(nome_coluna_planilha).upper():
-                if valor_celula:
+        input_file = os.path.join(pathlib.Path(
+            self.path_args).parent.resolve().__str__(), str(self.xlsx))
+        
+        df = pd.read_excel(input_file)
+        
+        for col in df.columns.to_list():
+            df[col] = df[col].apply(lambda x: x.strftime('%d/%m/%Y') if type(x)\
+                == datetime or type(x) == Timestamp else x)
+            
+        for col in df.select_dtypes(include=["float"]).columns.to_list():
+            df[col] = df[col].apply(lambda x: "{:.2f}".format(x).replace(".", ","))
+            
+        return df.to_dict(orient="records")
+    
+    def elawFormats(self, data: dict[str, str]) -> dict[str, str]:
+        
+        data_listed = list(data.items())
+        for key, value in data_listed:
+            
+            if key.upper() == "TIPO_EMPRESA":
+                data.update({"TIPO_PARTE_CONTRARIA": "Autor"})
+                if value.upper() == "RÉU":
+                    data.update({"TIPO_PARTE_CONTRARIA": "Autor"})
+                    
+            elif key.upper() == "COMARCA":
+                set_locale = cities_Amazonas().get(value, None)
+                if not set_locale:
+                    set_locale = "Outro Estado"
 
-                    if nome_coluna_planilha.upper() == "FASE":
-                        pass
-
-                    if isinstance(valor_celula, datetime):
-                        valor_celula = str(valor_celula.strftime("%d/%m/%Y"))
-
-                    elif str(nome_coluna_planilha).upper() == "DATA_LIMITE" and not self.bot_data.get("DATA_INICIO"):
-                        self.bot_data.update({"DATA_INICIO": valor_celula})
-
-                    elif isinstance(valor_celula, float):
-                        valor_celula = "{:.2f}".format(
-                            valor_celula).replace(".", ",")
-
-                    elif isinstance(valor_celula, int):
-                        valor_celula = str(valor_celula)
-
-                    elif str(nome_coluna_planilha).upper() == "TIPO_EMPRESA":
-
-                        self.bot_data.setdefault("TIPO_PARTE_CONTRARIA", "Réu")
-                        if valor_celula == "Réu":
-                            self.bot_data.update(
-                                {"TIPO_PARTE_CONTRARIA": "Autor"})
-
-                    elif str(nome_coluna_planilha).upper() == "COMARCA":
-                        set_locale = cities_Amazonas().get(valor_celula, None)
-                        if not set_locale:
-                            set_locale = "Outro Estado"
-
-                        self.bot_data.setdefault(
-                            "CAPITAL_INTERIOR", set_locale)
-
-                    returns = {nome_coluna.upper(): str(valor_celula)}
-                    break
-
-        return returns
+                data.update({"CAPITAL_INTERIOR": set_locale})
+                
+            elif key == "DATA_LIMITE" and not data.get("DATA_INICIO"):
+                data.update({"DATA_INICIO": value})   
+                
+            
+        return data
 
     def calc_time(self) -> list:
 
@@ -259,68 +245,72 @@ class CrawJUD(WorkerThread):
         elif len(self.appends) == 0:
             raise ErroDeExecucao("Nenhuma Movimentação encontrada")
 
-    def append_success(self, data: list, message: str = None):
-
-        try:
-            # Carrega a planilha existente
-            existing_data = pd.read_excel(self.path)
-            
-        except FileNotFoundError:
-            # Se a planilha não existir, cria uma nova
-            existing_data = pd.DataFrame()
-            
+    def append_success(self, data: list[dict[str, str]] = None,
+                        message: str = None, fileN: str = None,):
         
-        # Converte a nova data em DataFrame e nomeia as colunas
-        columns = existing_data.columns
-        if isinstance(data[0], list):
-            new_data = pd.DataFrame(data, columns=columns)
+        def save_info(data: list[dict[str, str]]):
+            if not self.path:
+                self.path = os.path.join(pathlib.Path(self.path).parent.resolve(), fileN)
+                
+            if not os.path.exists(self.path):
+                df = pd.DataFrame(data)
+                df = df.to_dict(orient="records")
+                
+                
+            elif os.path.exists(self.path):
+                
+                df = pd.read_excel(self.path)
+                df = df.to_dict(orient="records")
+                df.extend(data)   
             
-        elif not isinstance(data[0], list):
-            new_data = pd.DataFrame([data], columns=columns)
+            new_data = pd.DataFrame(df)
+            new_data.to_excel(self.path, index=False)
+        
+        typeD = (type(data) == list
+            and
+            all(isinstance(item, dict) for item in data))
+        
+        if not typeD:
+            
+            data2 = {}
+            
+            for item in self.name_colunas:
+                data2.update({item: ""})
+            
+            for item in data:    
+                for key, value in list(data2.items()):
+                    if not value:
+                        data2.update({key: item})
+                        break
+                    
+            data.clear()
+            data.append(data2)
 
-        # Concatena os dados existentes com os novos dados
-        updated_data = pd.concat(df.dropna(axis=1, how='all')
-                                 for df in [existing_data, new_data])
-
-        # Salva os dados atualizados de volta para a planilha
-        updated_data.to_excel(self.path, index=False)
+        save_info(data)                
 
         if not message:
-            message = f'Execução do processo Nº{data[0]} efetuada com sucesso!'
+            message = f'Execução do processo efetuada com sucesso!'
 
-        self.type_log = "success"
-        self.message = message
-        self.prt(self)
-
-    def append_error(self, motivo_erro: list = None, data: dict[str, str] = None):
-
-        if data:
-            try:
-                # Carrega a planilha existente
-                df = pd.read_excel(self.path_erro)
+        if message:
+            if self.type_log == "log":
+                self.type_log = "success"
                 
-            except FileNotFoundError:
-                # Se a planilha não existir, cria uma nova
-                df = pd.DataFrame()
-                
-            dict_itens = df.to_dict()
-            for key, value in list(dict_itens.items()):
-                dict_itens.update({key: {str(len(list(value))): data.get(key, "sem informação")}})
-            
-            for key, value in data.items():
-                if not dict_itens.get(key):
-                    dict_itens.update({key: {"0": value}})
-            
-            new_data = pd.DataFrame(dict_itens)
-            new_data.to_excel(self.path_erro, index=False)
-            
-        elif motivo_erro:
-            
-            wb = openpyxl.load_workbook(filename=self.path_erro)
-            sheet = wb.active
+            self.message = message
+            self.prt(self)
 
-            sheet.append(motivo_erro)
-            wb.save(self.path_erro)
+    def append_error(self, data: dict[str, str] = None):
+        
+        if not os.path.exists(self.path_erro):
+            df = pd.DataFrame(data)
+            df = df.to_dict(orient="records")
+            
+        elif os.path.exists(self.path_erro):
+            df = pd.read_excel(self.path_erro)
+            df = df.to_dict(orient="records")
+            df.extend([data])
+        
+        new_data = pd.DataFrame(df)
+        new_data.to_excel(self.path_erro, index=False)
 
     def format_String(self, string: str) -> str:
 
@@ -328,10 +318,10 @@ class CrawJUD(WorkerThread):
 
     def finalize_execution(self) -> None:
 
+        self.row += 1
         self.driver.delete_all_cookies()
         self.driver.close()
 
-        namefile = self.path.split("/")[-1]
         end_time = time.perf_counter()
         execution_time = end_time - self.start_time
         calc = execution_time / 60
@@ -340,13 +330,13 @@ class CrawJUD(WorkerThread):
         
         with self.app.app_context():
             SetStatus(status='Finalizado', pid=self.pid, 
-                    system=self.system, type=self.type).botstop()
+                    system=self.system, typebot=self.typebot).botstop()
             
         self.type_log = "success"
         self.message = f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos"
         self.prt(self)
 
-    def DriverLaunch(self) -> list[WebDriver, WebDriverWait]:
+    def DriverLaunch(self) -> bool:
         
         try:
             self.message = 'Inicializando WebDriver'
@@ -381,10 +371,12 @@ class CrawJUD(WorkerThread):
             for argument in self.list_args:
                 chrome_options.add_argument(argument)
 
-            for root, dirs, files in os.walk(os.path.join(os.getcwd())):
-                for file in files:
-                    if ".crx" in file:
-                        path_plugin = os.path.join(root, file)
+            this_path = pathlib.Path(__file__).parent.resolve().__str__()
+            path_extensions = os.path.join(this_path, "extensions")
+            for root, dirs, files in os.walk(path_extensions):
+                for file_ in files:
+                    if ".crx" in file_:
+                        path_plugin = os.path.join(root, file_)
                         chrome_options.add_extension(path_plugin)
             chrome_prefs = {
                 "download.prompt_for_download": False,
@@ -393,33 +385,35 @@ class CrawJUD(WorkerThread):
                 'printing.print_preview_sticky_settings.appState': json.dumps(self.settings),
                 "download.default_directory": "{}".format(os.path.join(self.output_dir_path))
             }
-
-            path_chrome = os.path.join(pathlib.Path(self.input_file).parent.resolve())
+            
+            path_chrome = os.path.join(pathlib.Path(self.path_args).parent.resolve())
             driver_cache_manager = DriverCacheManager(root_dir=path_chrome)
             chrome_options.add_experimental_option("prefs", chrome_prefs)
-            driverinst = ChromeDriverManager(
-                cache_manager=driver_cache_manager).install()
+            driverinst = ChromeDriverManager(cache_manager=driver_cache_manager).install()
             
-            path = os.path.join(pathlib.Path(driverinst).parent.resolve(), "chromedriver.exe")
+            driverinst = pathlib.Path(driverinst).parent.resolve().__str__()
+            path = os.path.join(driverinst, "chromedriver.exe")
             
             if platform.system() != "Windows":
                 path = path.replace(".exe", "")
             
             driver = webdriver.Chrome(service=Service(path), options=chrome_options)
             wait = WebDriverWait(driver, 20, 0.01)
-            args = [driver, wait]
             driver.delete_all_cookies()
+            
+            self.driver = driver
+            self.wait = wait
             
             self.message = "WebDriver inicializado"
             self.type_log = "log"
             self.prt(self)
             
-            return args
+            return True
 
         except Exception as e:
             raise e
 
-    def install_cert(self):
+    def install_cert(self) -> None:
 
         path_cert = str(os.path.join(self.output_dir_path, self.name_cert))
         comando = ["certutil", "-importpfx", "-user", "-f", "-p", self.senhacert, "-silent", path_cert]
@@ -434,19 +428,47 @@ class CrawJUD(WorkerThread):
         except subprocess.CalledProcessError as e:
             raise e
 
+    def group_date_all(self, data: dict[str, dict[str, str]]) -> list[dict[str, str]]:
 
+        
+        records = []
+        for vara, dates in data.items():
+            record = {}
+            for date, entries in dates.items():
+                for entry in entries:
+                    
+                    record.update({"Data": date, "Vara": vara})
+                    record.update(entry)
+                    records.append(record)
+
+        return records
+
+    def group_keys(self, data: list[dict[str, str]]) -> dict[str, str]:
+
+        record = {}
+        for pos, entry in enumerate(data):
+            for key, value in entry.items():
+                    
+                if not record.get(key):   
+                    record.update({key: {}})
+                    
+                record.get(key).update({str(pos): value})
+        return record
+    
 from bot.esaj import esaj, elements_esaj
 from bot.elaw import elaw, elements_elaw
+from bot.pje import pje, elements_pje
 from bot.projudi import projudi, elements_projudi
 
-def master_bots(system: str, type_bot: str, master: CrawJUD) -> projudi | esaj | elaw:
-    return globals().get(system.lower())(type_bot, master)
-        
-def elements_bot(system: str, state: str) -> Union[
-    Union[elements_projudi.AM, elements_projudi.AC, elements_projudi.SP],
-    Union[elements_esaj.AM, elements_esaj.AC, elements_esaj.SP]]:
+def master_bots(system: str, type_bot: str, master: CrawJUD) -> Callable[[], str]:
     
-    return globals().get(f"elements_{system.lower()}")(state)()
+    call_act = globals().get(system.lower())(type_bot, master)
+    return call_act
+        
+def elements_bot(system: str, state: str) -> Callable[[], str]:
+    
+    call_act = globals().get(f"elements_{system.lower()}")(state)()
+    return call_act
 
 
 
@@ -457,6 +479,5 @@ from bot.head.nome_colunas import nomes_colunas
 from bot.head.Tools.MakeTemplate import MakeXlsx
 from bot.head.Tools.PrintLogs import printtext
 from bot.head.Tools.dicionarios import cities_Amazonas
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeption_message
+from bot.head.common.exceptions import ErroDeExecucao
 from bot.head.Tools.StartStop_Notify import SetStatus

@@ -8,8 +8,6 @@ from datetime import datetime
 from bot.head import CrawJUD
 
 
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeption_message
 from bot.head.common.exceptions import ErroDeExecucao
 
 # Selenium Imports
@@ -25,24 +23,21 @@ class movimentacao(CrawJUD):
         
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
-
-    def execution(self):
         
-        while not self.thread._is_stopped:
+    def execution(self) -> None:
+        
+        frame = self.dataFrame()
+        self.max_rows = len(frame)
+        
+        for pos, value in enumerate(frame):
             
-            if self.row == self.ws.max_row+1:
-                self.row = self.ws.max_row+1
+            self.row = pos+2
+            self.bot_data = value
+            if self.thread._is_stopped:
                 break
             
-            self.appends = []
-            self.resultados = []
-            
-            self.bot_data = {}
-            for index in range(1, self.ws.max_column + 1):
-                self.index = index
-                self.bot_data.update(self.set_data())
-                if index == self.ws.max_column:
-                    break
+            if self.driver.title.lower() == "a sessao expirou":
+                self.auth(self)
             
             try:
                 self.queue()
@@ -50,28 +45,23 @@ class movimentacao(CrawJUD):
             except Exception as e:
                 
                 old_message = self.message
-                message_error = getattr(e, 'msg', getattr(e, 'message', ""))
-                if message_error == "":
-                    for exept in webdriver_exepts():
-                        if isinstance(e, exept):
-                            message_error = exeption_message().get(exept)
-                            break
-                        
-                if not message_error:
-                    message_error = str(e)
+                message_error = str(e)
                 
                 self.type_log = "error"
                 self.message_error = f'{message_error}. | Operação: {old_message}'
                 self.prt(self)
-                self.bot_data.update({'MOTIVO_ERRO': self.message_error})
-                self.append_error(data=self.bot_data)
+                
+                self.bot_data.update({"MOTIVO_ERRO": self.message_error})
+                self.append_error(self.bot_data)
+                
                 self.message_error = None
-            
-            self.row += 1
-            
+
         self.finalize_execution()
         
     def queue(self) -> None:
+        
+        self.appends = []
+        self.resultados = []
         
         self.search(self)
         self.get_moves()
@@ -92,10 +82,10 @@ class movimentacao(CrawJUD):
         sleep(0.5)
         
         try: 
-            table_moves = self.driver.find_element(By.CSS_SELECTOR, movimentacoes)
+            table_moves = self.driver.find_element(By.CSS_SELECTOR, self.elements.movimentacoes)
             self.driver.execute_script('document.querySelector("#tabelaTodasMovimentacoes").style.display = "block"')
         except:
-            table_moves = self.driver.find_element(By.ID, ultimas_movimentacoes)
+            table_moves = self.driver.find_element(By.ID, self.elements.ultimas_movimentacoes)
             self.driver.execute_script('document.querySelector("#tabelaUltimasMovimentacoes").style.display = "block"')
             
         itens = table_moves.find_elements(By.TAG_NAME, "tr")

@@ -9,7 +9,7 @@ class esaj:
         self.bot = bot
         self.Master = Master
     
-    def __call__(self):
+    def __call__(self) -> None:
         try:
             self.execution: capa | protocolo | movimentacao | \
                 emissao | busca_pags = globals().get(self.bot)(self.Master)

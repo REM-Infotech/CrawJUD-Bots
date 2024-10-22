@@ -2,8 +2,7 @@
 from bot.head import CrawJUD
 
 
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeption_message
+from bot.head.common.exceptions import ErroDeExecucao
 
 from typing import Type
 import time
@@ -31,65 +30,55 @@ class busca_pags(CrawJUD):
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
         
-    def execution(self):
+    def execution(self) -> None:
         
-        while not self.thread._is_stopped:
+        frame = self.dataFrame()
+        self.max_rows = len(frame)
+        
+        for pos, value in enumerate(frame):
             
-            if self.row == self.ws.max_row+1:
-                self.row = self.ws.max_row+1
+            self.row = pos+2
+            self.bot_data = value
+            if self.thread._is_stopped:
                 break
             
-            self.bot_data = {}
-            for index in range(1, self.ws.max_column + 1):
-                self.index = index
-                self.bot_data.update(self.set_data())
-                if index == self.ws.max_column:
-                    break
+            if self.driver.title.lower() == "a sessao expirou":
+                self.auth(self)
             
             try:
-                
-                if not len(self.bot_data) == 0:
-                    self.queue()
+                self.queue()
                 
             except Exception as e:
                 
                 old_message = self.message
-                message_error = getattr(e, 'msg', getattr(e, 'message', ""))
-                if message_error == "":
-                    for exept in webdriver_exepts():
-                        if isinstance(e, exept):
-                            message_error = exeption_message().get(exept)
-                            break
-                        
-                if not message_error:
-                    message_error = str(e)
+                message_error = str(e)
                 
                 self.type_log = "error"
                 self.message_error = f'{message_error}. | Operação: {old_message}'
                 self.prt(self)
-                self.append_error([self.bot_data.get('NUMERO_PROCESSO'), self.message])
+                
+                self.bot_data.update({"MOTIVO_ERRO": self.message_error})
+                self.append_error(self.bot_data)
+                
                 self.message_error = None
-            
-            self.row += 1
-            
-        self.finalize_execution()
 
-        
-    def queue(self):
+        self.finalize_execution()
+     
+    def queue(self) -> None:
 
         self.get_page_custas_pagas()
         self.page_custas()
  
-    def get_page_custas_pagas(self):
+    def get_page_custas_pagas(self) -> None:
         
-        generatepdf: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, get_page_custas_pagas)))
+        generatepdf: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.get_page_custas_pagas)))
         onclick_value =generatepdf.get_attribute("onclick")
         url_start = onclick_value.find("'") + 1
         url_end = onclick_value.find("'", url_start)
         url = onclick_value[url_start:url_end]
         self.driver.get(url)
         
-    def page_custas(self):
+    def page_custas(self) -> None:
         
         divcustaspagas: WebElement = self.wait.until(EC.presence_of_all_elements_located((By.TAG_NAME, 'div')))
         
@@ -169,7 +158,7 @@ class busca_pags(CrawJUD):
     def append_total_on_output(self, data_append):
 
         namefile = f"Total - PID {self.pid} {datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%d-%m-%y')}.xlsx"
-        output_filename = os.path.join(pathlib.Path(self.input_file).parent.resolve(), namefile)
+        output_filename = os.path.join(pathlib.Path(self.path_args).parent.resolve(), namefile)
 
         wb = openpyxl.load_workbook(filename=output_filename)
         sheet = wb.active

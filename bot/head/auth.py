@@ -39,7 +39,7 @@ class AuthBot(CrawJUD):
         
         return 
     
-    def esaj(self):
+    def esaj(self) -> None:
 
             try:
                 loginuser = ''.join(
@@ -121,7 +121,7 @@ class AuthBot(CrawJUD):
                 print(e)
                 raise e
 
-    def projudi(self):
+    def projudi(self) -> None:
         
         try:
             self.driver.get(self.elements.url_login)
@@ -148,7 +148,7 @@ class AuthBot(CrawJUD):
         except Exception as e:
             raise e
             
-    def elaw(self):
+    def elaw(self) -> None:
 
         try:
             self.driver.get("https://amazonas.elaw.com.br/login")
@@ -175,6 +175,33 @@ class AuthBot(CrawJUD):
         except Exception as e:
             raise e
 
+    def pje(self) -> None:
+        
+        try:
+            self.driver.get(self.elements.url_login)
+            
+            login = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.login_input)))
+            password = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.password_input)))
+            entrar = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.btn_entrar)))
+            
+            login.send_keys(self.username)
+            sleep(0.5)
+            password.send_keys(self.password)
+            sleep(0.5)
+            entrar.click()
+            
+            logado = None
+            with suppress(TimeoutException):
+                logado = self.wait.until(EC.url_to_be(self.elements.chk_login))
+                
+            if not logado:
+                raise
+            
+            return True
+        
+        except Exception as e:
+            raise e
+    
     def accept_cert(self, accepted_dir: str):
         
         try:

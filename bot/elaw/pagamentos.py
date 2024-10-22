@@ -12,8 +12,6 @@ from bot.head import CrawJUD
 
 
 from bot.head.common.exceptions import ErroDeExecucao
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeption_message
 
 
 # Selenium Imports
@@ -37,72 +35,66 @@ class sol_pags(CrawJUD):
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
         
-    def execution(self):
+    def execution(self) -> None:
         
-        while not self.thread._is_stopped:
+        frame = self.dataFrame()
+        self.max_rows = len(frame)
+        
+        for pos, value in enumerate(frame):
             
-            if self.row == self.ws.max_row+1:
-                self.row = self.ws.max_row+1
+            self.row = pos+2
+            self.bot_data = value
+            if self.thread._is_stopped:
                 break
             
-            self.bot_data = {}
-            for index in range(1, self.ws.max_column + 1):
-                self.index = index
-                self.bot_data.update(self.set_data())
-                if index == self.ws.max_column:
-                    break
+            if self.driver.title.lower() == "a sessao expirou":
+                self.auth(self)
             
             try:
-                
-                if not len(self.bot_data) == 0:
-                    self.queue()
+                self.queue()
                 
             except Exception as e:
                 
                 old_message = self.message
-                message_error = getattr(e, 'msg', getattr(e, 'message', ""))
-                if message_error == "":
-                    for exept in webdriver_exepts():
-                        if isinstance(e, exept):
-                            message_error = exeption_message().get(exept)
-                            break
-                        
-                if not message_error:
-                    message_error = str(e)
+                message_error = str(e)
                 
                 self.type_log = "error"
                 self.message_error = f'{message_error}. | Operação: {old_message}'
                 self.prt(self)
-                self.bot_data.update({'MOTIVO_ERRO': self.message_error})
-                self.append_error(data=self.bot_data)
+                
+                self.bot_data.update({"MOTIVO_ERRO": self.message_error})
+                self.append_error(self.bot_data)
+                
                 self.message_error = None
-            
-            self.row += 1
-            
+
         self.finalize_execution()
     
-    def queue(self):
+    def queue(self) -> None:
         
-        search = self.search(self)
-        
-        if search is True:
+        try:
+            search = self.search(self)
+            
+            if search is True:
 
-            namedef = self.format_String(self.bot_data.get("TIPO_PAGAMENTO"))
-            self.new_payment()
-            self.set_pgto(namedef)
-            pgto = getattr(self, namedef)
-            pgto()
+                namedef = self.format_String(self.bot_data.get("TIPO_PAGAMENTO"))
+                self.new_payment()
+                self.set_pgto(namedef)
+                pgto = getattr(self, namedef)
+                pgto()
+                
+                self.save_changes()
+                self.check_sucess()
+                
+            elif not search is True:
+                self.message = "Processo não encontrado!"
+                self.type_log = "error"
+                self.prt(self)
+                self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
+                
+        except Exception as e:
+            raise ErroDeExecucao(e=e)
             
-            self.save_changes()
-            self.check_sucess()
-            
-        elif not search is True:
-            self.message = "Processo não encontrado!"
-            self.type_log = "error"
-            self.prt(self)
-            self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
-            
-    def new_payment(self):
+    def new_payment(self) -> None:
         
         try:
             tab_pagamentos: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a[href="#tabViewProcesso:processoValorPagamento"]')))
@@ -112,9 +104,7 @@ class sol_pags(CrawJUD):
             novo_pgto.click()
         
         except Exception as e:
-            
-            self.message = "Não foi possível adicionar novo pagamento"
-            raise ErroDeExecucao(self.message)
+            raise ErroDeExecucao(e=e)
    
     def set_pgto(self, namedef: str):
         
@@ -146,27 +136,9 @@ class sol_pags(CrawJUD):
             raise ErroDeExecucao("Tipo de Pagamento não encontrado")
             
         except Exception as e:
-            
-            self.message = getattr(e, 'msg', None)
-            
-            if self.message is None:
-                self.message =  getattr(e, 'message', "")
-            
-            if self.message == "":
-            
-                for exept in webdriver_exepts():
-                    if isinstance(e, exept):
-                        self.message = exeption_message().get(exept)
-                        break
-
-            self.message = f'{self.message}.'
-            self.prt.print_log('error', self.message)
-
-            self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
-            
-            return
+            raise ErroDeExecucao(e=e)
     
-    def condenacao(self):
+    def condenacao(self) -> None:
         
         try:
 
@@ -344,9 +316,9 @@ class sol_pags(CrawJUD):
             conta_debito.click()
             
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
               
-    def custas(self):
+    def custas(self) -> None:
         
         try:
             
@@ -503,10 +475,9 @@ class sol_pags(CrawJUD):
             
             
         except Exception as e:
-            
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
         
-    def save_changes(self):
+    def save_changes(self) -> None:
         
         try:
             
@@ -517,12 +488,9 @@ class sol_pags(CrawJUD):
             save.click()
         
         except Exception as e:
-            
-            self.message = 'Erro ao salvar solicitação'
-            raise ErroDeExecucao(self.message)
-            return
+            raise ErroDeExecucao(e=e)
                               
-    def check_sucess(self):
+    def check_sucess(self) -> None:
         
         try:
             tab_pagamentos: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a[href="#tabViewProcesso:processoValorPagamento"]')))
@@ -549,8 +517,7 @@ class sol_pags(CrawJUD):
                         info_sucesso = [self.bot_data.get("NUMERO_PROCESSO"), "Pagamento solicitado com sucesso!!", str(self.bot_data.get("TIPO_GUIA"))]
                         self.append_success(info_sucesso)
                     break
+                
         except Exception as e:
-            
-            self.prt.print_log(self.pid, "error", "Não foi possível adicionar novo pagamento", self.row)
-            return     
+            raise ErroDeExecucao(e=e)   
     

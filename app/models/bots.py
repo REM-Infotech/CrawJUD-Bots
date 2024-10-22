@@ -3,26 +3,6 @@ from app import db
 import pytz
 from datetime import datetime
 
-execution_bots = db.Table(
-    'execution_bots',
-    db.Column('execution_id', db.Integer, db.ForeignKey('executions.id'), primary_key=True),
-    db.Column('bot_id', db.Integer, db.ForeignKey('bots.id'), primary_key=True)
-)
-
-# Tabela de associação para LicensesUsers e Credentials
-execution_users = db.Table(
-    'execution_users',
-    db.Column('executions_id', db.Integer, db.ForeignKey('executions.id'), primary_key=True),
-    db.Column('users_id', db.Integer, db.ForeignKey('users.id'), primary_key=True)
-)
-
-execution_licenses = db.Table(
-    'execution_licenses',
-    db.Column('executions_id', db.Integer, db.ForeignKey('executions.id'), primary_key=True),
-    db.Column('licenses_users_id', db.Integer, db.ForeignKey('licenses_users.id'), primary_key=True)
-)
-
-
 class BotsCrawJUD(db.Model):
     
     __tablename__ = 'bots'
@@ -35,6 +15,7 @@ class BotsCrawJUD(db.Model):
     form_cfg = db.Column(db.String(length=45), nullable=False)
     classification = db.Column(db.String(length=45), nullable=False)
     text = db.Column(db.String(length=512), nullable=False)
+    
     
 class Credentials(db.Model):
     
@@ -49,6 +30,9 @@ class Credentials(db.Model):
     certficate = db.Column(db.String(length=45))
     certficate_blob = db.Column(db.LargeBinary(length=(2**32)-1))
     
+    license_id = db.Column(db.Integer, db.ForeignKey('licenses_users.id'))
+    license_usr = db.relationship('LicensesUsers', backref=db.backref('credentials', lazy=True))
+    
 class Executions(db.Model):
     
     __tablename__ = 'executions'
@@ -61,14 +45,16 @@ class Executions(db.Model):
     data_execucao = db.Column(db.DateTime, default=datetime.now(pytz.timezone('Etc/GMT+4')))
     data_finalizacao = db.Column(db.DateTime, default=datetime.now(pytz.timezone('Etc/GMT+4')))
     arquivo_xlsx = db.Column(db.String(length=64))
-
-    # Relacionamento com Bots (conforme já definido antes)
-    bot = db.relationship('BotsCrawJUD', secondary=execution_bots, backref=db.backref('executions', lazy=True))
-    user = db.relationship('Users', secondary=execution_users, backref=db.backref('executions', lazy=True))
-    licenses = db.relationship('LicensesUsers', secondary='execution_licenses', back_populates='executions')
     
-
+    bot_id = db.Column(db.Integer, db.ForeignKey('bots.id'))
+    bot = db.relationship('BotsCrawJUD', backref=db.backref('executions', lazy=True))
     
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship('Users', backref=db.backref('executions', lazy=True))
+    
+    license_id = db.Column(db.Integer, db.ForeignKey('licenses_users.id'))
+    license_usr = db.relationship('LicensesUsers', backref=db.backref('executions', lazy=True))
+
     
 class CacheLogs(db.Model):
     

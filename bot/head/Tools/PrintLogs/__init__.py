@@ -45,7 +45,7 @@ class printtext(CrawJUD):
             sleep(1)
             self.file_log()
             
-    def file_log(self):
+    def file_log(self) -> None:
 
         try:
             savelog = os.path.join(os.getcwd(), 'Temp' , self.pid, f'LogFile - PID {self.pid}.txt')
@@ -66,7 +66,7 @@ class printtext(CrawJUD):
             # Exibe o erro
             tqdm.write(f"{e}")
     
-    def socket_message(self):
+    def socket_message(self) -> None:
     
         try:
             data: dict[str, str | int] = {'message': self.prompt,
@@ -101,7 +101,14 @@ class printtext(CrawJUD):
             elif log_pid:
                 
                 log_pid.pos = int(data["pos"])
-                if data["type"] == "success":
+                
+                typeSuccess = (
+                    data["type"] == "success"
+                    or
+                    data["type"] == "info")
+                
+                if typeSuccess:
+                    
                     log_pid.remaining -= 1
                     log_pid.success += 1
                     log_pid.last_log = data["message"]

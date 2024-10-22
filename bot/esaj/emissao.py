@@ -18,8 +18,6 @@ from contextlib import suppress
 from datetime import datetime
 import openpyxl
 
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeption_message
 from bot.head.common.exceptions import ErroDeExecucao
 
 """Selenium Imports"""
@@ -48,52 +46,43 @@ class emissao(CrawJUD):
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
         
-    def execution(self):
+    def execution(self) -> None:
         
-        while not self.thread._is_stopped:
+        frame = self.dataFrame()
+        self.max_rows = len(frame)
+        
+        for pos, value in enumerate(frame):
             
-            if self.row == self.ws.max_row+1:
-                self.row = self.ws.max_row+1
+            self.row = pos+2
+            self.bot_data = value
+            if self.thread._is_stopped:
                 break
             
-            self.bot_data = {}
-            for index in range(1, self.ws.max_column + 1):
-                self.index = index
-                self.bot_data.update(self.set_data())
-                if index == self.ws.max_column:
-                    break
+            if self.driver.title.lower() == "a sessao expirou":
+                self.auth(self)
             
             try:
-                
-                if not len(self.bot_data) == 0:
-                    self.queue()
+                self.queue()
                 
             except Exception as e:
                 
                 old_message = self.message
-                message_error = getattr(e, 'msg', getattr(e, 'message', ""))
-                if message_error == "":
-                    for exept in webdriver_exepts():
-                        if isinstance(e, exept):
-                            message_error = exeption_message().get(exept)
-                            break
-                        
-                if not message_error:
-                    message_error = str(e)
+                message_error = str(e)
                 
                 self.type_log = "error"
                 self.message_error = f'{message_error}. | Operação: {old_message}'
                 self.prt(self)
-                self.bot_data.update({'MOTIVO_ERRO': self.message_error})
-                self.append_error(data=self.bot_data)
+                
+                self.bot_data.update({"MOTIVO_ERRO": self.message_error})
+                self.append_error(self.bot_data)
+                
                 self.message_error = None
-            
-            self.row += 1
-            
+
         self.finalize_execution()
 
 
-    def queue(self):
+
+    def queue(self) -> None:
         
         custa = str(self.bot_data.get("TIPO_GUIA"))
         if custa.lower() == "custas iniciais":
@@ -108,21 +97,21 @@ class emissao(CrawJUD):
         self.downloadpdf(self.generate_doc())
         self.append_success(self.get_barcode())
              
-    def custas_iniciais(self):
+    def custas_iniciais(self) -> None:
         
         self.driver.get('https://consultasaj.tjam.jus.br/ccpweb/iniciarCalculoDeCustas.do?cdTipoCusta=7&flTipoCusta=0&&cdServicoCalculoCusta=690003')
         
         self.prt.print_log(self.pid, 'log', "Informando foro", self.row)
-        set_foro: WebElement = self.wait.until(EC.presence_of_element_located((By. CSS_SELECTOR, nome_foro)))
+        set_foro: WebElement = self.wait.until(EC.presence_of_element_located((By. CSS_SELECTOR, self.elements.ome_foro)))
         set_foro.send_keys(self.bot_data.get("FORO"))
         
-        set_classe = self.driver.find_element(By. CSS_SELECTOR, tree_selection)
+        set_classe = self.driver.find_element(By. CSS_SELECTOR, self.elements.tree_selection)
         set_classe.send_keys(self.bot_data.get("CLASSE"))
         
-        semprecível = self.driver.find_element(By.CSS_SELECTOR, civil_selector)
+        semprecível = self.driver.find_element(By.CSS_SELECTOR, self.elements.civil_selector)
         semprecível.click()
 
-        val_acao = self.driver.find_element(By.CSS_SELECTOR, valor_acao)
+        val_acao = self.driver.find_element(By.CSS_SELECTOR, self.elements.valor_acao)
         val_acao.send_keys(self.bot_data.get("VALOR_CAUSA"))
         
         nameinteressado = self.driver.find_element(By. CSS_SELECTOR, 'input[name="entity.nmInteressado"]')
@@ -136,7 +125,7 @@ class emissao(CrawJUD):
         sleep(0.5)
         setcpf_cnpj.send_keys(self.bot_data.get("CPF_CNPJ"))
         
-        avançar = self.driver.find_element(By.CSS_SELECTOR, botao_avancar)
+        avançar = self.driver.find_element(By.CSS_SELECTOR, self.elements.botao_avancar)
         avançar.click()
 
         self.valor_doc = ''
@@ -144,7 +133,7 @@ class emissao(CrawJUD):
             css_val_doc = 'body > table:nth-child(4) > tbody > tr > td > table:nth-child(10) > tbody > tr:nth-child(5) > td:nth-child(3) > strong'
             self.valor_doc: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_val_doc))).text
                        
-    def preparo_ri(self):
+    def preparo_ri(self) -> None:
         
         portal = self.bot_data.get("PORTAL", "não informado") 
         if str(portal).lower() == 'esaj':
@@ -153,13 +142,13 @@ class emissao(CrawJUD):
         elif str(portal).lower() == "projudi":
             self.driver.get("https://consultasaj.tjam.jus.br/ccpweb/iniciarCalculoDeCustas.do?cdTipoCusta=21&flTipoCusta=5&&cdServicoCalculoCusta=690007")
             
-            set_foro: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, nome_foro)))
+            set_foro: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.nome_foro)))
             set_foro.send_keys(self.bot_data.get("FORO"))
 
-            val_acao = self.driver.find_element(By.CSS_SELECTOR, valor_acao)
+            val_acao = self.driver.find_element(By.CSS_SELECTOR, self.elements.valor_acao)
             val_acao.send_keys(self.bot_data.get("VALOR_CAUSA"))
                 
-            nameinteressado = self.driver.find_element(By.CSS_SELECTOR, interessado)
+            nameinteressado = self.driver.find_element(By.CSS_SELECTOR, self.elements.interessado)
             nameinteressado.send_keys(self.bot_data.get("NOME_INTERESSADO"))
 
             elements:list = type_docscss.get(self.bot_data.get("TIPO_GUIA")).get(count_doc(self.bot_data.get("CPF_CNPJ")))
@@ -170,15 +159,15 @@ class emissao(CrawJUD):
             sleep(0.5)
             setcpf_cnpj.send_keys(self.bot_data.get("CPF_CNPJ"))
 
-            avançar = self.driver.find_element(By.CSS_SELECTOR, botao_avancar)
+            avançar = self.driver.find_element(By.CSS_SELECTOR, self.elements.botao_avancar)
             avançar.click()
             
             sleep(1)
-            set_RI: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, check)))
+            set_RI: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.check)))
             set_RI.click()
             
             sleep(1)
-            last_avançar = self.driver.find_element(By.CSS_SELECTOR, botao_avancar_dois)
+            last_avançar = self.driver.find_element(By.CSS_SELECTOR, self.elements.botao_avancar_dois)
             last_avançar.click()
             
             sleep(1)
@@ -190,19 +179,19 @@ class emissao(CrawJUD):
             errodata = [self.bot_data.get('NUMERO_PROCESSO'),'Informar portal do processo na planilha (PROJUDI ou ESAJ)']
             self.append_error(errodata)
     
-    def renajud(self):
+    def renajud(self) -> None:
         pass
     
-    def sisbajud(self):
+    def sisbajud(self) -> None:
         pass
     
-    def custas_postais(self):
+    def custas_postais(self) -> None:
         pass          
                 
     def generate_doc(self) -> str:
         
         self.original_window = original_window = self.driver.current_window_handle
-        generatepdf: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, boleto)))
+        generatepdf: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.boleto)))
         onclick_value =generatepdf.get_attribute("onclick")
         url_start = onclick_value.find("'") + 1
         url_end = onclick_value.find("'", url_start)
@@ -220,7 +209,7 @@ class emissao(CrawJUD):
         ## Checar se não ocorreu o erro "Boleto inexistente"
         check = None
         with suppress(TimeoutException):
-            check:WebElement = WebDriverWait(self.driver, 3).until(EC.presence_of_element_located((By.CSS_SELECTOR, mensagem_retorno))).text
+            check:WebElement = WebDriverWait(self.driver, 3).until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.mensagem_retorno))).text
         
         if check:
             self.driver.close()
@@ -252,7 +241,7 @@ class emissao(CrawJUD):
         self.driver.switch_to.window(self.original_window)
         self.prt.print_log(self.pid, 'log', f"Boleto Nº{self.bot_data.get('NUMERO_PROCESSO')} emitido com sucesso!", self.row)
     
-    def get_barcode(self):
+    def get_barcode(self) -> None:
         
         try:
             self.prt.print_log(self.pid, 'log', 'Extraindo código de barras', self.row)

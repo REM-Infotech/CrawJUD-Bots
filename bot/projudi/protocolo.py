@@ -13,8 +13,6 @@ from contextlib import suppress
 
 
 from bot.head.common.exceptions import ErroDeExecucao
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeption_message
 
 
 # Selenium Imports
@@ -31,60 +29,46 @@ from bot.head import CrawJUD
 
 class protocolo(CrawJUD):
 
-    def __init__(self, Initbot: CrawJUD) -> None:
+    def __init__(self, Initbot: Type[CrawJUD]) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
         
-    def execution(self):
+    def execution(self) -> None:
         
-        self.row = 2
-        while not self.thread._is_stopped:
+        frame = self.dataFrame()
+        self.max_rows = len(frame)
+        
+        for pos, value in enumerate(frame):
+            
+            self.row = pos+2
+            self.bot_data = value
+            if self.thread._is_stopped:
+                break
             
             if self.driver.title.lower() == "a sessao expirou":
                 self.auth(self)
             
-            if self.row == self.ws.max_row+1:
-                self.row = self.ws.max_row+1
-                break
-            
-            self.bot_data = {}
-            for index in range(1, self.ws.max_column + 1):
-                self.index = index
-                self.bot_data.update(self.set_data())
-                if index == self.ws.max_column:
-                    break
-            
             try:
-                
-                if not len(self.bot_data) == 0:
-                    self.queue()
+                self.queue()
                 
             except Exception as e:
                 
                 old_message = self.message
-                message_error = getattr(e, 'msg', getattr(e, 'message', ""))
-                if message_error == "":
-                    for exept in webdriver_exepts():
-                        if isinstance(e, exept):
-                            message_error = exeption_message().get(exept)
-                            break
-                        
-                if not message_error:
-                    message_error = str(e)
+                message_error = str(e)
                 
                 self.type_log = "error"
                 self.message_error = f'{message_error}. | Operação: {old_message}'
                 self.prt(self)
-                self.bot_data.update({'MOTIVO_ERRO': self.message_error})
-                self.append_error(data=self.bot_data)
+                
+                self.bot_data.update({"MOTIVO_ERRO": self.message_error})
+                self.append_error(self.bot_data)
+                
                 self.message_error = None
-            
-            self.row += 1
-            
+
         self.finalize_execution()
-    
-    def queue(self):
+  
+    def queue(self) -> None:
         
         search = self.search(self)
         
@@ -108,7 +92,7 @@ class protocolo(CrawJUD):
         if "intimacaoAdvogado.do" in self.driver.current_url:
             raise ErroDeExecucao("Processo com Intimação pendente de leitura!")
       
-    def add_new_move(self):
+    def add_new_move(self) -> None:
 
         try:
             self.message = 'Inicializando peticionamento...'
@@ -137,9 +121,9 @@ class protocolo(CrawJUD):
             input_move_option.click()
             
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
    
-    def add_new_file(self):
+    def add_new_file(self) -> None:
 
         try:
             file = str(self.bot_data.get("PETICAO_PRINCIPAL"))
@@ -161,7 +145,7 @@ class protocolo(CrawJUD):
             
             file_to_upload = "".join([c for c in unicodedata.normalize('NFKD', file.replace(" ", "").replace("_","")) if not unicodedata.combining(c)])
             
-            path_file = os.path.join(pathlib.Path(self.input_file).parent.resolve(), file_to_upload)
+            path_file = os.path.join(pathlib.Path(self.path_args).parent.resolve(), file_to_upload)
             
             input_file_element.send_keys(path_file)
             
@@ -182,9 +166,9 @@ class protocolo(CrawJUD):
                     break
         
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
         
-    def set_file_principal(self):
+    def set_file_principal(self) -> None:
 
         try:
             tablefiles : WebElement = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'resultTable')))
@@ -193,9 +177,9 @@ class protocolo(CrawJUD):
             radiobutton.click()
 
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
         
-    def more_files(self):
+    def more_files(self) -> None:
 
         try:
             sleep(0.5)
@@ -211,7 +195,7 @@ class protocolo(CrawJUD):
                 self.type_log = "log"
                 self.prt(self)
                 input_file_element:WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="conteudo"]')))
-                input_file_element.send_keys(f'{os.path.join(pathlib.Path(self.input_file).parent.resolve())}/{file_to_upload}')
+                input_file_element.send_keys(f'{os.path.join(pathlib.Path(self.path_args).parent.resolve())}/{file_to_upload}')
                 self.wait_progressbar()
                 self.message = f"Arquivo '{file}' enviado com sucesso!"
                 self.type_log = "log"
@@ -237,9 +221,9 @@ class protocolo(CrawJUD):
                         break
         
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
         
-    def sign_files(self):
+    def sign_files(self) -> None:
 
         try:
             self.prt.print_log("log", 'Assinando arquivos...')
@@ -266,15 +250,15 @@ class protocolo(CrawJUD):
             self.prt.print_log("log", 'Arquivos assinados')
         
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
 
-    def finish_move(self):
+    def finish_move(self) -> None:
 
         self.prt.print_log("log", f'Concluindo peticionamento do processo {self.bot_data.get("NUMERO_PROCESSO")}')
         finish_button = self.driver.find_element(By.CSS_SELECTOR, 'input#editButton[value="Concluir Movimento"]')
         finish_button.click()
         
-    def screenshot_sucesso(self):
+    def screenshot_sucesso(self) -> None:
         
         try:
             sleep(2)
@@ -292,9 +276,9 @@ class protocolo(CrawJUD):
             sleep(2)
             
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
 
-    def remove_files(self):
+    def remove_files(self) -> None:
         
         tablefiles = None
         with suppress(TimeoutException):
@@ -323,7 +307,7 @@ class protocolo(CrawJUD):
                 
                 sleep(2)
             
-    def wait_progressbar(self):
+    def wait_progressbar(self) -> None:
         
         while True:
             
