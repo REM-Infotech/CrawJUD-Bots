@@ -1,16 +1,16 @@
-from selenium.common.exceptions import (TimeoutException, StaleElementReferenceException, NoSuchElementException, ElementNotInteractableException,
-                                        ElementClickInterceptedException)
+from selenium.common.exceptions import (
+    TimeoutException, StaleElementReferenceException, 
+    NoSuchElementException, ElementNotInteractableException,
+    ElementClickInterceptedException)
 
 
-def webdriver_exepts() -> list[TimeoutException | StaleElementReferenceException |  
-                               NoSuchElementException | ElementNotInteractableException | 
-                               ElementClickInterceptedException]:
+def webdriver_exepts() -> list[Exception]:
 
     return [TimeoutException, StaleElementReferenceException, NoSuchElementException,
             ElementNotInteractableException, ElementClickInterceptedException, ValueError, Exception]
 
 
-def exeption_message() -> dict[str, str]:
+def exeptionsBot() -> dict[Exception, str]:
 
     return {
         TimeoutException: "Falha ao encontrar elemento",

@@ -12,7 +12,7 @@ class elaw:
     def __call__(self) -> None:
         try:
             self.execution: \
-                Union[download, andamentos, audiencia,
+                Union[download, andamentos, prazos,
                       cadastro, complement,
                       provisao, sol_pags]\
                         = globals().\
@@ -26,9 +26,9 @@ class elaw:
 
 from bot.elaw.download import download
 from bot.elaw.cadastro import cadastro
-from bot.elaw.audiencia import audiencia
 from bot.elaw.pagamentos import sol_pags
 from bot.elaw.andamentos import andamentos
 from bot.elaw.complementar import complement
 from bot.elaw.provisionamento import provisao
+from bot.elaw.audiencia import audiencia as prazos
 from bot.elaw.common.elements import elements_elaw

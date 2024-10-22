@@ -18,7 +18,7 @@ from bot.head import CrawJUD
 
 from bot.head.common.exceptions import ErroDeExecucao
 from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeption_message
+from bot.head.common.selenium_excepts import exeptionsBot
 from selenium.webdriver.common.print_page_options import PrintOptions
 
 # Selenium Imports
@@ -65,7 +65,7 @@ class CrawlerCalculoTJ(CrawJUD):
                 if message_error == "":
                     for exept in webdriver_exepts():
                         if isinstance(e, exept):
-                            message_error = exeption_message().get(exept)
+                            message_error = exeptionsBot().get(exept)
                             break
                         
                 if not message_error:

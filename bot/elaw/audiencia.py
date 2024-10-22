@@ -10,8 +10,6 @@ from bot.head import CrawJUD
 
 
 from bot.head.common.exceptions import ErroDeExecucao
-from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeption_message
 
 
 # Selenium Imports
@@ -52,21 +50,15 @@ class audiencia(CrawJUD):
             except Exception as e:
                 
                 old_message = self.message
-                message_error: str = getattr(e, 'msg', getattr(e, 'message', ""))
-                if message_error == "":
-                    for exept in webdriver_exepts():
-                        if isinstance(e, exept):
-                            message_error = exeption_message().get(exept)
-                            break
-                        
-                if not message_error:
-                    message_error = str(e)
+                message_error = str(e)
                 
                 self.type_log = "error"
                 self.message_error = f'{message_error}. | Operação: {old_message}'
                 self.prt(self)
+                
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
+                
                 self.message_error = None
 
         self.finalize_execution()
@@ -132,15 +124,20 @@ class audiencia(CrawJUD):
             items = selectorTipoAudiencia.find_elements(By.TAG_NAME, "option")
             opt_itens: dict[str, str] = {}
             for item in items:
-                opt_itens.update({item.text.upper(): item.get_attribute("value")})
+                
+                value_item = item.get_attribute("value")
+                text_item = self.driver.execute_script(
+                    f'return $("option[value=\'{value_item}\']").text();')
+                
+                opt_itens.update({text_item.upper(): value_item})
             
             value_opt = opt_itens.get(self.bot_data["TIPO_AUDIENCIA"].upper())
             if value_opt:
-                self.driver.execute_script(
-                    f'$("{self.elements.selectorTipoAudiencia}").val(["{value_opt}"]);')
+                command = f'$(\'{self.elements.selectorTipoAudiencia}\').val([\'{value_opt}\']);'
+                self.driver.execute_script(command)
                 
-                self.driver.execute_script(
-                    f'$("{self.elements.selectorTipoAudiencia}").trigger("change");')
+                command2 = f'$(\'{self.elements.selectorTipoAudiencia}\').trigger(\'change\');'
+                self.driver.execute_script(command2)
                 
         except Exception as e:
             raise ErroDeExecucao(str(e))

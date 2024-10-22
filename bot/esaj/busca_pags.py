@@ -3,7 +3,7 @@ from bot.head import CrawJUD
 
 
 from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeption_message
+from bot.head.common.selenium_excepts import exeptionsBot
 
 from typing import Type
 import time
@@ -30,6 +30,7 @@ class busca_pags(CrawJUD):
         
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
+        
     def execution(self) -> None:
         
         frame = self.dataFrame()
@@ -51,21 +52,15 @@ class busca_pags(CrawJUD):
             except Exception as e:
                 
                 old_message = self.message
-                message_error: str = getattr(e, 'msg', getattr(e, 'message', ""))
-                if message_error == "":
-                    for exept in webdriver_exepts():
-                        if isinstance(e, exept):
-                            message_error = exeption_message().get(exept)
-                            break
-                        
-                if not message_error:
-                    message_error = str(e)
+                message_error = str(e)
                 
                 self.type_log = "error"
                 self.message_error = f'{message_error}. | Operação: {old_message}'
                 self.prt(self)
+                
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
+                
                 self.message_error = None
 
         self.finalize_execution()

@@ -15,7 +15,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from bot.head.common.exceptions import ErroDeExecucao
 from selenium.webdriver.support import expected_conditions as EC
 from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeption_message
+from bot.head.common.selenium_excepts import exeptionsBot
 from selenium.common.exceptions import NoSuchElementException
 
 from bot.head import CrawJUD
@@ -51,7 +51,7 @@ class movimentacao(CrawJUD):
                 if message_error == "":
                     for exept in webdriver_exepts():
                         if isinstance(e, exept):
-                            message_error = exeption_message().get(exept)
+                            message_error = exeptionsBot().get(exept)
                             break
                         
                 if not message_error:

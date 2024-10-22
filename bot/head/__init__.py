@@ -462,5 +462,5 @@ from bot.head.Tools.MakeTemplate import MakeXlsx
 from bot.head.Tools.PrintLogs import printtext
 from bot.head.Tools.dicionarios import cities_Amazonas
 from bot.head.common.selenium_excepts import webdriver_exepts
-from bot.head.common.selenium_excepts import exeption_message
+from bot.head.common.selenium_excepts import exeptionsBot
 from bot.head.Tools.StartStop_Notify import SetStatus
