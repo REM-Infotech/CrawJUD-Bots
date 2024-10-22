@@ -213,15 +213,16 @@ class CrawJUD(WorkerThread):
                 if value.upper() == "RÉU":
                     data.update({"TIPO_PARTE_CONTRARIA": "Autor"})
                     
-            if key.upper() == "COMARCA":
+            elif key.upper() == "COMARCA":
                 set_locale = cities_Amazonas().get(value, None)
                 if not set_locale:
                     set_locale = "Outro Estado"
 
                 data.update({"CAPITAL_INTERIOR": set_locale})
                 
-            if key == "DATA_LIMITE" and not data.get("DATA_INICIO"):
+            elif key == "DATA_LIMITE" and not data.get("DATA_INICIO"):
                 data.update({"DATA_INICIO": value})   
+                
             
         return data
 

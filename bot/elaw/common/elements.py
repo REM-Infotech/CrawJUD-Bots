@@ -10,8 +10,27 @@ class elements_elaw:
             
             string = ""
         
-        numero_processo = "input[id='j_id_3k_1:j_id_3k_4_2_2_2_9_f_2:txtNumeroMask']"
+        ## Login Elaw    
+        url_login = ""
+        campo_username = ''
+        campo_passwd = ''
+        btn_entrar = ''
+        chk_login = ''
         
+        ## Busca Elaw
+        url_busca = ""
+        btn_busca = ""    
+            
+        ## Robô Lançar Audiências
+        switch_pautaAndamento = 'a[href="#tabViewProcesso:agendamentosAndamentos"]'
+        btn_NovaAudiencia = 'button[id="tabViewProcesso:novaAudienciaBtn"]'
+        selectorTipoAudiencia = 'select[id="j_id_2l:comboTipoAudiencia_input"]'
+        DataAudiencia = 'input[id="j_id_2l:j_id_2p_2_8_8:dataAudienciaField_input"]'
+        btn_Salvar = 'button[id="btnSalvarNovaAudiencia"]'
+        tablePrazos = 'tbody[id="tabViewProcesso:j_id_i3_4_1_3_d:dtAgendamentoResults_data"]'
+        
+        ## Robô cadastros
+        numero_processo = "input[id='j_id_3k_1:j_id_3k_4_2_2_2_9_f_2:txtNumeroMask']"
         estado_combo = "div[id='j_id_3k_1:j_id_3k_4_2_2_1_9_u_1:comboEstadoVara']"
         estado_panel = "div[id='j_id_3k_1:j_id_3k_4_2_2_1_9_u_1:comboEstadoVara_panel']"
         
@@ -32,23 +51,14 @@ class elements_elaw:
         tipo_parte_contraria_combo = "div[id='j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:j_id_3k_4_2_2_5_9_9_4_2_m']"
         tipo_parte_contraria_panel = "div[id='j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:j_id_3k_4_2_2_5_9_9_4_2_m_panel']"
 
-        ##
         css_list_tipo_parte = 'div[id="j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:j_id_3k_4_2_2_5_9_9_4_2_m"]'
         seach_tipo_parte_css = 'input[id="j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:j_id_3k_4_2_2_5_9_9_4_2_m_filter"]'
         
         css_table_tipo_doc = 'table[id="j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:tipoDocumentoInput"]'
         css_campo_doc = 'input[id="j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:cpfCnpjInput"]'
         css_search_button = 'button[id="j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:j_id_3k_4_2_2_5_9_9_4_2_f"]'
+
         
-        ##
-        url_login = ""
-        campo_username = ''
-        campo_passwd = ''
-        btn_entrar = ''
-        chk_login = ''
-        
-        url_busca = ""
-        btn_busca = ""
     
     classes: dict[str, Union[AME]] = {
         "AME": AME

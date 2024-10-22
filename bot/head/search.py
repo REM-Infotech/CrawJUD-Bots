@@ -53,8 +53,10 @@ class SeachBot(CrawJUD):
         sleep(1.5)
         
         if open_proc:
-            
-            if self.bot is None:
+            chkTypeBot = not self.typebot.upper()\
+                == "COMPLEMENT" and not self.typebot.upper() == "CADASTRO"
+                
+            if chkTypeBot:
                 open_proc.click()
             
             return True
