@@ -27,7 +27,7 @@ class pauta(CrawJUD):
         self.data_append: list[
             dict[str, dict[str, list[dict[str, str]]]]] = {}
 
-    def execution(self):
+    def execution(self) -> None:
 
         self.row = 2
         self.current_date = self.data_inicio
@@ -63,7 +63,7 @@ class pauta(CrawJUD):
 
         self.finalize_execution()
 
-    def queue(self):
+    def queue(self) -> None:
         
         try:
             

@@ -30,7 +30,7 @@ class busca_pags(CrawJUD):
         
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
-    def execution(self):
+    def execution(self) -> None:
         
         frame = self.dataFrame()
         self.max_rows = len(frame)
@@ -70,12 +70,12 @@ class busca_pags(CrawJUD):
 
         self.finalize_execution()
      
-    def queue(self):
+    def queue(self) -> None:
 
         self.get_page_custas_pagas()
         self.page_custas()
  
-    def get_page_custas_pagas(self):
+    def get_page_custas_pagas(self) -> None:
         
         generatepdf: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.get_page_custas_pagas)))
         onclick_value =generatepdf.get_attribute("onclick")
@@ -84,7 +84,7 @@ class busca_pags(CrawJUD):
         url = onclick_value[url_start:url_end]
         self.driver.get(url)
         
-    def page_custas(self):
+    def page_custas(self) -> None:
         
         divcustaspagas: WebElement = self.wait.until(EC.presence_of_all_elements_located((By.TAG_NAME, 'div')))
         

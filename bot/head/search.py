@@ -63,7 +63,7 @@ class SeachBot(CrawJUD):
         
         return False
         
-    def esaj_search(self):
+    def esaj_search(self) -> None:
         
         grau = int(self.bot_data.get("GRAU").replace("º", ""))
         if grau == 1:
@@ -95,7 +95,7 @@ class SeachBot(CrawJUD):
         openprocess: WebElement = self.wait.until(EC.presence_of_element_located((By.ID, id_consultar)))
         self.interact.click(openprocess)
             
-    def projudi_search(self):
+    def projudi_search(self) -> None:
 
         self.driver.get(self.elements.url_busca)
 

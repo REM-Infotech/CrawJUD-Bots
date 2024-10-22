@@ -39,7 +39,7 @@ class Users(db.Model):
         self.email = email
 
     @property
-    def senhacrip(self):
+    def senhacrip(self) -> None:
         return self.senhacrip
 
     @senhacrip.setter

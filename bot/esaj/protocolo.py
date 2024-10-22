@@ -34,7 +34,7 @@ class protocolo(CrawJUD):
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
         
-    def execution(self):
+    def execution(self) -> None:
         
         frame = self.dataFrame()
         self.max_rows = len(frame)
@@ -75,7 +75,7 @@ class protocolo(CrawJUD):
         self.finalize_execution()
 
         
-    def queue(self):
+    def queue(self) -> None:
 
         self.search(self)
         self.init_protocolo()
@@ -87,7 +87,7 @@ class protocolo(CrawJUD):
         data = self.get_confirm_protocol()
         self.append_success(data, message = data[1])
 
-    def init_protocolo(self):
+    def init_protocolo(self) -> None:
         
         try:
             try:
@@ -111,7 +111,7 @@ class protocolo(CrawJUD):
         except:
             raise ErroDeExecucao("Erro ao inicializar peticionamento") 
     
-    def set_tipo_protocolo(self):
+    def set_tipo_protocolo(self) -> None:
 
         try:
             self.interact.sleep_load('div[id="loadFeedback"]')
@@ -131,7 +131,7 @@ class protocolo(CrawJUD):
         except:
             raise ErroDeExecucao("Erro ao informar tipo de protocolo") 
     
-    def set_subtipo_protocolo(self):
+    def set_subtipo_protocolo(self) -> None:
         
         try:
             self.prt.print_log('log', 'Informando subtipo de peticionamento')
@@ -149,7 +149,7 @@ class protocolo(CrawJUD):
         except:
             raise ErroDeExecucao("Erro ao informar subtipo de protocolo") 
     
-    def set_petition_file(self):
+    def set_petition_file(self) -> None:
         
         try:
             self.prt.print_log('log', 'Anexando petição')
@@ -181,7 +181,7 @@ class protocolo(CrawJUD):
         except:
             raise ErroDeExecucao("Erro ao enviar petição") 
     
-    def vincular_parte(self):
+    def vincular_parte(self) -> None:
         
         try:
             parte_peticao = self.bot_data.get("PARTE_PETICIONANTE").__str__().lower()
@@ -224,7 +224,7 @@ class protocolo(CrawJUD):
         except:
             raise ErroDeExecucao("Não foi possivel vincular parte a petição") 
     
-    def finish_petition(self):
+    def finish_petition(self) -> None:
         
         self.prt.print_log('log', 'Finalizando...')
 

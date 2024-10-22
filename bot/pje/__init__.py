@@ -7,7 +7,7 @@ class pje:
         self.bot = bot
         self.Master = Master
     
-    def __call__(self):
+    def __call__(self) -> None:
         try:
             self.execution: pauta = globals().get(self.bot)(self.Master)
             self.execution.execution()

@@ -41,7 +41,7 @@ class CaixaMaster(CrawJUD):
         
         self.start_time = time.perf_counter()
         
-    def execution(self):
+    def execution(self) -> None:
         
         frame = self.dataFrame()
         self.max_rows = len(frame)

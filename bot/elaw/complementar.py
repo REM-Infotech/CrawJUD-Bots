@@ -39,7 +39,7 @@ class complement(CrawJUD):
         
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
-    def execution(self):
+    def execution(self) -> None:
         
         frame = self.dataFrame()
         self.max_rows = len(frame)

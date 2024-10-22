@@ -32,7 +32,7 @@ class download(CrawJUD):
         
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
-    def execution(self):
+    def execution(self) -> None:
         
         frame = self.dataFrame()
         self.max_rows = len(frame)
@@ -92,7 +92,7 @@ class download(CrawJUD):
             self.prt(self)
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
         
-    def buscar_doc(self):
+    def buscar_doc(self) -> None:
           
         self.message = "Acessando página de anexos"
         self.type_log = "log"
@@ -105,7 +105,7 @@ class download(CrawJUD):
         self.type_log = "log"
         self.prt(self)      
     
-    def download_docs(self):
+    def download_docs(self) -> None:
         
         css_table_doc = 'tbody[id="tabViewProcesso:gedEFileDataTable:GedEFileViewDt_data"]'
         table_doc: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_table_doc)))

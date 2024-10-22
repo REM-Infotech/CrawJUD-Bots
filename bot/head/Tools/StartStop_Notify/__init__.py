@@ -123,7 +123,7 @@ class SetStatus:
             
         return (path_args, bt.display_name)
     
-    def botstop(self):
+    def botstop(self) -> None:
         
         try:
             srv = platform.system() in ("Windows")

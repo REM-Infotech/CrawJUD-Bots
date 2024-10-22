@@ -25,7 +25,7 @@ class movimentacao(CrawJUD):
         
         self.__dict__ = Initbot.__dict__.copy()
         
-    def execution(self):
+    def execution(self) -> None:
         
         frame = self.dataFrame()
         self.max_rows = len(frame)

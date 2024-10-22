@@ -13,7 +13,7 @@ from app.models import ThreadBots
 
 class WorkerThread:
     
-    def __init__(self):
+    def __init__(self) -> None:
         
         from bot import CrawJUD
         self.thread = None
@@ -53,7 +53,7 @@ class WorkerThread:
             bot = self.crawjud(self)
             bot.setup(app, path_args)
         
-    def stop(self):
+    def stop(self) -> None:
         
         for thread in threading.enumerate():
             if thread.ident == self.thread_id:

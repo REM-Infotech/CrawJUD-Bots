@@ -12,7 +12,7 @@ import subprocess
 import unicodedata
 import pandas as pd
 from pandas import Timestamp
-from typing import Type, Union
+from typing import Type, Union, Callable
 from datetime import datetime
 # from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.workbook.workbook import Workbook
@@ -398,7 +398,7 @@ class CrawJUD(WorkerThread):
         except Exception as e:
             raise e
 
-    def install_cert(self):
+    def install_cert(self) -> None:
 
         path_cert = str(os.path.join(self.output_dir_path, self.name_cert))
         comando = ["certutil", "-importpfx", "-user", "-f", "-p", self.senhacert, "-silent", path_cert]
@@ -442,14 +442,15 @@ from bot.elaw import elaw, elements_elaw
 from bot.pje import pje, elements_pje
 from bot.projudi import projudi, elements_projudi
 
-def master_bots(system: str, type_bot: str, master: CrawJUD) -> projudi | esaj | elaw:
-    return globals().get(system.lower())(type_bot, master)
-        
-def elements_bot(system: str, state: str) -> Union[
-    Union[elements_projudi.AM, elements_projudi.AC, elements_projudi.SP],
-    Union[elements_esaj.AM, elements_esaj.AC, elements_esaj.SP]]:
+def master_bots(system: str, type_bot: str, master: CrawJUD) -> Callable[[], str]:
     
-    return globals().get(f"elements_{system.lower()}")(state)()
+    call_act = globals().get(system.lower())(type_bot, master)
+    return call_act
+        
+def elements_bot(system: str, state: str) -> Callable[[], str]:
+    
+    call_act = globals().get(f"elements_{system.lower()}")(state)()
+    return call_act
 
 
 

@@ -36,7 +36,7 @@ class sol_pags(CrawJUD):
         
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
-    def execution(self):
+    def execution(self) -> None:
         
         frame = self.dataFrame()
         self.max_rows = len(frame)
@@ -77,7 +77,7 @@ class sol_pags(CrawJUD):
         self.finalize_execution()
 
     
-    def queue(self):
+    def queue(self) -> None:
         
         search = self.search(self)
         
@@ -98,7 +98,7 @@ class sol_pags(CrawJUD):
             self.prt(self)
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
             
-    def new_payment(self):
+    def new_payment(self) -> None:
         
         try:
             tab_pagamentos: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a[href="#tabViewProcesso:processoValorPagamento"]')))
@@ -162,7 +162,7 @@ class sol_pags(CrawJUD):
             
             return
     
-    def condenacao(self):
+    def condenacao(self) -> None:
         
         try:
 
@@ -342,7 +342,7 @@ class sol_pags(CrawJUD):
         except Exception as e:
             raise ErroDeExecucao()
               
-    def custas(self):
+    def custas(self) -> None:
         
         try:
             
@@ -502,7 +502,7 @@ class sol_pags(CrawJUD):
             
             raise ErroDeExecucao()
         
-    def save_changes(self):
+    def save_changes(self) -> None:
         
         try:
             
@@ -518,7 +518,7 @@ class sol_pags(CrawJUD):
             raise ErroDeExecucao(self.message)
             return
                               
-    def check_sucess(self):
+    def check_sucess(self) -> None:
         
         try:
             tab_pagamentos: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a[href="#tabViewProcesso:processoValorPagamento"]')))

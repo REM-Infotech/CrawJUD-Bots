@@ -35,7 +35,7 @@ class protocolo(CrawJUD):
         
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
-    def execution(self):
+    def execution(self) -> None:
         
         frame = self.dataFrame()
         self.max_rows = len(frame)
@@ -75,7 +75,7 @@ class protocolo(CrawJUD):
 
         self.finalize_execution()
   
-    def queue(self):
+    def queue(self) -> None:
         
         search = self.search(self)
         
@@ -99,7 +99,7 @@ class protocolo(CrawJUD):
         if "intimacaoAdvogado.do" in self.driver.current_url:
             raise ErroDeExecucao("Processo com Intimação pendente de leitura!")
       
-    def add_new_move(self):
+    def add_new_move(self) -> None:
 
         try:
             self.message = 'Inicializando peticionamento...'
@@ -130,7 +130,7 @@ class protocolo(CrawJUD):
         except Exception as e:
             raise ErroDeExecucao()
    
-    def add_new_file(self):
+    def add_new_file(self) -> None:
 
         try:
             file = str(self.bot_data.get("PETICAO_PRINCIPAL"))
@@ -175,7 +175,7 @@ class protocolo(CrawJUD):
         except Exception as e:
             raise ErroDeExecucao()
         
-    def set_file_principal(self):
+    def set_file_principal(self) -> None:
 
         try:
             tablefiles : WebElement = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'resultTable')))
@@ -186,7 +186,7 @@ class protocolo(CrawJUD):
         except Exception as e:
             raise ErroDeExecucao()
         
-    def more_files(self):
+    def more_files(self) -> None:
 
         try:
             sleep(0.5)
@@ -230,7 +230,7 @@ class protocolo(CrawJUD):
         except Exception as e:
             raise ErroDeExecucao()
         
-    def sign_files(self):
+    def sign_files(self) -> None:
 
         try:
             self.prt.print_log("log", 'Assinando arquivos...')
@@ -259,13 +259,13 @@ class protocolo(CrawJUD):
         except Exception as e:
             raise ErroDeExecucao()
 
-    def finish_move(self):
+    def finish_move(self) -> None:
 
         self.prt.print_log("log", f'Concluindo peticionamento do processo {self.bot_data.get("NUMERO_PROCESSO")}')
         finish_button = self.driver.find_element(By.CSS_SELECTOR, 'input#editButton[value="Concluir Movimento"]')
         finish_button.click()
         
-    def screenshot_sucesso(self):
+    def screenshot_sucesso(self) -> None:
         
         try:
             sleep(2)
@@ -285,7 +285,7 @@ class protocolo(CrawJUD):
         except Exception as e:
             raise ErroDeExecucao()
 
-    def remove_files(self):
+    def remove_files(self) -> None:
         
         tablefiles = None
         with suppress(TimeoutException):
@@ -314,7 +314,7 @@ class protocolo(CrawJUD):
                 
                 sleep(2)
             
-    def wait_progressbar(self):
+    def wait_progressbar(self) -> None:
         
         while True:
             

@@ -126,7 +126,7 @@ class Interact(CrawJUD):
             if check_wait:
                 break
             
-    def wait_fileupload(self):
+    def wait_fileupload(self) -> None:
         
         while True:
             

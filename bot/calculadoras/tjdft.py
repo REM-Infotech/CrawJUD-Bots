@@ -40,7 +40,7 @@ class CrawlerCalculoTJ(CrawJUD):
         
         self.start_time = time.perf_counter()
         
-    def execution(self):
+    def execution(self) -> None:
         
         frame = self.dataFrame()
         self.max_rows = len(frame)
@@ -92,7 +92,7 @@ class CrawlerCalculoTJ(CrawJUD):
         self.finalizar_execucao()
 
         
-    def get_calcular(self):
+    def get_calcular(self) -> None:
         
         try:
             self.message = "Acessando Página de cálculo.."
@@ -117,7 +117,7 @@ class CrawlerCalculoTJ(CrawJUD):
             self.message = ""
             raise ErroDeExecucao()
     
-    def info_numproc(self):
+    def info_numproc(self) -> None:
     
         try:
             sleep(2)
@@ -138,7 +138,7 @@ class CrawlerCalculoTJ(CrawJUD):
             self.message = "Erro ao informar número do processo"
             raise ErroDeExecucao(self.message)
         
-    def info_requerente(self):
+    def info_requerente(self) -> None:
     
         try:
             sleep(2)
@@ -158,7 +158,7 @@ class CrawlerCalculoTJ(CrawJUD):
             self.message = ""
             raise ErroDeExecucao()
     
-    def info_requerido(self):    
+    def info_requerido(self) -> None:    
         
         try:
             sleep(2)   
@@ -178,7 +178,7 @@ class CrawlerCalculoTJ(CrawJUD):
             self.message = ""
             raise ErroDeExecucao()
         
-    def info_jurosapartir(self):
+    def info_jurosapartir(self) -> None:
     
         try:
             self.message = "Informando incidencia de juros e data de incidencia"
@@ -211,7 +211,7 @@ class CrawlerCalculoTJ(CrawJUD):
             self.message = ""
             raise ErroDeExecucao()
         
-    def valores_devidos(self):
+    def valores_devidos(self) -> None:
     
         try:
             css_data_valor_devido = 'input[id="data-0"][name="parcela_data:list"]'
@@ -242,7 +242,7 @@ class CrawlerCalculoTJ(CrawJUD):
             self.message = ""
             raise ErroDeExecucao()
                  
-    def acessorios(self):
+    def acessorios(self) -> None:
         
         def multa_percentual() -> None | Exception:
             
@@ -421,7 +421,7 @@ class CrawlerCalculoTJ(CrawJUD):
                         func()
                         break
         
-    def finalizar_execucao(self):
+    def finalizar_execucao(self) -> None:
 
         try:
             css_calcular = 'input[type="submit"][value="Calcular"][id="calcular"]'

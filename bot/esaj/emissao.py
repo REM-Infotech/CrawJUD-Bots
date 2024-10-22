@@ -47,7 +47,7 @@ class emissao(CrawJUD):
         
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
-    def execution(self):
+    def execution(self) -> None:
         
         frame = self.dataFrame()
         self.max_rows = len(frame)
@@ -89,7 +89,7 @@ class emissao(CrawJUD):
 
 
 
-    def queue(self):
+    def queue(self) -> None:
         
         custa = str(self.bot_data.get("TIPO_GUIA"))
         if custa.lower() == "custas iniciais":
@@ -104,7 +104,7 @@ class emissao(CrawJUD):
         self.downloadpdf(self.generate_doc())
         self.append_success(self.get_barcode())
              
-    def custas_iniciais(self):
+    def custas_iniciais(self) -> None:
         
         self.driver.get('https://consultasaj.tjam.jus.br/ccpweb/iniciarCalculoDeCustas.do?cdTipoCusta=7&flTipoCusta=0&&cdServicoCalculoCusta=690003')
         
@@ -140,7 +140,7 @@ class emissao(CrawJUD):
             css_val_doc = 'body > table:nth-child(4) > tbody > tr > td > table:nth-child(10) > tbody > tr:nth-child(5) > td:nth-child(3) > strong'
             self.valor_doc: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_val_doc))).text
                        
-    def preparo_ri(self):
+    def preparo_ri(self) -> None:
         
         portal = self.bot_data.get("PORTAL", "não informado") 
         if str(portal).lower() == 'esaj':
@@ -186,13 +186,13 @@ class emissao(CrawJUD):
             errodata = [self.bot_data.get('NUMERO_PROCESSO'),'Informar portal do processo na planilha (PROJUDI ou ESAJ)']
             self.append_error(errodata)
     
-    def renajud(self):
+    def renajud(self) -> None:
         pass
     
-    def sisbajud(self):
+    def sisbajud(self) -> None:
         pass
     
-    def custas_postais(self):
+    def custas_postais(self) -> None:
         pass          
                 
     def generate_doc(self) -> str:
@@ -248,7 +248,7 @@ class emissao(CrawJUD):
         self.driver.switch_to.window(self.original_window)
         self.prt.print_log(self.pid, 'log', f"Boleto Nº{self.bot_data.get('NUMERO_PROCESSO')} emitido com sucesso!", self.row)
     
-    def get_barcode(self):
+    def get_barcode(self) -> None:
         
         try:
             self.prt.print_log(self.pid, 'log', 'Extraindo código de barras', self.row)

@@ -25,7 +25,7 @@ class capa(CrawJUD):
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
         
-    def execution(self):
+    def execution(self) -> None:
         
         frame = self.dataFrame()
         self.max_rows = len(frame)
@@ -65,7 +65,7 @@ class capa(CrawJUD):
 
         self.finalize_execution()
         
-    def queue(self):
+    def queue(self) -> None:
         
         self.search(self)
         self.append_success(self.get_process_informations())

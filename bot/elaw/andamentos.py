@@ -32,7 +32,7 @@ class andamentos(CrawJUD):
         
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
-    def execution(self):
+    def execution(self) -> None:
         
         frame = self.dataFrame()
         self.max_rows = len(frame)
@@ -74,7 +74,7 @@ class andamentos(CrawJUD):
 
 
         
-    def queue(self):
+    def queue(self) -> None:
         
         search = self.search(self)
         if search is True:
@@ -97,7 +97,7 @@ class andamentos(CrawJUD):
             self.prt(self)
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
   
-    def info_data(self):
+    def info_data(self) -> None:
 
         try:
             
@@ -118,7 +118,7 @@ class andamentos(CrawJUD):
         except Exception as e:
             raise ErroDeExecucao()
         
-    def info_ocorrencia(self):
+    def info_ocorrencia(self) -> None:
         
         try:
             self.message = "Informando ocorrência"
@@ -134,7 +134,7 @@ class andamentos(CrawJUD):
         except Exception as e:
             raise ErroDeExecucao()
     
-    def info_observacao(self):
+    def info_observacao(self) -> None:
         
         try:
             self.message = "Informando observação"
@@ -151,11 +151,11 @@ class andamentos(CrawJUD):
         except Exception as e:
             raise ErroDeExecucao()
     
-    def add_anexo(self):
+    def add_anexo(self) -> None:
 
         pass
             
-    def save_andamento(self):
+    def save_andamento(self) -> None:
         
         try:
             self.message = 'Salvando andamento...'

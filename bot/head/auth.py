@@ -39,7 +39,7 @@ class AuthBot(CrawJUD):
         
         return 
     
-    def esaj(self):
+    def esaj(self) -> None:
 
             try:
                 loginuser = ''.join(
@@ -121,7 +121,7 @@ class AuthBot(CrawJUD):
                 print(e)
                 raise e
 
-    def projudi(self):
+    def projudi(self) -> None:
         
         try:
             self.driver.get(self.elements.url_login)
@@ -148,7 +148,7 @@ class AuthBot(CrawJUD):
         except Exception as e:
             raise e
             
-    def elaw(self):
+    def elaw(self) -> None:
 
         try:
             self.driver.get("https://amazonas.elaw.com.br/login")
@@ -175,7 +175,7 @@ class AuthBot(CrawJUD):
         except Exception as e:
             raise e
 
-    def pje(self):
+    def pje(self) -> None:
         
         try:
             self.driver.get(self.elements.url_login)
