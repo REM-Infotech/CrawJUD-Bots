@@ -71,24 +71,28 @@ class sol_pags(CrawJUD):
     
     def queue(self) -> None:
         
-        search = self.search(self)
-        
-        if search is True:
+        try:
+            search = self.search(self)
+            
+            if search is True:
 
-            namedef = self.format_String(self.bot_data.get("TIPO_PAGAMENTO"))
-            self.new_payment()
-            self.set_pgto(namedef)
-            pgto = getattr(self, namedef)
-            pgto()
-            
-            self.save_changes()
-            self.check_sucess()
-            
-        elif not search is True:
-            self.message = "Processo não encontrado!"
-            self.type_log = "error"
-            self.prt(self)
-            self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
+                namedef = self.format_String(self.bot_data.get("TIPO_PAGAMENTO"))
+                self.new_payment()
+                self.set_pgto(namedef)
+                pgto = getattr(self, namedef)
+                pgto()
+                
+                self.save_changes()
+                self.check_sucess()
+                
+            elif not search is True:
+                self.message = "Processo não encontrado!"
+                self.type_log = "error"
+                self.prt(self)
+                self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
+                
+        except Exception as e:
+            raise ErroDeExecucao(e=e)
             
     def new_payment(self) -> None:
         
@@ -100,9 +104,7 @@ class sol_pags(CrawJUD):
             novo_pgto.click()
         
         except Exception as e:
-            
-            self.message = "Não foi possível adicionar novo pagamento"
-            raise ErroDeExecucao(self.message)
+            raise ErroDeExecucao(e=e)
    
     def set_pgto(self, namedef: str):
         
@@ -473,8 +475,7 @@ class sol_pags(CrawJUD):
             
             
         except Exception as e:
-            
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
         
     def save_changes(self) -> None:
         
@@ -487,10 +488,7 @@ class sol_pags(CrawJUD):
             save.click()
         
         except Exception as e:
-            
-            self.message = 'Erro ao salvar solicitação'
-            raise ErroDeExecucao(self.message)
-            return
+            raise ErroDeExecucao(e=e)
                               
     def check_sucess(self) -> None:
         
@@ -519,8 +517,7 @@ class sol_pags(CrawJUD):
                         info_sucesso = [self.bot_data.get("NUMERO_PROCESSO"), "Pagamento solicitado com sucesso!!", str(self.bot_data.get("TIPO_GUIA"))]
                         self.append_success(info_sucesso)
                     break
+                
         except Exception as e:
-            
-            self.prt.print_log(self.pid, "error", "Não foi possível adicionar novo pagamento", self.row)
-            return     
+            raise ErroDeExecucao(e=e)   
     

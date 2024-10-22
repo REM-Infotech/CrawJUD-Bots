@@ -121,7 +121,7 @@ class protocolo(CrawJUD):
             input_move_option.click()
             
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
    
     def add_new_file(self) -> None:
 
@@ -166,7 +166,7 @@ class protocolo(CrawJUD):
                     break
         
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
         
     def set_file_principal(self) -> None:
 
@@ -177,7 +177,7 @@ class protocolo(CrawJUD):
             radiobutton.click()
 
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
         
     def more_files(self) -> None:
 
@@ -221,7 +221,7 @@ class protocolo(CrawJUD):
                         break
         
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
         
     def sign_files(self) -> None:
 
@@ -250,7 +250,7 @@ class protocolo(CrawJUD):
             self.prt.print_log("log", 'Arquivos assinados')
         
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
 
     def finish_move(self) -> None:
 
@@ -276,7 +276,7 @@ class protocolo(CrawJUD):
             sleep(2)
             
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
 
     def remove_files(self) -> None:
         

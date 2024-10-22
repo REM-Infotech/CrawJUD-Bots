@@ -253,7 +253,7 @@ class provisao(CrawJUD):
             self.driver.execute_script(f"document.getElementById('{id_informar_motivo}').blur()")
 
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
      
     def save_changes(self) -> None:
         

@@ -109,7 +109,7 @@ class andamentos(CrawJUD):
             self.interact.sleep_load('div[id="j_id_34"]')
             
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
         
     def info_ocorrencia(self) -> None:
         
@@ -125,7 +125,7 @@ class andamentos(CrawJUD):
             self.interact.send_key(ocorrencia, text_andamento)
 
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
     
     def info_observacao(self) -> None:
         
@@ -142,7 +142,7 @@ class andamentos(CrawJUD):
             self.interact.send_key(observacao, text_andamento)
 
         except Exception as e:
-            raise ErroDeExecucao()
+            raise ErroDeExecucao(e=e)
     
     def add_anexo(self) -> None:
 
