@@ -110,7 +110,9 @@ class printtext(CrawJUD):
                 if typeSuccess:
                     
                     log_pid.remaining -= 1
-                    log_pid.success += 1
+                    if not "fim da execução" in data["message"].lower():
+                        log_pid.success += 1
+                        
                     log_pid.last_log = data["message"]
                 
                 elif data["type"] == "error":
