@@ -47,7 +47,9 @@ class CrawJUD(WorkerThread):
         self.__dict__ = worker_thread.__dict__.copy()
         self.prt: Type[printtext] = printtext(self)
     
-    def __getattr__(self, nome_do_atributo: str) -> str | int:
+    def __getattr__(self, nome_do_atributo: str) -> Union[
+        Callable[[], None], list[dict[str, str]], list[str], 
+        str, int, datetime]:
         item = getattr(self.argbot, nome_do_atributo, None) 
         return item
     
@@ -117,10 +119,7 @@ class CrawJUD(WorkerThread):
                 self.type_log = "error"
                 self.prt(self)
                 return
-            
-            
-            self.driver: Type[WebDriver] = args[0]
-            self.wait: Type[WebDriverWait] = args[1]
+
             self.interact = Interact(self)
             
             Get_Login = self.login()
@@ -246,8 +245,8 @@ class CrawJUD(WorkerThread):
         elif len(self.appends) == 0:
             raise ErroDeExecucao("Nenhuma Movimentação encontrada")
 
-    def append_success(self, message: str = None, fileN: str = None, 
-                       data: list[dict[str, str]] = None):
+    def append_success(self, data: list[dict[str, str]] = None,
+                        message: str = None, fileN: str = None,):
         
         def save_info(data: list[dict[str, str]]):
             if not self.path:
@@ -266,13 +265,24 @@ class CrawJUD(WorkerThread):
             
             new_data = pd.DataFrame(df)
             new_data.to_excel(self.path, index=False)
-            
-        if type(data) != list[dict[str, str]]:
+        
+        typeD = (type(data) == list
+            and
+            all(isinstance(item, dict) for item in data))
+        
+        if not typeD:
             
             data2 = {}
-            data2.keys = self.name_colunas
-            data2.values = data
             
+            for item in self.name_colunas:
+                data2.update({item: ""})
+            
+            for item in data:    
+                for key, value in list(data2.items()):
+                    if not value:
+                        data2.update({key: item})
+                        break
+                    
             data.clear()
             data.append(data2)
 
@@ -282,7 +292,9 @@ class CrawJUD(WorkerThread):
             message = f'Execução do processo efetuada com sucesso!'
 
         if message:
-            self.type_log = "success"
+            if self.type_log == "log":
+                self.type_log = "success"
+                
             self.message = message
             self.prt(self)
 
@@ -306,6 +318,7 @@ class CrawJUD(WorkerThread):
 
     def finalize_execution(self) -> None:
 
+        self.row += 1
         self.driver.delete_all_cookies()
         self.driver.close()
 
@@ -323,7 +336,7 @@ class CrawJUD(WorkerThread):
         self.message = f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos"
         self.prt(self)
 
-    def DriverLaunch(self) -> list[WebDriver, WebDriverWait]:
+    def DriverLaunch(self) -> bool:
         
         try:
             self.message = 'Inicializando WebDriver'
@@ -386,14 +399,16 @@ class CrawJUD(WorkerThread):
             
             driver = webdriver.Chrome(service=Service(path), options=chrome_options)
             wait = WebDriverWait(driver, 20, 0.01)
-            args = [driver, wait]
             driver.delete_all_cookies()
+            
+            self.driver = driver
+            self.wait = wait
             
             self.message = "WebDriver inicializado"
             self.type_log = "log"
             self.prt(self)
             
-            return args
+            return True
 
         except Exception as e:
             raise e
@@ -413,21 +428,24 @@ class CrawJUD(WorkerThread):
         except subprocess.CalledProcessError as e:
             raise e
 
-    def group_date_all(self, data: dict[str, dict[str, str]]) -> dict[str, str]:
+    def group_date_all(self, data: dict[str, dict[str, str]]) -> list[dict[str, str]]:
 
-        record = {}
+        
+        records = []
         for vara, dates in data.items():
+            record = {}
             for date, entries in dates.items():
                 for entry in entries:
-                    record = {'Data': date}
+                    
+                    record.update({"Data": date, "Vara": vara})
                     record.update(entry)
+                    records.append(record)
 
-        return record
+        return records
 
     def group_keys(self, data: list[dict[str, str]]) -> dict[str, str]:
 
         record = {}
-        
         for pos, entry in enumerate(data):
             for key, value in entry.items():
                     

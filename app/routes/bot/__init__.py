@@ -89,8 +89,8 @@ def stop_execution(user: str, pid: str) -> int:
                 return 200
             
             elif filename == "":
-                system = get_info.bot[0].system
-                typebot = get_info.bot[0].type
+                system = get_info.bot.system
+                typebot = get_info.bot.type
                 SetStatus(usr=user, pid=pid, system=system, typebot=typebot).botstop()
                 return 200
             

@@ -101,7 +101,14 @@ class printtext(CrawJUD):
             elif log_pid:
                 
                 log_pid.pos = int(data["pos"])
-                if data["type"] == "success":
+                
+                typeSuccess = (
+                    data["type"] == "success"
+                    or
+                    data["type"] == "info")
+                
+                if typeSuccess:
+                    
                     log_pid.remaining -= 1
                     log_pid.success += 1
                     log_pid.last_log = data["message"]

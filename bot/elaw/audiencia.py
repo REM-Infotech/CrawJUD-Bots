@@ -66,40 +66,58 @@ class audiencia(CrawJUD):
     def queue(self) -> None:
         
         result = self.search(self)
-        if result:
+        if not result:
+            self.message = "Buscando Processo"
+            raise ErroDeExecucao("Não Encontrado!")
             
-            self.message = "Processo Encontrado!"
-            self.type_log = "log"
-            self.prt(self)
+        comprovante = ""
+        self.data_Concat = f"{self.bot_data["DATA_AUDIENCIA"]} {self.bot_data["HORA_AUDIENCIA"]}"
+        self.message = "Processo Encontrado!"
+        self.type_log = "log"
+        self.prt(self)
+        
+        self.TablePautas()
+        chk_lancamento = self.CheckLancamento()
+        
+        if chk_lancamento:
+            self.message = "Já existe lançamento para esta pauta"
+            self.type_log = "info"
+            comprovante = chk_lancamento 
             
-            self.nova_audiencia()
-            
-            self.TipoAudiencia()
-            self.dataAudiencia()
+        if not comprovante:
+            self.NovaPauta()
             self.save_Prazo()
-            comprovante = self.GetComprovante()
+            comprovante = self.CheckLancamento()
             if not comprovante:
                 raise ErroDeExecucao(
                     "Não foi possível comprovar lançamento, verificar manualmente")
 
-            data = [{
-                "NUMERO_PROCESSO": self.bot_data["NUMERO_PROCESSO"],
-                "MENSAGEM_COMCLUSAO": f"PRAZO LANÇADO!. ID: {self.idPrazo}", 
-                "NOME_COMPROVANTE": self.nameComprovante
-            }]
-            self.append_success(data)
+            self.message = "Pauta lançada!"
             
-    def nova_audiencia(self) -> None:
+        self.append_success([comprovante], self.message)
+            
+    def TablePautas(self) -> None:
 
         try:
-            self.message = "Lançando nova audiência"
-            self.type_log = "log"
-            self.prt(self)
             
             switch_pautaAndamento = self.driver.find_element(
                 By.CSS_SELECTOR, self.elements.switch_pautaAndamento)
             
             switch_pautaAndamento.click()
+            
+            self.message = f"Verificando se existem pautas para o dia {self.data_Concat}"
+            self.type_log = "log"
+            self.prt(self)
+            
+        except Exception as e:
+            raise ErroDeExecucao(e=e)
+    
+    def NovaPauta(self) -> None:
+        
+        try:
+            self.message = "Lançando nova audiência"
+            self.type_log = "log"
+            self.prt(self)
             
             btn_NovaAudiencia = self.wait.until(EC.presence_of_element_located((
                 By.CSS_SELECTOR, self.elements.btn_NovaAudiencia
@@ -107,12 +125,7 @@ class audiencia(CrawJUD):
             
             btn_NovaAudiencia.click()
             
-        except Exception as e:
-            raise ErroDeExecucao(str(e))
-        
-    def TipoAudiencia(self) -> None:
-        
-        try:
+            ## Info tipo Audiencia
             self.message = "Informando tipo de audiência"
             self.type_log = "log"
             self.prt(self)
@@ -139,13 +152,8 @@ class audiencia(CrawJUD):
                 command2 = f'$(\'{self.elements.selectorTipoAudiencia}\').trigger(\'change\');'
                 self.driver.execute_script(command2)
                 
-        except Exception as e:
-            raise ErroDeExecucao(str(e))
-            
-    def dataAudiencia(self) -> None:
-        
-        try:
-            
+                
+            ## Info Data Audiencia
             self.message = "Informando data da Audiência"
             self.type_log = "log"
             self.prt(self)
@@ -154,11 +162,12 @@ class audiencia(CrawJUD):
                 EC.presence_of_element_located(
                     (By.CSS_SELECTOR, self.elements.DataAudiencia)))
             
-            self.data_Concat = f"{self.bot_data["DATA_AUDIENCIA"]} {self.bot_data["HORA_AUDIENCIA"]}"
+           
             DataAudiencia.send_keys(self.data_Concat)
         
+                
         except Exception as e:
-            raise ErroDeExecucao(str(e))
+            raise ErroDeExecucao(e=e)
         
     def save_Prazo(self) -> None:
         
@@ -174,14 +183,11 @@ class audiencia(CrawJUD):
             btn_Salvar.click()
             
         except Exception as e:
-            raise ErroDeExecucao(str(e))
+            raise ErroDeExecucao(e=e)
         
-    def GetComprovante(self) -> bool:
+    def CheckLancamento(self) -> dict[str, str] | None:
         
         try:
-            self.message = "Gerando comprovante"
-            self.type_log = "log"
-            self.prt(self)
             
             tablePrazos: WebElement = self.wait.until(
                 EC.presence_of_element_located(
@@ -190,24 +196,40 @@ class audiencia(CrawJUD):
             tablePrazos: list[WebElement] = tablePrazos.find_elements(
                 By.TAG_NAME, "tr")
             
-            comprovante = False
+            data = None
             for item in tablePrazos:
                 
-                data_Prazo = item.find_elements(
-                    By.TAG_NAME, "td")[4]
-                if data_Prazo == self.data_Concat:
+                if item.text == "Nenhum registro encontrado!":
+                    return None
+                
+                data_Prazo = str(item.find_elements(
+                By.TAG_NAME, "td")[4].text)
+            
+                tipo = str(item.find_elements(
+                    By.TAG_NAME, "td")[5].text)
+                
+                chk_tipo = (tipo.upper() == "AUDIÊNCIA")
+                chk_dataAudiencia = (data_Prazo == self.data_Concat)
+                
+                if chk_tipo and chk_dataAudiencia:
+                    
                     nProc_pid = f'{self.bot_data["NUMERO_PROCESSO"]} - {self.pid}'
                     
-                    self.nameComprovante = f"Comprovante - {nProc_pid}.png"
-                    self.idPrazo = item.find_elements(By.TAG_NAME, "td")[2]
+                    nameComprovante = f"Comprovante - {nProc_pid}.png"
+                    idPrazo = str(item.find_elements(By.TAG_NAME, "td")[2].text)
                     
-                    comprovante = item.screenshot(
-                        os.path.join(
-                            self.output_dir_path, self.nameComprovante))
+                    item.screenshot(os.path.join(
+                            self.output_dir_path, nameComprovante))
+                    
+                    data = {
+                    "NUMERO_PROCESSO": str(self.bot_data["NUMERO_PROCESSO"]),
+                    "MENSAGEM_COMCLUSAO": f"PRAZO LANÇADO",
+                    "ID_PRAZO": idPrazo,
+                    "NOME_COMPROVANTE": nameComprovante}
             
-            return comprovante
+            return data
         
         except Exception as e:
-            raise ErroDeExecucao(str(e))
+            raise ErroDeExecucao(e=e)
 
         

@@ -1,4 +1,3 @@
-from bot.head.common.exceptions import ErroDeExecucao
 from bot.head.common.selenium_excepts import exeptionsBot
 class CrawJUDExceptions(Exception):
     """Exceção base personalizada."""

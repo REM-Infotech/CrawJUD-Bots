@@ -63,8 +63,8 @@ class pauta(CrawJUD):
             self.message = f"Buscando pautas na data {self.current_date.strftime('%d/%m/%Y')}"
             self.type_log = "log"
             self.prt(self)
-            
-            for vara in self.varas:
+            varas: list[str] = self.varas
+            for vara in varas:
                 
                 date = self.current_date.strftime('%Y-%m-%d')
                 self.data_append.update({vara: {date: []}})
@@ -72,20 +72,20 @@ class pauta(CrawJUD):
                 self.driver.get(f"{self.elements.url_pautas}{vara}-{date}")
                 self.get_pautas(date, vara)
 
-                if len(self.data_append[vara][date]) == 0:
+                data_append = self.data_append[vara][date]
+                if len(data_append) == 0:
                     self.data_append[vara].pop(date)
-
-                data_append = self.group_keys(self.data_append[vara][date])
-                if len(data_append) > 0:
-                    vara = vara.replace("#", "")
-                    self.append_success(data2=data_append,
-                    fileN=f"{vara} - {date.replace("-", ".")} - {self.pid}.xlsx")
+                
+                elif len(data_append) > 0:
+                    vara = vara.replace("#", "").upper()
+                    fileN = f"{vara} - {date.replace("-", ".")} - {self.pid}.xlsx"
+                    self.append_success(data=data_append, fileN=fileN)
             
             
             data_append = self.group_date_all(self.data_append)
             fileN = os.path.basename(self.path)
             if len(data_append) > 0:
-                self.append_success(data2=data_append, fileN=fileN,
+                self.append_success(data=[data_append], fileN=fileN,
                                     message="Dados extraídos com sucesso!")
                 
             elif len(data_append) == 0:
@@ -167,6 +167,6 @@ class pauta(CrawJUD):
             sleep(times)
 
         except Exception as e:
-            raise ErroDeExecucao(str(e))
+            raise ErroDeExecucao(e=e)
 
     

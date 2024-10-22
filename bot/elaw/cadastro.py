@@ -819,7 +819,7 @@ class cadastro(CrawJUD):
             self.prt(self)
             
         except Exception as e:
-            raise ErroDeExecucao(str(e))
+            raise ErroDeExecucao(e=e)
 
     def salvar_tudo(self) -> None:
 
