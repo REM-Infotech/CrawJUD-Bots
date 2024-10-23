@@ -82,6 +82,9 @@ class audiencia(CrawJUD):
         if chk_lancamento:
             self.message = "Já existe lançamento para esta pauta"
             self.type_log = "info"
+            chk_lancamento.update({
+                "MENSAGEM_COMCLUSAO": "REGISTROS ANTERIORES EXISTENTES!"})
+            
             comprovante = chk_lancamento 
             
         if not comprovante:
