@@ -58,9 +58,11 @@ class proc_parte(CrawJUD):
         
     def queue(self) -> None:
         
-        search = self.search(self)
-        if search is True:
-            self.get_process_list()
+        for vara in self.varas:
+            self.vara: str = vara
+            search = self.search(self)
+            if search is True:
+                self.get_process_list()
 
             
     def get_process_list(self) -> None:
