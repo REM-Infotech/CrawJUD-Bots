@@ -192,6 +192,7 @@ class CrawJUD(WorkerThread):
             self.path_args).parent.resolve().__str__(), str(self.xlsx))
         
         df = pd.read_excel(input_file)
+        df.columns = df.columns.str.upper()
         
         for col in df.columns.to_list():
             df[col] = df[col].apply(lambda x: x.strftime('%d/%m/%Y') if type(x)\

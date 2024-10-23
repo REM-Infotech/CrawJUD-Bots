@@ -15,7 +15,7 @@ class listas:
             
         return list
 
-    def caixa_guias_emissao_sucesso(self) -> list[str]:
+    def emissor_sucesso(self) -> list[str]:
         return ['Descrição do Prazo', 'Valor do documento', "Data para pagamento",
                 'Tipo de pagamento', 'Solicitante', 'Condenação', 'Código de Barras', 'Nome Documento']
 
