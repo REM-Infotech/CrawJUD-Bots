@@ -28,8 +28,6 @@ debug = values.get('DEBUG', 'False').lower() in (
         'true', '1', 't', 'y', 'yes')
 
 database_uri = f"mysql://{login_db}:{passwd_db}@{host_db}/{database_name}"
-if debug is True:
-    database_uri = "sqlite:///project.db"
 
 SQLALCHEMY_DATABASE_URI = database_uri
 SQLALCHEMY_BINDS = {

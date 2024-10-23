@@ -4,7 +4,7 @@ from flask_mail import Mail
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_talisman import Talisman
-
+from cloudflared_flask import CloudFlared
 ## Python Imports
 import os
 import re
@@ -22,7 +22,7 @@ db = SQLAlchemy()
 tlsm = Talisman()
 mail = Mail()
 io = SocketIO()
-app = Flask(__name__, static_folder=src_path)
+app = CloudFlared(Flask(__name__, static_folder=src_path)).recreate_run()
 app.config.from_object(default_config)
 
 allowed_origins = [
