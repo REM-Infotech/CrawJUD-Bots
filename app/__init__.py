@@ -4,7 +4,6 @@ from flask_mail import Mail
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_talisman import Talisman
-from cloudflared_flask import CloudFlared
 ## Python Imports
 import os
 import re

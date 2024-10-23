@@ -454,20 +454,30 @@ class CrawJUD(WorkerThread):
                     
                 record.get(key).update({str(pos): value})
         return record
-    
+
+from bot.pje import pje, elements_pje
 from bot.esaj import esaj, elements_esaj
 from bot.elaw import elaw, elements_elaw
-from bot.pje import pje, elements_pje
+from bot.caixa import caixa, elements_caixa
 from bot.projudi import projudi, elements_projudi
 
 def master_bots(system: str, type_bot: str, master: CrawJUD) -> Callable[[], str]:
     
-    call_act = globals().get(system.lower())(type_bot, master)
+    call_act: Callable[[], None] | None = globals().get(system.lower())
+    
+    if call_act:
+        call_act = call_act(type_bot, master)
+    
     return call_act
         
 def elements_bot(system: str, state: str) -> Callable[[], str]:
     
-    call_act = globals().get(f"elements_{system.lower()}")(state)()
+    call_act: Callable[
+        [], None] | None = globals().get(f"elements_{system.lower()}")
+    
+    if call_act:
+        call_act = call_act(state)()
+    
     return call_act
 
 

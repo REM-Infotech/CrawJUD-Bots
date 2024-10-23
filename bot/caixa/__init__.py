@@ -17,3 +17,4 @@ class caixa:
             raise e
         
 from bot.caixa.emissao import emissao
+from bot.caixa.common.elements import elements_caixa
