@@ -9,4 +9,4 @@ if __name__ == "__main__":
         'true', '1', 't', 'y', 'yes')
 
     
-    io.run(app, "0.0.0.0", port=int(port), debug=True,)
+    io.run(app, "0.0.0.0", port=int(port), debug=debug)

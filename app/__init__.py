@@ -22,7 +22,8 @@ db = SQLAlchemy()
 tlsm = Talisman()
 mail = Mail()
 io = SocketIO()
-app = CloudFlared(Flask(__name__, static_folder=src_path)).recreate_run()
+# app = CloudFlared(Flask(__name__, static_folder=src_path))()
+app = Flask(__name__, static_folder=src_path)
 app.config.from_object(default_config)
 
 allowed_origins = [

@@ -527,7 +527,7 @@ class cadastro(CrawJUD):
         input_adv_responsavel.click()
         self.interact.send_key(input_adv_responsavel, self.bot_data.get("ADVOGADO_INTERNO"))
 
-        css_wait_adv = '#j_id_3k_1\:autoCompleteLawyer_panel > ul > li'
+        css_wait_adv = r'#j_id_3k_1\:autoCompleteLawyer_panel > ul > li'
         
         wait_adv = None
         
@@ -582,7 +582,7 @@ class cadastro(CrawJUD):
         
         self.interact.send_key(campo_adv, Text)
 
-        css_check_adv = '#j_id_3k_1\:autoCompleteLawyerOutraParte_panel > ul > li.ui-autocomplete-item.ui-autocomplete-list-item.ui-corner-all.ui-state-highlight'
+        css_check_adv = r'#j_id_3k_1\:autoCompleteLawyerOutraParte_panel > ul > li.ui-autocomplete-item.ui-autocomplete-list-item.ui-corner-all.ui-state-highlight'
         check_adv = None
         
         self.interact.sleep_load('div[id="j_id_3x"]')

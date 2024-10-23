@@ -27,12 +27,16 @@ MAIL_DEFAULT_SENDER = values['MAIL_DEFAULT_SENDER']
 debug = values.get('DEBUG', 'False').lower() in (
         'true', '1', 't', 'y', 'yes')
 
-database_uri = f"mysql://{login_db}:{passwd_db}@{host_db}/{database_name}"
+## SqlAlchemy config
+SQLALCHEMY_POOL_SIZE = 30  # Número de conexões na pool
+SQLALCHEMY_MAX_OVERFLOW = 10  # Número de conexões extras além da pool_size
+SQLALCHEMY_POOL_TIMEOUT = 30  # Tempo de espera para obter uma conexão
+SQLALCHEMY_POOL_RECYCLE = 1800  # Tempo (em segundos) para reciclar as conexões ociosas
+SQLALCHEMY_POOL_PRE_PING = True  # Verificar a saúde da conexão antes de usá-la
 
-SQLALCHEMY_DATABASE_URI = database_uri
-SQLALCHEMY_BINDS = {
-    'cachelogs':      'sqlite:///cachelogs.db'
-}
+SQLALCHEMY_DATABASE_URI = f"postgresql+psycopg2://{login_db}:{passwd_db}@{host_db}:5432/{database_name}"
+SQLALCHEMY_BINDS = {'cachelogs':'sqlite:///cachelogs.db'}
+SQLALCHEMY_ENGINE_OPTIONS = {'pool_pre_ping': True}
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 ## FLASK CONFIG   
