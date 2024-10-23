@@ -29,9 +29,9 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import  NoSuchElementException, TimeoutException, StaleElementReferenceException
-from PyPDF2 import *
+from PyPDF2 import PdfReader
 
-class CaixaMaster(CrawJUD):
+class emissao(CrawJUD):
 
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
         
@@ -60,21 +60,15 @@ class CaixaMaster(CrawJUD):
             except Exception as e:
                 
                 old_message = self.message
-                message_error: str = getattr(e, 'msg', getattr(e, 'message', ""))
-                if message_error == "":
-                    for exept in webdriver_exepts():
-                        if isinstance(e, exept):
-                            message_error = exeptionsBot().get(exept)
-                            break
-                        
-                if not message_error:
-                    message_error = str(e)
+                message_error = str(e)
                 
                 self.type_log = "error"
                 self.message_error = f'{message_error}. | Operação: {old_message}'
                 self.prt(self)
+                
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
+                
                 self.message_error = None
 
         self.finalize_execution()
