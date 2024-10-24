@@ -6,29 +6,26 @@ import time
 import pytz
 import json
 import pathlib
-import openpyxl
 import platform
 import subprocess
 import unicodedata
 import pandas as pd
+from datetime import datetime
 from pandas import Timestamp
 from typing import Type, Union, Callable
-from datetime import datetime
-# from openpyxl.worksheet.worksheet import Worksheet
-from openpyxl.workbook.workbook import Workbook
-from webdriver_manager.chrome import ChromeDriverManager
+
 
 # Selenium Imports
-from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
-
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
-from webdriver_manager.core.driver_cache import DriverCacheManager
+from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.firefox.service import Service
+
+from bot.head.WebDriverManager import GetDriver
 from bot.head.common.exceptions import ErroDeExecucao
+
 from initbot import WorkerThread
 
 
@@ -387,18 +384,12 @@ class CrawJUD(WorkerThread):
                 "download.default_directory": "{}".format(os.path.join(self.output_dir_path))
             }
             
-            path_chrome = os.path.join(pathlib.Path(self.path_args).parent.resolve())
-            driver_cache_manager = DriverCacheManager(root_dir=path_chrome)
-            chrome_options.add_experimental_option("prefs", chrome_prefs)
-            driverinst = ChromeDriverManager(cache_manager=driver_cache_manager).install()
+            pid_path = pathlib.Path(self.path_args).parent.resolve()
+            getdriver = GetDriver(destination=pid_path)
+            path_chrome = os.path.join(pid_path, getdriver())
             
-            driverinst = pathlib.Path(driverinst).parent.resolve().__str__()
-            path = os.path.join(driverinst, "chromedriver.exe")
             
-            if platform.system() != "Windows":
-                path = path.replace(".exe", "")
-            
-            driver = webdriver.Chrome(service=Service(path), options=chrome_options)
+            driver = webdriver.Chrome(service=Service(path_chrome), options=chrome_options)
             wait = WebDriverWait(driver, 20, 0.01)
             driver.delete_all_cookies()
             

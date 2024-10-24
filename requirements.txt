@@ -23,6 +23,8 @@ flask_talisman
 pyyaml
 termcolor
 psycopg2
+rich
+chrome-version
 python-dotenv
 ## Instalar isso aqui se o servidor for linux: 
 # apt install python3-dev libmysqlclient-dev pkg-config tightvncserver && tightvncserver :99 -geometry 1920x1080
