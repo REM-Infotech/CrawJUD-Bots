@@ -4,17 +4,12 @@
 
 import os
 import shutil
-import signal
-import zipfile
 import requests
 import platform
-import subprocess
-
+import zipfile
 
 from clear import clear
 from pathlib import Path
-from typing import Iterable
-from threading import Event
 from functools import partial
 import chrome_version as v_chrome
 from urllib.request import urlopen
@@ -88,11 +83,12 @@ class GetDriver:
             self.file_path += ".exe"
         
         self.destination = os.path.join(self.destination, self.fileN)
-        
-        root_path = str(Path(self.file_path).parent.resolve())
-        if not os.path.exists(root_path):
+        if not os.path.exists(self.file_path):
             
-            os.makedirs(root_path)
+            root_path = str(Path(self.file_path).parent.resolve())
+            if not os.path.exists(root_path):
+                os.makedirs(root_path)
+                
             pool.submit(self.copy_url, task_id, self.getUrl(), self.file_path)
             
         elif os.path.exists(root_path):
@@ -108,9 +104,26 @@ class GetDriver:
         url_chromegit = f"https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_{self.code_ver}"
         results = requests.get(url_chromegit)
         chrome_version = results.text
-
-        ## Baixa o WebDriver conforme disponivel no repositório 
-        return f"https://storage.googleapis.com/chrome-for-testing-public/{chrome_version}/linux64/chromedriver-linux64.zip"
+        
+        system = platform.system().replace("dows", "").lower()
+        arch = platform.architecture()
+        if type(arch) == tuple:
+            arch = arch[0].replace("bit", "")
+        
+        os_sys = f"{system}{arch}"
+        ## Baixa o WebDriver conforme disponivel no repositório
+        url_driver = "https://storage.googleapis.com/chrome-for-testing-public/"
+        
+        set_URL = [chrome_version, os_sys, os_sys]
+        for pos, item in enumerate(set_URL):
+            
+            if pos == len(set_URL)-1:
+                url_driver += f"chromedriver-{item}.zip"
+                continue
+            
+            url_driver += f"{item}/"
+        
+        return url_driver
     
     
     def copy_url(self, task_id: TaskID, url: str, path: str) -> None:
@@ -122,13 +135,37 @@ class GetDriver:
         # This will break if the response doesn't contain content length
         self.progress.update(task_id, total=int(response.info()["Content-length"]))
         
-        with open(path, "wb") as dest_file:
+        with open(path.replace(".exe", ".zip"), "wb") as dest_file:
             
             self.progress.start_task(task_id)
             for data in iter(partial(response.read, 32768), b""):
                 
                 dest_file.write(data)
                 self.progress.update(task_id, advance=len(data))
+        
+        # Extract the zip file
+        with zipfile.ZipFile(path.replace(
+            ".exe", ".zip"), 'r') as zip_ref:
+            
+            # Extract each file directly into the subfolder
+            for member in zip_ref.namelist():
                 
+                if member.split("/")[1].lower() == "chromedriver.exe" or \
+                    member.split("/")[1].lower() == "chromedriver":
+                    
+                        
+                    # Get the original file name without any directory structure
+                    extracted_path = zip_ref.extract(member, os.path.dirname(path))
+                    
+                    
+                    # If the extracted path has directories, move the file directly into the subfolder
+                    if os.path.basename(extracted_path) and os.path.isdir(extracted_path):
+                        continue
+                    
+                    shutil.move(extracted_path, os.path.join(
+                        os.path.dirname(path), self.fileN))
+        
+        os.remove(path.replace(".exe", ".zip"))
         self.current_app_progress.update(
             self.current_task_id, description="[bold green] ChromeDriver Baixado!")
+
