@@ -67,6 +67,7 @@ class init_app:
                           x_content_type_options=True,
                           x_xss_protection=True)
     from app import routes
+    from app import handling
 
 
 init_app()()

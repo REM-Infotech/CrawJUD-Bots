@@ -24,6 +24,7 @@ pyyaml
 termcolor
 psycopg2
 rich
+deep-translator
 chrome-version
 python-dotenv
 ## Instalar isso aqui se o servidor for linux: 

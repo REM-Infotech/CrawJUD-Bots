@@ -1,4 +1,6 @@
 from typing import Union, Any
+
+
 class elements_elaw:
     
     class AME:
@@ -10,7 +12,7 @@ class elements_elaw:
             
             string = ""
         
-        ## Login Elaw    
+        ## Login Elaw
         url_login = ""
         campo_username = ''
         campo_passwd = ''
@@ -19,7 +21,7 @@ class elements_elaw:
         
         ## Busca Elaw
         url_busca = ""
-        btn_busca = ""    
+        btn_busca = ""
             
         ## Robô Lançar Audiências
         switch_pautaAndamento = 'a[href="#tabViewProcesso:agendamentosAndamentos"]'
@@ -62,7 +64,7 @@ class elements_elaw:
     
     classes: dict[str, Union[AME]] = {
         "AME": AME
-    }    
+    }
     
     def __init__(self, state: str) -> None:
         

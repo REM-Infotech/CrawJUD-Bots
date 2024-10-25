@@ -10,7 +10,7 @@ class WorkerThread:
     
     def __init__(self) -> None:
         
-        from bot import CrawJUD
+        from bot.head import CrawJUD
         self.thread = None
         self.thread_id = None
         self.crawjud = CrawJUD
@@ -43,7 +43,8 @@ class WorkerThread:
     def run(self, app: Flask, path_args: str = None, pid: str = None):
         
         while not self.thread_id:
-            print("wait pid thread")
+            print(f"wait {pid} thread".upper())
+            
         with app.app_context():
             bot = self.crawjud(self)
             bot.setup(app, path_args)

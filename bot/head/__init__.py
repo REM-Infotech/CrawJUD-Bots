@@ -10,6 +10,7 @@ import platform
 import subprocess
 import unicodedata
 import pandas as pd
+from typing import Union
 from datetime import datetime
 from pandas import Timestamp
 from typing import Callable
@@ -34,6 +35,16 @@ class CrawJUD(WorkerThread):
         "version": 2
     }
 
+    args_bot: dict[str, str | int] = {}
+    
+    @property
+    def argbot(self) -> dict[str, str | int]:
+        return self.args_bot
+
+    @argbot.setter
+    def argbot(self, args: dict[str, str | int]):
+        self.args_bot = args
+    
     def setBots(self):
         
         ## FuncBots
@@ -46,25 +57,32 @@ class CrawJUD(WorkerThread):
         from bot.head.Tools.dicionarios import cities_Amazonas
         
         ## Bots
-        from bot.pje import pje, elements_pje
-        from bot.esaj import esaj, elements_esaj
-        from bot.elaw import elaw, elements_elaw
-        from bot.caixa import caixa, elements_caixa
-        from bot.projudi import projudi, elements_projudi
+        from bot.pje import pje
+        from bot.esaj import esaj
+        from bot.elaw import elaw
+        from bot.caixa import caixa
+        from bot.projudi import projudi
         
-        for item in [pje, elements_pje, AuthBot,
-                     esaj, elements_esaj, SeachBot,
-                     elaw, elements_elaw, Interact,
-                     caixa, elements_caixa, printtext,
-                     projudi, elements_projudi, MakeXlsx,
-                     SetStatus, cities_Amazonas]:
+        from bot.pje.common.elements import elements_pje
+        from bot.esaj.common.elements import elements_esaj
+        from bot.elaw.common.elements import elements_elaw
+        from bot.caixa.common.elements import elements_caixa
+        from bot.projudi.common.elements import elements_projudi
+        from bot.calculadoras.common.elements import elements_calculadoras
+        
+        local_classes = list(locals().items())
+        for key, value in local_classes:
             
-            setattr(self, item.__class__.__name__, item)
-    
-    def __getattr__(self, nome_do_atributo: str) -> Callable[[], str | None]:
-        
-        item = getattr(self.argbot, nome_do_atributo, None)
-        return item
+            if key != "self":
+                value: Union[pje, esaj, elaw, caixa, projudi,
+                             Interact, printtext, MakeXlsx,
+                             SetStatus, cities_Amazonas,
+                             elements_pje, elements_esaj,
+                             elements_elaw, elements_caixa,
+                             elements_projudi, elements_calculadoras]
+                
+                setattr(self, key, value)
+
     
     def __init__(self, worker_thread: WorkerThread):
         
@@ -79,7 +97,7 @@ class CrawJUD(WorkerThread):
         with open(path_args, "rb") as f:
             json_f: dict[str, str | int] = json.load(f)
             
-            setattr(self, "argbot", json_f)
+            self.argbot = json_f
             
             for key, value in json_f.items():
                 setattr(self, key, value)
@@ -480,3 +498,10 @@ class CrawJUD(WorkerThread):
                     
                 record.get(key).update({str(pos): value})
         return record
+
+    def __getattr__(self, nome_do_atributo: str) -> Callable[[], str | None]:
+           
+        item = self.argbot.get(nome_do_atributo, getattr(
+            self, nome_do_atributo, None))
+        
+        return item

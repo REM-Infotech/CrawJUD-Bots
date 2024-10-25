@@ -1,6 +1,6 @@
 from app import app, io
 from app.routes.bot import bot
-
+from app.routes import handler
 from flask_socketio import join_room, leave_room, emit
 from app.models import CacheLogs
 

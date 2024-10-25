@@ -35,11 +35,11 @@ SQLALCHEMY_POOL_RECYCLE = 1800  # Tempo (em segundos) para reciclar as conexões
 SQLALCHEMY_POOL_PRE_PING = True  # Verificar a saúde da conexão antes de usá-la
 
 SQLALCHEMY_DATABASE_URI = f"postgresql+psycopg2://{login_db}:{passwd_db}@{host_db}:5432/{database_name}"
-SQLALCHEMY_BINDS = {'cachelogs':'sqlite:///cachelogs.db'}
+SQLALCHEMY_BINDS = {'cachelogs': 'sqlite:///cachelogs.db'}
 SQLALCHEMY_ENGINE_OPTIONS = {'pool_pre_ping': True}
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-## FLASK CONFIG   
+## FLASK CONFIG
 PREFERRED_URL_SCHEME = "https"
 SESSION_COOKIE_HTTPONLY = False
 SESSION_COOKIE_SECURE = True
@@ -59,6 +59,3 @@ for paths in [DOCS_PATH, TEMP_PATH, IMAGE_TEMP_PATH, CSV_TEMP_PATH, PDF_TEMP_PAT
     
     if not os.path.exists(paths):
         os.makedirs(paths, exist_ok=True)
-
-
-
