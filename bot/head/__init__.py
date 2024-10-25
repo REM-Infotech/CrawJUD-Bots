@@ -164,28 +164,29 @@ class CrawJUD(WorkerThread):
 
             self.interact = self.Interact(self)
             
-            Get_Login = self.login()
-            if Get_Login is True:
-                
-                self.message = 'Login efetuado com sucesso!'
-                self.type_log = "log"
-                self.prt(self)
+            if self.login_method:
+                Get_Login = self.login()
+                if Get_Login is True:
+                    
+                    self.message = 'Login efetuado com sucesso!'
+                    self.type_log = "log"
+                    self.prt(self)
 
-            elif Get_Login is False:
+                elif Get_Login is False:
 
-                self.driver.quit()
-                
-                self.message = 'Erro ao realizar login'
-                self.type_log = "error"
-                self.prt(self)
-                
-                with app.app_context():
-                    self.SetStatus(status='Falha ao iniciar',
-                                   pid=self.pid,
-                                   system=self.system,
-                                   typebot=self.typebot).botstop()
-                
-                return
+                    self.driver.quit()
+                    
+                    self.message = 'Erro ao realizar login'
+                    self.type_log = "error"
+                    self.prt(self)
+                    
+                    with app.app_context():
+                        self.SetStatus(status='Falha ao iniciar',
+                                       pid=self.pid,
+                                       system=self.system,
+                                       typebot=self.typebot).botstop()
+                    
+                    return
 
             self.search = self.SeachBot(self)
             
