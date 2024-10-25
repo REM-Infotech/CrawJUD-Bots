@@ -270,6 +270,9 @@ class CrawJUD(WorkerThread):
             elif key == "DATA_LIMITE" and not data.get("DATA_INICIO"):
                 data.update({"DATA_INICIO": value})
                 
+            elif type(value) is int or type(value) is float:
+                data.update({key: "{:.2f}".format(value).replace(".", ",")})
+                
             
         return data
 

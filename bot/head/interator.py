@@ -32,7 +32,7 @@ class Interact(CrawJUD):
         if send is None:
             element.click()
             sleep(0.05)
-            for c in word:
+            for c in str(word):
                 sleep(0.001)
                 element.send_keys(c)
 

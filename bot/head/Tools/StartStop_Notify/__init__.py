@@ -9,6 +9,7 @@ import pathlib
 import logging
 import platform
 import openpyxl
+import unicodedata
 
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -40,6 +41,10 @@ class SetStatus:
         self.user = form.get("user", usr)
         self.pid = form.get("pid", pid)
         self.status = status
+    
+    def format_String(self, string: str) -> str:
+
+        return "".join([c for c in unicodedata.normalize('NFKD', string.lower().replace(" ", "").replace("_", "")) if not unicodedata.combining(c)])
         
     def start_bot(self) -> tuple[str, str]:
         
@@ -48,6 +53,10 @@ class SetStatus:
         
         if self.files:
             for f, value in self.files.items():
+                
+                if "xlsx" not in f:
+                    f = self.format_String(f)
+                    
                 filesav = os.path.join(path_pid, secure_filename(f))
                 value.save(filesav)
         
