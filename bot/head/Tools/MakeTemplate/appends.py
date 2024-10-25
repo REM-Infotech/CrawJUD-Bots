@@ -39,6 +39,10 @@ class listas:
     def sucesso(self) -> list[str]:
         
         return ["MENSAGEM_COMCLUSAO", "NOME_COMPROVANTE"]
+    
+    def protocolo_sucesso(self) -> list[str]:
+        
+        return ["MENSAGEM_COMCLUSAO", "NOME_COMPROVANTE", "ID_PROTOCOLO"]
 
     def erro(self) -> list[str]:
 

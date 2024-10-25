@@ -1,9 +1,8 @@
 import os
 import time
-import shutil
 import pathlib
-import openpyxl
 import unicodedata
+from PIL import Image
 from time import sleep
 from typing import Type
 from contextlib import suppress
@@ -76,8 +75,11 @@ class protocolo(CrawJUD):
             raise ErroDeExecucao("Processo não encontrado!")
         
         self.detect_intimacao()
-        
         self.add_new_move()
+        
+        if self.set_parte() is not True:
+            raise ErroDeExecucao("Não foi possível selecionar parte")
+        
         self.add_new_file()
         if self.bot_data.get("ANEXOS", None) is not None:
             self.more_files()
@@ -85,13 +87,59 @@ class protocolo(CrawJUD):
         self.set_file_principal()
         self.sign_files()
         self.finish_move()
-        self.screenshot_sucesso()
+        
+        confirm_protocol = self.confirm_protocol()
+        if confirm_protocol:
+            data = self.screenshot_sucesso()
+            
+        data.append(confirm_protocol)
+        self.append_success(data)
+    
+    def confirm_protocol(self) -> str | None:
+        
+        successMessage = None
+        with suppress(TimeoutException):
+            successMessage = self.wait.until(
+                EC.presence_of_element_located((
+                    By.CSS_SELECTOR, "#successMessages"))).text.split("Protocolo:")[1]
+        
+        return successMessage
     
     def detect_intimacao(self) -> None:
         
         if "intimacaoAdvogado.do" in self.driver.current_url:
             raise ErroDeExecucao("Processo com Intimação pendente de leitura!")
-      
+    
+    def set_parte(self) -> bool:
+        
+        # self.driver.switch_to.frame(self.driver.find_element(By.CSS_SELECTOR, 'iframe[name="userMainFrame"]'))
+        self.message = "Selecionando parte"
+        self.type_log = "log"
+        self.prt(self)
+        
+        table_partes = self.driver.find_element(By.CSS_SELECTOR, "#juntarDocumentoForm > table:nth-child(28)")
+        table_partes = table_partes.find_element(By.TAG_NAME, "tbody").find_elements(By.TAG_NAME, "tr")
+        
+        selected_parte = False
+        
+        for pos, item in enumerate(table_partes):
+            
+            for parte in table_partes[pos + 1].find_elements(By.TAG_NAME, "td"):
+                
+                if parte.text.upper() == self.bot_data.get("PARTE_PETICIONANTE").upper():
+                    radio_item = item.find_element(By.CSS_SELECTOR, "input[type='radio']")
+                    radio_item.click()
+                    
+                    set_parte = parte.find_element(By.CSS_SELECTOR, "input[type='checkbox']")
+                    set_parte.click()
+                    selected_parte = True
+                break
+            
+            if selected_parte:
+                break
+
+        return selected_parte
+            
     def add_new_move(self) -> None:
 
         try:
@@ -134,7 +182,7 @@ class protocolo(CrawJUD):
             self.prt(self)
             button_new_file = self.driver.find_element(By.CSS_SELECTOR, 'input#editButton[value="Adicionar"]')
             button_new_file.click()
-            
+           
             sleep(2.5)
     
             self.driver.switch_to.frame(self.driver.find_element(By.CSS_SELECTOR, 'iframe[frameborder="0"][id]'))
@@ -271,19 +319,51 @@ class protocolo(CrawJUD):
     def screenshot_sucesso(self) -> None:
         
         try:
-            sleep(2)
+            
+            table_moves = self.driver.find_element(By.CLASS_NAME, 'resultTable')
+            table_moves = table_moves.find_elements(By.XPATH, './/tr[contains(@class, "odd") or contains(@class, "even")][not(@style="display:none;")]')
+            
+            table_moves[0].screenshot(os.path.join(self.output_dir_path, 'tr_0.png'))
+            
+            expand = table_moves[0].find_element(By.CSS_SELECTOR, 'a[href="javascript://nop/"]')
+            expand.click()
+            
+            sleep(1.5)
+            
+            table_moves[1].screenshot(os.path.join(self.output_dir_path, 'tr_1.png'))
+            
+            # Abra as imagens
+            im_tr1 = Image.open(os.path.join(self.output_dir_path, 'tr_0.png'))
+            im_tr2 = Image.open(os.path.join(self.output_dir_path, 'tr_1.png'))
+
+            # Obtenha as dimensões das imagens
+            width1, height1 = im_tr1.size
+            width2, height2 = im_tr2.size
+
+            # Calcule a largura e altura total para combinar as imagens
+            total_height = height1 + height2
+            total_width = max(width1, width2)
+
+            # Crie uma nova imagem com o tamanho combinado
+            combined_image = Image.new('RGB', (total_width, total_height))
+
+            # Cole as duas imagens (uma em cima da outra)
+            combined_image.paste(im_tr1, (0, 0))
+            combined_image.paste(im_tr2, (0, height1))
+
+            # Salve a imagem combinada
+            comprovante1 = f'{self.pid} - COMPROVANTE 1 - {self.bot_data.get("NUMERO_PROCESSO")}.png'
+            combined_image.save(os.path.join(self.output_dir_path, comprovante1))
 
             filename = f'Protocolo - {self.bot_data.get("NUMERO_PROCESSO")} - PID{self.pid}.png'
-            self.driver.get_screenshot_as_file(f"{self.output_dir_path}/{filename}")
+            self.driver.get_screenshot_as_file(os.path.join(self.output_dir_path, filename))
             
             self.message = f'Peticionamento do processo Nº{self.bot_data.get("NUMERO_PROCESSO")} concluído com sucesso!'
             
             self.type_log = "log"
             self.prt(self)
 
-            self.append_success([self.bot_data.get("NUMERO_PROCESSO"), self.message, filename])
-
-            sleep(2)
+            return [self.bot_data.get("NUMERO_PROCESSO"), self.message, comprovante1]
             
         except Exception as e:
             raise ErroDeExecucao(e=e)
