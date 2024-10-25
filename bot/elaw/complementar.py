@@ -20,17 +20,9 @@ type_doc = {
     14: "cnpj"
 }
 
-lista1 = ["NUMERO_PROCESSO", "UNIDADE_CONSUMIDORA", "DIVISAO",
-          "DATA_CITACAO", "PROVIMENTO", "FASE", "FATO_GERADOR",
-          "DESC_OBJETO", "OBJETO"]
 
 
 class complement(CrawJUD):
-
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-        
-        self.__dict__ = Initbot.__dict__.copy()
-        self.start_time = time.perf_counter()
         
     def execution(self) -> None:
         
@@ -66,7 +58,6 @@ class complement(CrawJUD):
 
         self.finalize_execution()
 
-        
     def queue(self) -> None:
 
         search = self.search(self)
@@ -80,19 +71,20 @@ class complement(CrawJUD):
             edit_proc_button = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'button[id="dtProcessoResults:0:btnEditar"]')))
             edit_proc_button.click()
             
+            lista1 = list(self.bot_data.keys())
+            
             start_time = time.perf_counter()
             for item in lista1:
                 check_column = self.bot_data.get(item.upper())
                 
                 if check_column:
                     func = None
-                    with suppress(AttributeError):
-                        func = getattr(self, item.lower())
+                    class_itens = list(self.__dict__.items())
                     
-                    if func is None:
-                        continue
-                    
-                    func()
+                    for name, func in class_itens:
+                        if name.lower() == item.lower():
+                            func()
+                            break
             
             end_time = time.perf_counter()
             execution_time = end_time - start_time
@@ -182,7 +174,108 @@ class complement(CrawJUD):
         self.message = "Data de citação informada!"
         self.type_log = "log"
         self.prt(self)
-    
+        
+    def estado(self) -> None:
+
+        """Declaração dos CSS em variáveis"""
+        
+        key = "ESTADO"
+        comboEstadoVara = self.elements.estado_combo
+        elemento = self.elements.estado_panel
+        
+        self.message = 'Informando estado do processo'
+        self.type_log = "log"
+        self.prt(self)
+        
+        set_estado: WebElement = self.wait.until(
+            EC.presence_of_element_located((
+                By.CSS_SELECTOR, comboEstadoVara)), message="Erro ao encontrar elemento")
+        
+        set_estado.click()
+        sleep(0.5)
+
+        
+        text = str(self.bot_data.get(key, None))
+        self.interact.select_item(elemento, text)
+        self.interact.sleep_load('div[id="j_id_3x"]')
+            
+        self.message = 'Estado do processo informado!'
+        self.type_log = "log"
+        self.prt(self)
+
+    def comarca(self) -> None:
+
+        """Declaração dos CSS em variáveis"""
+        
+        key = "COMARCA"
+        
+        comboComarcaVara = self.elements.comarca_combo
+        elemento = self.elements.comarca_panel
+        
+        self.message = 'Informando comarca do processo'
+        self.type_log = "log"
+        self.prt(self)
+
+        comarca: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboComarcaVara)), message="Erro ao encontrar elemento")
+        comarca.click()
+        sleep(0.5)
+        
+        text = str(self.bot_data.get(key))
+        self.interact.select_item(elemento, text)
+        self.interact.sleep_load('div[id="j_id_3x"]')
+        
+        self.message = 'Comarca do processo informado!'
+        self.type_log = "log"
+        self.prt(self)
+
+    def foro(self) -> None:
+
+        """Declaração dos CSS em variáveis"""
+        
+        key = "FORO"
+        
+        comboForoTribunal = self.elements.foro_combo
+        elemento = self.elements.foro_panel
+        
+        self.message = 'Informando foro do processo'
+        self.type_log = "log"
+        self.prt(self)
+        
+        foro: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboForoTribunal)), message="Erro ao encontrar elemento")
+        foro.click()
+        sleep(0.5)
+        
+        text = str(self.bot_data.get(key))
+        self.interact.select_item(elemento, text)
+        self.interact.sleep_load('div[id="j_id_3x"]')
+
+        self.message = 'Foro do processo informado!'
+        self.type_log = "log"
+        self.prt(self)
+
+    def vara(self) -> None:
+
+        """Declaração dos CSS em variáveis"""
+        key = "VARA"
+        
+        comboVara = self.elements.vara_combo
+        elemento = self.elements.vara_panel
+        
+        self.message = 'Informando vara do processo'
+        self.type_log = "log"
+        self.prt(self)
+        
+        vara: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboVara)), message="Erro ao encontrar elemento")
+        vara.click()
+        sleep(0.5)
+        text = str(self.bot_data.get(key))
+        self.interact.select_item(elemento, text)
+        self.interact.sleep_load('div[id="j_id_3x"]')
+
+        self.message = 'Vara do processo informado!'
+        self.type_log = "log"
+        self.prt(self)
+
     def fase(self) -> None:
 
         """Declaração dos CSS em variáveis"""
@@ -344,4 +437,8 @@ class complement(CrawJUD):
         #     except Exception as e:
         #         self.message = "Processo Não cadastrado"
         #         raise ErroDeExecucao(self.message)
-            
+    
+    def __init__(self, Initbot: Type[CrawJUD]) -> None:
+        
+        self.__dict__.update(Initbot.__dict__)
+        self.start_time = time.perf_counter()

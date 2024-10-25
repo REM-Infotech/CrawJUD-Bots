@@ -75,14 +75,14 @@ class sol_pags(CrawJUD):
             
             if search is True:
 
-                # namedef = self.format_String(self.bot_data.get("TIPO_PAGAMENTO"))
-                # self.new_payment()
-                # self.set_pgto(namedef)
-                # pgto = getattr(self, namedef)
-                # pgto()
+                namedef = self.format_String(self.bot_data.get("TIPO_PAGAMENTO"))
+                self.new_payment()
+                self.set_pgto(namedef)
+                pgto = getattr(self, namedef)
+                pgto()
                 
-                # self.save_changes()
-                self.confirm_save()
+                self.save_changes()
+                self.append_success(self.confirm_save())
                 
             elif search is not True:
                 self.message = "Processo não encontrado!"
@@ -501,6 +501,8 @@ class sol_pags(CrawJUD):
             enter_table: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div[id="tabViewProcesso:pvp-dtProcessoValorResults"]'))).find_element(By.TAG_NAME, 'table').find_element(By.TAG_NAME, 'tbody')
             check_solicitacoes = enter_table.find_elements(By.TAG_NAME, 'tr')
             info_sucesso = [self.bot_data.get("NUMERO_PROCESSO"), "Pagamento solicitado com sucesso!!"]
+            current_handle = self.driver.current_window_handle
+            
             for item in check_solicitacoes:
                 
                 
@@ -514,7 +516,7 @@ class sol_pags(CrawJUD):
                 id_task = item.find_elements(By.TAG_NAME, "td")[2].text
                 closeContext = self.wait.until(EC.presence_of_element_located((
                     By.CSS_SELECTOR, 'div[id="tabViewProcesso:pvp-dtProcessoValorResults:0:pvp-pgBotoesValoresPagamentoBtnVer_dlg"]'
-                ).find_element(By.TAG_NAME, "a")))
+                ))).find_element(By.TAG_NAME, "a")
                 
                 
                 
@@ -522,9 +524,6 @@ class sol_pags(CrawJUD):
                     EC.presence_of_element_located((By.CSS_SELECTOR, 'iframe[title="Valor"]'))
                 )
                 self.driver.switch_to.frame(WaitFrame)
-                
-                
-                
                 
                 tipoCusta = None
                 cod_bars = None
@@ -538,7 +537,7 @@ class sol_pags(CrawJUD):
                             By.CSS_SELECTOR,
                             r"#processoValorPagamentoView\:j_id_p_1_2_1_2_1 > table > tbody > tr:nth-child(5)"
                         ))
-                    ).text.split(":")[-1]
+                    ).text.split(":")[-1].replace("\n", "")
                     
                 with suppress(TimeoutException):
                     cod_bars = self.wait.until(
@@ -547,7 +546,7 @@ class sol_pags(CrawJUD):
                             By.CSS_SELECTOR,
                             r"#processoValorPagamentoView\:j_id_p_1_2_1_2_7_8_4_23_1\:j_id_p_1_2_1_2_7_8_4_23_2_1_2_1\:j_id_p_1_2_1_2_7_8_4_23_2_1_2_2_1_3 > table > tbody > tr:nth-child(3)"
                         ))
-                    ).text.split(":")[-1]
+                    ).text.split(":")[-1].replace("\n", "")
                 
                 with suppress(TimeoutException):
                     tipoCondenacao = self.wait.until(
@@ -555,45 +554,56 @@ class sol_pags(CrawJUD):
                             By.CSS_SELECTOR,
                             r"#processoValorPagamentoView\:j_id_p_1_2_1_2_1 > table > tbody > tr:nth-child(4)"
                         ))
-                    ).text.split(":")[-1]
+                    ).text.split(":")[-1].replace("\n", "")
                 
                 if self.bot_data.get("TIPO_CONDENACAO", ""):
                     if tipoCondenacao:
-                        if self.bot_data.get("TIPO_CONDENACAO", "") == tipoCondenacao:
+                        if self.bot_data.get("TIPO_CONDENACAO", "vazio").lower() == tipoCondenacao.lower():
                             
                             if self.bot_data.get("COD_BARRAS").replace(".", "").replace(" ", "") == cod_bars:
-                                WaitFrame.screenshot(os.path.join(self.output_dir_path, Name_Comprovante1))
+                                
+                                self.driver.switch_to.default_content()
+                                url_page = WaitFrame.get_attribute("src")
+                                self.getScreenShot(url_page, Name_Comprovante1)
+                                self.driver.switch_to.window(current_handle)
                                 
                                 closeContext.click()
-                                self.driver.switch_to.default_content()
-                                
                                 Name_Comprovante2 = f"COMPROVANTE 2 {self.bot_data.get("NUMERO_PROCESSO")} - {self.pid} - {now}.png"
-                                item.screenshot(self.output_dir_path, Name_Comprovante2)
+                                item.screenshot(os.path.join(self.output_dir_path, Name_Comprovante2))
                                 
                                 info_sucesso.extend([tipoCondenacao, Name_Comprovante1, id_task, Name_Comprovante2])
                                 return info_sucesso
                 
                 elif self.bot_data.get("TIPO_GUIA", ""):
                     if tipoCusta:
-                        if self.bot_data.get("TIPO_GUIA", "") == tipoCusta:
+                        if self.bot_data.get("TIPO_GUIA", "vazio").lower() == tipoCusta.lower():
                             
                             if self.bot_data.get("COD_BARRAS").replace(".", "").replace(" ", "") == cod_bars:
-                                WaitFrame.screenshot(os.path.join(self.output_dir_path, Name_Comprovante1))
+                                
+                                self.driver.switch_to.default_content()
+                                url_page = WaitFrame.get_attribute("src")
+                                self.getScreenShot(url_page, Name_Comprovante1)
+                                self.driver.switch_to.window(current_handle)
                                 
                                 closeContext.click()
-                                self.driver.switch_to.default_content()
-                                
                                 Name_Comprovante2 = f"COMPROVANTE 2 {self.bot_data.get("NUMERO_PROCESSO")} - {self.pid} - {now}.png"
-                                item.screenshot(self.output_dir_path, Name_Comprovante2)
+                                item.screenshot(os.path.join(self.output_dir_path, Name_Comprovante2))
                                 
-                                info_sucesso.extend([tipoCusta, Name_Comprovante1, id_task, Name_Comprovante2])
+                                info_sucesso.extend([tipoCondenacao, Name_Comprovante1, id_task, Name_Comprovante2])
                                 return info_sucesso
                 
-                closeContext.click()
                 self.driver.switch_to.default_content()
+                closeContext.click()
                 sleep(0.25)
             
             raise ErroDeExecucao("Pagamento não solicitado")
           
         except Exception as e:
             raise ErroDeExecucao(e=e)
+
+    def getScreenShot(self, url_page: str, Name_Comprovante1: str):
+        
+        self.driver.switch_to.new_window('tab')
+        self.driver.get(url_page)
+        self.driver.save_screenshot(os.path.join(self.output_dir_path, Name_Comprovante1))
+        self.driver.close()

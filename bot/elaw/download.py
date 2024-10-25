@@ -5,31 +5,17 @@ import time
 import shutil
 from time import sleep
 from typing import Type
-from contextlib import suppress
-
-
-""" Imports do Projeto """
 from bot.head import CrawJUD
-
-
 from bot.head.common.exceptions import ErroDeExecucao
 
 
 # Selenium Imports
-from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.common.exceptions import  NoSuchElementException, TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 
 
 class download(CrawJUD):
-
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-        
-        self.__dict__ = Initbot.__dict__.copy()
-        self.start_time = time.perf_counter()
         
     def execution(self) -> None:
         
@@ -65,7 +51,6 @@ class download(CrawJUD):
 
         self.finalize_execution()
 
-
     def queue(self) -> None:
         
         check_cadastro = self.search(self)
@@ -96,7 +81,7 @@ class download(CrawJUD):
         sleep(1.5)
         self.message = "Acessando tabela de documentos"
         self.type_log = "log"
-        self.prt(self)      
+        self.prt(self)
     
     def download_docs(self) -> None:
         
@@ -107,7 +92,7 @@ class download(CrawJUD):
         if "," in self.bot_data.get("TERMOS"):
             termos = str(self.bot_data.get("TERMOS")).replace(", ", ",").replace(" ,", ",").split(",")
             
-        elif not "," in self.bot_data.get("TERMOS"):
+        elif "," not in self.bot_data.get("TERMOS"):
             termos = [str(self.bot_data.get("TERMOS"))]
         
         self.message = f'Buscando documentos que contenham "{self.bot_data.get("TERMOS").__str__().replace(",", ", ")}"'
@@ -132,14 +117,14 @@ class download(CrawJUD):
                     baixar.click()
                               
                     self.rename_doc(get_name_file)
-                    self.message = f'Arquivo baixado com sucesso!'
+                    self.message = 'Arquivo baixado com sucesso!'
                     self.type_log = "log"
                     self.prt(self)
     
     def rename_doc(self, namefile: str):
         
         filedownloaded = False
-        while  True:
+        while True:
             for root, dirs, files in os.walk(os.path.join(self.output_dir_path)):
                 
                 for file in files:
@@ -158,7 +143,7 @@ class download(CrawJUD):
                 sleep(0.5)
                 break
             
-            sleep(0.01)    
+            sleep(0.01)
                         
         filename_replaced = f'{self.pid} - {namefile.replace(" ", "")}'
         path_renamed = os.path.join(self.output_dir_path, filename_replaced)
@@ -169,3 +154,8 @@ class download(CrawJUD):
             
         elif self.list_docs:
             self.list_docs = self.list_docs + "," + filename_replaced
+    
+    def __init__(self, Initbot: Type[CrawJUD]) -> None:
+        
+        self.__dict__.update(Initbot.__dict__)
+        self.start_time = time.perf_counter()

@@ -17,13 +17,14 @@ from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.common.exceptions import  NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 
 type_doc = {
     11: "cpf",
     14: "cnpj"
 }
+
 
 class provisao(CrawJUD):
 
@@ -68,7 +69,7 @@ class provisao(CrawJUD):
 
     def queue(self) -> None | Exception:
 
-        module = "search_processo"
+        # module = "search_processo"
         
         check_cadastro = self.search(self)
         if check_cadastro is True:
@@ -76,7 +77,7 @@ class provisao(CrawJUD):
             self.type_log = "log"
             self.message = "Processo encontrado! Informando valores..."
             self.prt(self)
-            module = "get_valores_proc"
+            # module = "get_valores_proc"
             get_valores = self.get_valores_proc()
             css_btn_edit = 'button[id="tabViewProcesso:j_id_i3_c_1_5_2:processoValoresEditarBtn"]'
             edit_button: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_btn_edit)))
@@ -85,17 +86,17 @@ class provisao(CrawJUD):
             
             if get_valores == "Nenhum registro encontrado!":
                 
-                module = "add_new_valor"
+                # module = "add_new_valor"
                 self.add_new_valor()
                 
-                module = "set_valores"
+                # module = "set_valores"
                 self.set_valores()
                 
                 self.save_changes()
                 
             elif '-' in get_valores or get_valores == "Contém valores" and provisao != "possível":
                 
-                module = "set_valores"
+                # module = "set_valores"
                 self.set_valores()
                 self.save_changes()
 
@@ -106,7 +107,7 @@ class provisao(CrawJUD):
                 self.prt(self)
                 self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
 
-        if not check_cadastro is True:
+        if check_cadastro is not True:
             self.message = "Processo não encontrado!"
             self.type_log = "error"
             self.prt(self)
@@ -114,7 +115,7 @@ class provisao(CrawJUD):
                    
     def get_valores_proc(self) -> str:
         
-        table_valores_css = 'tbody[id="tabViewProcesso:j_id_i3_c_1_5_2:j_id_i3_c_1_5_70:viewValoresCustomeDt_data"]' 
+        table_valores_css = 'tbody[id="tabViewProcesso:j_id_i3_c_1_5_2:j_id_i3_c_1_5_70:viewValoresCustomeDt_data"]'
         
         get_valores: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a[href="#tabViewProcesso:valores"]')))
         get_valores.click()
@@ -130,8 +131,8 @@ class provisao(CrawJUD):
                 value_provcss = 'div[id="tabViewProcesso:j_id_i3_c_1_5_2:j_id_i3_c_1_5_70:viewValoresCustomeDt:0:j_id_i3_c_1_5_7e:0:j_id_i3_c_1_5_7m"]'
                 valueprovisao = item.find_element(By.CSS_SELECTOR, value_provcss).text
             
-            if '-' in valueprovisao or valueprovisao  == "Nenhum registro encontrado!":
-                return valueprovisao 
+            if '-' in valueprovisao or valueprovisao == "Nenhum registro encontrado!":
+                return valueprovisao
 
         return "Contém valores"
 
@@ -157,9 +158,7 @@ class provisao(CrawJUD):
             self.interact.sleep_load('div[id="j_id_7t"]')
             
         except Exception as e:
-            
-            self.message = "Não foi possivel atualizar provisão"
-            raise ErroDeExecucao(self.message)
+            raise ErroDeExecucao("Não foi possivel atualizar provisão", e=e)
                                  
     def set_valores(self) -> None | Exception:
         
@@ -181,7 +180,7 @@ class provisao(CrawJUD):
             if "," in valor_informar:
                 sleep(0.25)
                 campo_valor_dml.send_keys(f"{valor_informar}")
-            elif not "," in valor_informar:
+            elif "," not in valor_informar:
                 sleep(0.25)
                 campo_valor_dml.send_keys(f"{valor_informar}{','}")
                 
@@ -204,7 +203,7 @@ class provisao(CrawJUD):
                 provisao_from_xlsx = str(self.bot_data.get("PROVISAO")).lower()
                 
                 provisao = item.text.lower()
-                if  provisao == provisao_from_xlsx:
+                if provisao == provisao_from_xlsx:
                     sleep(1)
                     item.click()
                     break
@@ -230,13 +229,13 @@ class provisao(CrawJUD):
                     self.interact.send_key(DataCorrecao, self.bot_data.get("DATA_ATUALIZACAO"))
                     
                     self.driver.execute_script(f"document.getElementById('{css_DataCorrecao}').blur()")
-                    self.interact.sleep_load('div[id="j_id_2z"]')   
+                    self.interact.sleep_load('div[id="j_id_2z"]')
                     
                     DataJurosCss = 'input[id="j_id_2m:j_id_2p_2e:processoAmountObjetoDt:0:amountDataJuros_input"]'
                     DataJuros = self.driver.find_element(By.CSS_SELECTOR, DataJurosCss)
                     css_data = DataJuros.get_attribute("id")
                     self.interact.clear(DataJuros)
-                    self.interact.send_key(DataJuros, self.bot_data.get("DATA_ATUALIZACAO"))          
+                    self.interact.send_key(DataJuros, self.bot_data.get("DATA_ATUALIZACAO"))
                     self.driver.execute_script(f"document.getElementById('{css_data}').blur()")
                     self.interact.sleep_load('div[id="j_id_2z"]')
                     

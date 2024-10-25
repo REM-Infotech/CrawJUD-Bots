@@ -25,11 +25,6 @@ type_doc = {
 
 
 class cadastro(CrawJUD):
-
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-        
-        self.__dict__ = Initbot.__dict__.copy()
-        self.start_time = time.perf_counter()
         
     def execution(self) -> None:
         
@@ -873,3 +868,8 @@ class cadastro(CrawJUD):
                 ErroElaw = "Cadastro do processo nao finalizado, verificar manualmente"
                 
             raise ErroDeExecucao(ErroElaw)
+
+    def __init__(self, Initbot: Type[CrawJUD]) -> None:
+        
+        self.__dict__.update(Initbot.__dict__)
+        self.start_time = time.perf_counter()
