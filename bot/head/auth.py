@@ -27,14 +27,14 @@ class AuthBot(CrawJUD):
     
     def __call__(self, Head: CrawJUD) -> bool:
         
-        self.__dict__ = Head.__dict__.copy()
-        to_call = getattr(self, self.system.lower())
+        to_call = getattr(self, f"{self.system.lower()}_auth")
         if to_call:
+            self.__dict__ = Head.__dict__.copy()
             return to_call()
         
-        return
+        raise RuntimeError("Sistema Não encontrado!")
     
-    def esaj(self) -> None:
+    def esaj_auth(self) -> None:
 
         try:
             loginuser = ''.join(
@@ -115,7 +115,7 @@ class AuthBot(CrawJUD):
             print(e)
             raise e
 
-    def projudi(self) -> None:
+    def projudi_auth(self) -> None:
         
         try:
             self.driver.get(self.elements.url_login)
@@ -142,7 +142,7 @@ class AuthBot(CrawJUD):
         except Exception as e:
             raise e
             
-    def elaw(self) -> None:
+    def elaw_auth(self) -> None:
 
         try:
             self.driver.get("https://amazonas.elaw.com.br/login")
@@ -169,7 +169,7 @@ class AuthBot(CrawJUD):
         except Exception as e:
             raise e
 
-    def pje(self) -> None:
+    def pje_auth(self) -> None:
         
         try:
             self.driver.get(self.elements.url_login)

@@ -10,11 +10,10 @@ class esaj:
     def __call__(self) -> None:
         try:
             
-            self.execution = getattr(self.bot)(self.Master)
+            self.execution = getattr(self, self.bot)(self.Master)
             self.execution.execution()
             
         except Exception as e:
-            print(e)
             raise e
 
     from bot.esaj.capa import capa

@@ -13,7 +13,7 @@ import pandas as pd
 from typing import Union
 from datetime import datetime
 from pandas import Timestamp
-from typing import Callable
+from typing import Callable, Dict, List, Any
 
 
 # Selenium Imports
@@ -25,6 +25,9 @@ from bot.head.WebDriverManager import GetDriver
 from bot.head.common.exceptions import ErroDeExecucao
 
 from initbot import WorkerThread
+TypeHint = Union[Callable[[], Any | None], List[str],
+                 List[Dict[str, str | int | float | datetime]],
+                 Dict[str, str]]
 
 
 class CrawJUD(WorkerThread):
@@ -86,8 +89,8 @@ class CrawJUD(WorkerThread):
     
     def __init__(self, worker_thread: WorkerThread):
         
-        self.setBots()
         self.__dict__ = worker_thread.__dict__.copy()
+        self.setBots()
         self.prt = self.printtext(self)
     
     def setup(self, app: Flask, path_args: str = None):
@@ -149,8 +152,7 @@ class CrawJUD(WorkerThread):
             if not cl:
                 cl = self.client.split(" ")[0]
             
-            self.elements: Callable[[], Callable[[], str]] = (
-                getattr(self, f"elements_{self.system}")(cl))
+            self.elements: TypeHint = getattr(self, f"elements_{self.system}")(cl)
             
             args = self.DriverLaunch()
             if not args:
@@ -435,7 +437,7 @@ class CrawJUD(WorkerThread):
                 "download.default_directory": "{}".format(os.path.join(self.output_dir_path))
             }
             
-            chrome_options.add_experimental_option(chrome_prefs)
+            chrome_options.add_experimental_option("prefs", chrome_prefs)
             pid_path = pathlib.Path(self.path_args).parent.resolve()
             getdriver = GetDriver(destination=pid_path)
             path_chrome = os.path.join(pid_path, getdriver())
@@ -499,9 +501,11 @@ class CrawJUD(WorkerThread):
                 record.get(key).update({str(pos): value})
         return record
 
-    def __getattr__(self, nome_do_atributo: str) -> Callable[[], str | None]:
+    def __getattr__(self, nome: str) -> TypeHint:
            
-        item = self.argbot.get(nome_do_atributo, getattr(
-            self, nome_do_atributo, None))
+        item = self.argbot.get(nome, None)
+        
+        if not item:
+            item = self.__dict__.get(nome, None)
         
         return item
