@@ -1,21 +1,15 @@
 import time
 from time import sleep
 from typing import Type
-from contextlib import suppress
 from datetime import datetime
-
-""" Imports do Projeto """
 from bot.head import CrawJUD
-
-
 from bot.head.common.exceptions import ErroDeExecucao
 
 # Selenium Imports
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import  TimeoutException
+
 
 class movimentacao(CrawJUD):
 
@@ -31,7 +25,7 @@ class movimentacao(CrawJUD):
         
         for pos, value in enumerate(frame):
             
-            self.row = pos+2
+            self.row = pos + 2
             self.bot_data = value
             if self.thread._is_stopped:
                 break
@@ -60,12 +54,16 @@ class movimentacao(CrawJUD):
         
     def queue(self) -> None:
         
-        self.appends = []
-        self.resultados = []
-        
-        self.search(self)
-        self.get_moves()
-        self.append_moves()
+        try:
+            self.appends = []
+            self.resultados = []
+            
+            self.search(self)
+            self.get_moves()
+            self.append_moves()
+            
+        except Exception as e:
+            raise ErroDeExecucao(e=e)
         
     def get_moves(self) -> None:
         
@@ -81,10 +79,12 @@ class movimentacao(CrawJUD):
         
         sleep(0.5)
         
-        try: 
+        try:
+            
             table_moves = self.driver.find_element(By.CSS_SELECTOR, self.elements.movimentacoes)
             self.driver.execute_script('document.querySelector("#tabelaTodasMovimentacoes").style.display = "block"')
-        except:
+            
+        except Exception:
             table_moves = self.driver.find_element(By.ID, self.elements.ultimas_movimentacoes)
             self.driver.execute_script('document.querySelector("#tabelaUltimasMovimentacoes").style.display = "block"')
             
@@ -107,12 +107,12 @@ class movimentacao(CrawJUD):
                     data_mov = td_tr[0].text
                     
                     try:
-                        data_mov = datetime.strptime(data_mov.replace("/", "-"), "%d-%m-%Y")
+                        if type(data_mov) is str:
+                            data_mov = datetime.strptime(data_mov.replace("/", "-"), "%d-%m-%Y")
                         
-                    except Exception as e:
+                    except Exception:
                         pass
                         
                     name_mov = mov.split("\n")[0]
                     text_mov = td_tr[2].find_element(By.TAG_NAME, 'span').text
                     self.appends.append([self.bot_data.get("NUMERO_PROCESSO"), data_mov, name_mov, text_mov, "", ""])
-

@@ -1,4 +1,6 @@
 from typing import Union, Any
+
+
 class elements_pje:
 
     # Classes internas para diferentes estados
@@ -27,14 +29,12 @@ class elements_pje:
     classes: dict[str, Union[SP, AC, AM]] = {
         "SP": SP,
         "AC": AC,
-        "AM": AM
-    } 
+        "AM": AM}
         
     def __init__(self, state: str) -> Union[SP, AC, AM]:
         
         # Se o estado passado existir no dicionário, atualiza as variáveis
-        self.state_class: Union[elements_pje.SP,\
-            elements_pje.AC, elements_pje.AM] = self.classes[state]
+        self.state_class = self.classes[state]
 
                 
     def __call__(self, *args, **kwds) -> Union[SP, AC, AM]:
@@ -51,4 +51,3 @@ class elements_pje:
         if not item:
             raise AttributeError(f"Atributo '{nome_do_atributo}' não encontrado na classe '{self.state_class.__name__}'")
         return item
-        

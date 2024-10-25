@@ -108,17 +108,17 @@ class proc_parte(CrawJUD):
                 
             try:
                 polo_ativo = processo.find_elements(By.TAG_NAME, 'td')[2].find_elements(By.TAG_NAME, 'td')[1].text
-            except:
+            except Exception:
                 polo_ativo = 'Não consta ou processo em sigilo'
                 
             try:  
                 polo_passivo = processo.find_elements(By.TAG_NAME, 'td')[7].text
-            except:
+            except Exception:
                 polo_passivo = 'Não consta ou processo em sigilo'
                 
             try:  
                 juizo = processo.find_elements(By.TAG_NAME, 'td')[9].text
-            except: juizo = 'Não consta ou processo em sigilo'    
+            except Exception: juizo = 'Não consta ou processo em sigilo'    
 
 
             self.data_append.append(

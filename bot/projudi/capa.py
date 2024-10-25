@@ -28,7 +28,7 @@ class capa(CrawJUD):
         
         for pos, value in enumerate(frame):
             
-            self.row = pos+2
+            self.row = pos + 2
             self.bot_data = value
             if self.thread._is_stopped:
                 break
@@ -78,7 +78,7 @@ class capa(CrawJUD):
 
         try:
             includeContent = self.driver.find_element(By.ID, self.elements.includeContent)
-        except:
+        except Exception:
             time.sleep(3)
             self.driver.refresh()
             time.sleep(1)
@@ -102,7 +102,7 @@ class capa(CrawJUD):
 
         try:
             includeContent = self.driver.find_element(By.ID, self.elements.includeContent)
-        except:
+        except Exception:
             time.sleep(3)
             self.driver.refresh()
             time.sleep(1)
@@ -143,16 +143,16 @@ class capa(CrawJUD):
         
         try:
             statusproc = tablestatusproc.find_elements(By.TAG_NAME, 'td')[1].text
-        except:
+        except Exception:
             statusproc = 'Não Consta'
         try:
             juizproc = includeContent.find_elements(By.XPATH, ".//tr")[2].find_elements(By.XPATH, ".//td")[4].text
-        except:
+        except Exception:
             juizproc = 'Não Consta'
         
         try:
             includeContent = self.driver.find_element(By.ID, self.elements.includeContent)
-        except:
+        except Exception:
             time.sleep(3)
             self.driver.refresh()
             time.sleep(1)

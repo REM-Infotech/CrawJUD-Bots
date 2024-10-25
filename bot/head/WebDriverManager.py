@@ -19,11 +19,12 @@ from rich.console import Group
 from rich.panel import Panel
 from rich.progress import (
     TimeElapsedColumn, Progress, TaskID,
-    TextColumn, BarColumn, DownloadColumn, 
+    TextColumn, BarColumn, DownloadColumn,
     TransferSpeedColumn, TimeRemainingColumn)
 
 
 from concurrent.futures import ThreadPoolExecutor
+
 
 class GetDriver:
     
@@ -56,7 +57,7 @@ class GetDriver:
         self.file_path += self.code_ver
         
         self.fileN = os.path.basename(self.file_path)
-        if not self.code_ver in self.fileN:
+        if self.code_ver not in self.fileN:
             self.fileN += self.code_ver
         
         for key, value in list(kwargs.items()):
@@ -71,7 +72,7 @@ class GetDriver:
             with ThreadPoolExecutor() as pool:
                 self.ConfigBar(pool)
         
-        shutil.copy(self.file_path, self.destination)     
+        shutil.copy(self.file_path, self.destination)
         return os.path.basename(self.destination)
     
     def ConfigBar(self, pool: ThreadPoolExecutor):
@@ -79,7 +80,7 @@ class GetDriver:
         task_id = self.progress.add_task("download", filename=self.fileN.upper(), start=False)
         
         if platform.system() == "Windows":
-            self.fileN += ".exe" 
+            self.fileN += ".exe"
             self.file_path += ".exe"
         
         self.destination = os.path.join(self.destination, self.fileN)
@@ -94,20 +95,20 @@ class GetDriver:
         elif os.path.exists(root_path):
             if os.path.exists(self.file_path):
                 self.current_app_progress.update(
-                self.current_task_id, 
+                self.current_task_id,
                 description="[bold green] Carregado webdriver salvo em cache!")
                 shutil.copy(self.file_path, self.destination)
      
     def getUrl(self) -> str:
         
-        ## Verifica no endpoint qual a versão disponivel do WebDriver 
+        ## Verifica no endpoint qual a versão disponivel do WebDriver
         url_chromegit = f"https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_{self.code_ver}"
         results = requests.get(url_chromegit)
         chrome_version = results.text
         
         system = platform.system().replace("dows", "").lower()
         arch = platform.architecture()
-        if type(arch) == tuple:
+        if type(arch) is tuple:
             arch = arch[0].replace("bit", "")
         
         os_sys = f"{system}{arch}"
@@ -117,7 +118,7 @@ class GetDriver:
         set_URL = [chrome_version, os_sys, os_sys]
         for pos, item in enumerate(set_URL):
             
-            if pos == len(set_URL)-1:
+            if pos == len(set_URL) - 1:
                 url_driver += f"chromedriver-{item}.zip"
                 continue
             
@@ -144,14 +145,12 @@ class GetDriver:
                 self.progress.update(task_id, advance=len(data))
         
         # Extract the zip file
-        with zipfile.ZipFile(path.replace(
-            ".exe", ".zip"), 'r') as zip_ref:
+        with zipfile.ZipFile(path.replace(".exe", ".zip"), 'r') as zip_ref:
             
             # Extract each file directly into the subfolder
             for member in zip_ref.namelist():
                 
-                if member.split("/")[1].lower() == "chromedriver.exe" or \
-                    member.split("/")[1].lower() == "chromedriver":
+                if member.split("/")[1].lower() == "chromedriver.exe" or member.split("/")[1].lower() == "chromedriver":
                     
                         
                     # Get the original file name without any directory structure
@@ -168,4 +167,3 @@ class GetDriver:
         os.remove(path.replace(".exe", ".zip"))
         self.current_app_progress.update(
             self.current_task_id, description="[bold green] ChromeDriver Baixado!")
-

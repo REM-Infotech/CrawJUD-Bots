@@ -1,5 +1,6 @@
 from typing import Union, Any
 
+
 class elements_caixa:
     
     class SP:
@@ -37,15 +38,12 @@ class elements_caixa:
     classes: dict[str, Union[SP, AC, AM]] = {
         "SP": SP,
         "AC": AC,
-        "AM": AM
-    }    
+        "AM": AM}
     
     def __init__(self, state: str) -> Union[SP, AC, AM]:
         
         # Se o estado passado existir no dicionário, atualiza as variáveis
-        self.state_class: Union[elements_caixa.SP,\
-            elements_caixa.AC, elements_caixa.AM] = self.classes[state]
-
+        self.state_class = self.classes[state]
                 
     def __call__(self, *args, **kwds) -> Union[SP, AC, AM]:
         return self.state_class

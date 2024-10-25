@@ -34,7 +34,7 @@ class movimentacao(CrawJUD):
         
         for pos, value in enumerate(frame):
             
-            self.row = pos+2
+            self.row = pos + 2
             self.bot_data = value
             if self.thread._is_stopped:
                 break
@@ -331,7 +331,7 @@ class movimentacao(CrawJUD):
                     text = page.extract_text()
                     remove_n_space = text.replace("\n", " ")
                     pagescontent = pagescontent + remove_n_space
-                except:
+                except Exception:
                     pass
             
         return pagescontent

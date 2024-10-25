@@ -1,42 +1,29 @@
 """ Imports do Projeto """
 from bot.head import CrawJUD
-
-
 from bot.head.count_doc import count_doc
 from typing import Type
 import time
-import pathlib
-import os
 import requests
 import platform
 from PyPDF2 import PdfReader
 import re
-
-import pytz
 from time import sleep
 from contextlib import suppress
-from datetime import datetime
-import openpyxl
-
 from bot.head.common.exceptions import ErroDeExecucao
-
-"""Selenium Imports"""
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.common.exceptions import  NoSuchElementException, TimeoutException
+from selenium.common.exceptions import TimeoutException
 
 type_docscss = {
-    'custas_iniciais': 
+    'custas_iniciais':
         {'cnpj': ['input[name="entity.flTipoPessoa"][value="J"]', 'tr[id="campoNuCnpj"]', 'input[name="entity.nuCpfCnpj"][rotulo="CNPJ"]'],
          'cpf': ['input[name="entity.flTipoPessoa"][value="F"]', 'tr[id="campoNuCpf"]', 'input[name="entity.nuCpfCnpj"][rotulo="CPF"]']},
         
-    'preparo ri': 
+    'preparo ri':
         {'cnpj': ['input[name="entity.flTipoPessoa"][value="J"]', 'tr[id="campoNuCnpj"]', 'input[name="entity.nuCpfCnpj"][rotulo="CNPJ"]'],
-         'cpf': ['input[name="entity.flTipoPessoa"][value="F"]', 'tr[id="campoNuCpf"]', 'input[name="entity.nuCpfCnpj"][rotulo="CPF"]']}
-        }
+         'cpf': ['input[name="entity.flTipoPessoa"][value="F"]', 'tr[id="campoNuCpf"]', 'input[name="entity.nuCpfCnpj"][rotulo="CPF"]']}}
 
 
 class emissao(CrawJUD):
@@ -53,7 +40,7 @@ class emissao(CrawJUD):
         
         for pos, value in enumerate(frame):
             
-            self.row = pos+2
+            self.row = pos + 2
             self.bot_data = value
             if self.thread._is_stopped:
                 break
@@ -84,19 +71,23 @@ class emissao(CrawJUD):
 
     def queue(self) -> None:
         
-        custa = str(self.bot_data.get("TIPO_GUIA"))
-        if custa.lower() == "custas iniciais":
-            self.tipodoc = custa
-            self.custas_iniciais()
+        try:
+            custa = str(self.bot_data.get("TIPO_GUIA"))
+            if custa.lower() == "custas iniciais":
+                self.tipodoc = custa
+                self.custas_iniciais()
+                
+            elif custa.lower() == 'preparo ri':
+                custa = "Custas Preparo"
+                self.tipodoc = custa
+                self.preparo_ri()
             
-        elif custa.lower() == 'preparo ri':
-            custa = "Custas Preparo"
-            self.tipodoc = custa
-            self.preparo_ri()
+            self.downloadpdf(self.generate_doc())
+            self.append_success(self.get_barcode())
         
-        self.downloadpdf(self.generate_doc())
-        self.append_success(self.get_barcode())
-             
+        except Exception as e:
+            raise ErroDeExecucao(e=e)
+        
     def custas_iniciais(self) -> None:
         
         self.driver.get('https://consultasaj.tjam.jus.br/ccpweb/iniciarCalculoDeCustas.do?cdTipoCusta=7&flTipoCusta=0&&cdServicoCalculoCusta=690003')
@@ -117,8 +108,8 @@ class emissao(CrawJUD):
         nameinteressado = self.driver.find_element(By. CSS_SELECTOR, 'input[name="entity.nmInteressado"]')
         nameinteressado.send_keys(self.bot_data.get("NOME_INTERESSADO"))
         
-        elements:list = type_docscss.get(self.bot_data.get("TIPO_GUIA")).get(count_doc(self.bot_data.get("CPF_CNPJ")))
-        set_doc = self.driver.find_element(By.CSS_SELECTOR, elements[0])  
+        elements: list = type_docscss.get(self.bot_data.get("TIPO_GUIA")).get(count_doc(self.bot_data.get("CPF_CNPJ")))
+        set_doc = self.driver.find_element(By.CSS_SELECTOR, elements[0])
         set_doc.click()
         sleep(0.5)
         setcpf_cnpj = self.driver.find_element(By.CSS_SELECTOR, elements[1]).find_element(By.CSS_SELECTOR, elements[2])
@@ -135,7 +126,7 @@ class emissao(CrawJUD):
                        
     def preparo_ri(self) -> None:
         
-        portal = self.bot_data.get("PORTAL", "não informado") 
+        portal = self.bot_data.get("PORTAL", "não informado")
         if str(portal).lower() == 'esaj':
             self.driver.get("https://consultasaj.tjam.jus.br/ccpweb/iniciarCalculoDeCustas.do?cdTipoCusta=9&flTipoCusta=1&&cdServicoCalculoCusta=690019")
             
@@ -151,8 +142,11 @@ class emissao(CrawJUD):
             nameinteressado = self.driver.find_element(By.CSS_SELECTOR, self.elements.interessado)
             nameinteressado.send_keys(self.bot_data.get("NOME_INTERESSADO"))
 
-            elements:list = type_docscss.get(self.bot_data.get("TIPO_GUIA")).get(count_doc(self.bot_data.get("CPF_CNPJ")))
-            set_doc = self.driver.find_element(By.CSS_SELECTOR, elements[0])  
+            elements: list = type_docscss.get(
+                self.bot_data.get("TIPO_GUIA")).get(
+                    count_doc(self.bot_data.get("CPF_CNPJ")))
+                
+            set_doc = self.driver.find_element(By.CSS_SELECTOR, elements[0])
             set_doc.click()
             sleep(0.5)
             setcpf_cnpj = self.driver.find_element(By.CSS_SELECTOR, elements[1]).find_element(By.CSS_SELECTOR, elements[2])
@@ -172,12 +166,10 @@ class emissao(CrawJUD):
             
             sleep(1)
             css_val_doc = 'body > table:nth-child(4) > tbody > tr > td > table:nth-child(10) > tbody > tr:nth-child(3) > td:nth-child(3) > strong'
-            self.valor_doc: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_val_doc))).text                  
+            self.valor_doc: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_val_doc))).text
             
         elif portal == "não informado":
-            self.prt.print_log(self.pid, 'error', 'Informar portal do processo na planilha (PROJUDI ou ESAJ)', self.row)
-            errodata = [self.bot_data.get('NUMERO_PROCESSO'),'Informar portal do processo na planilha (PROJUDI ou ESAJ)']
-            self.append_error(errodata)
+            raise ErroDeExecucao('Informar portal do processo na planilha (PROJUDI ou ESAJ)')
     
     def renajud(self) -> None:
         pass
@@ -186,13 +178,13 @@ class emissao(CrawJUD):
         pass
     
     def custas_postais(self) -> None:
-        pass          
+        pass
                 
     def generate_doc(self) -> str:
         
         self.original_window = original_window = self.driver.current_window_handle
         generatepdf: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.boleto)))
-        onclick_value =generatepdf.get_attribute("onclick")
+        onclick_value = generatepdf.get_attribute("onclick")
         url_start = onclick_value.find("'") + 1
         url_end = onclick_value.find("'", url_start)
         url = onclick_value[url_start:url_end]
@@ -209,7 +201,8 @@ class emissao(CrawJUD):
         ## Checar se não ocorreu o erro "Boleto inexistente"
         check = None
         with suppress(TimeoutException):
-            check:WebElement = WebDriverWait(self.driver, 3).until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.mensagem_retorno))).text
+            check: WebElement = WebDriverWait(self.driver, 3).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.mensagem_retorno))).text
         
         if check:
             self.driver.close()
@@ -255,9 +248,8 @@ class emissao(CrawJUD):
 
             pdf_file = self.path_pdf
             read = PdfReader(pdf_file)
-            num_pages = len(read.pages)
 
-            #Read PDF
+            # Read PDF
             for page in read.pages:
                 text = page.extract_text()
                 
@@ -269,21 +261,13 @@ class emissao(CrawJUD):
 
             # Imprima os números encontrados
             for numero in numeros_encontrados:
-                bar_code = numero.replace("  ","")
-                bar_code = bar_code.replace(" ","")
-                bar_code = bar_code.replace("."," ")
+                bar_code = numero.replace("  ", "")
+                bar_code = bar_code.replace(" ", "")
+                bar_code = bar_code.replace(".", " ")
                 numero = numero.split("  ")
                 numero = numero[2].split(".")
                 
             return [self.bot_data.get('NUMERO_PROCESSO'), self.tipodoc, self.valor_doc, self.data_lancamento, "guias", "JEC", "SENTENÇA", bar_code, self.nomearquivo]
 
         except Exception as e:
-            
-            errodata = [self.bot_data.get('NUMERO_PROCESSO'), 'Erro: não foi possível extrair código de barras"']
-            self.prt.print_log(self.pid, 'error', errodata[1], self.row)
-            self.append_error(errodata)
-              
-    def append_sucess_total(self, proc):
-        
-        pass
-        
+            raise ErroDeExecucao(e=e)

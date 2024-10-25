@@ -9,11 +9,12 @@ class calculadoras:
     
     def __call__(self) -> None:
         try:
-            self.execution = globals().get(self.bot)(self.Master)
+            
+            self.execution = getattr(self.bot)(self.Master)
             self.execution.execution()
             
         except Exception as e:
             print(e)
             raise e
         
-from bot.calculadoras.tjdft import tjdft
+    from bot.calculadoras.tjdft import tjdft

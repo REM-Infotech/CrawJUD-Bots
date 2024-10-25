@@ -39,7 +39,7 @@ class protocolo(CrawJUD):
         
         for pos, value in enumerate(frame):
             
-            self.row = pos+2
+            self.row = pos + 2
             self.bot_data = value
             if self.thread._is_stopped:
                 break
@@ -89,7 +89,7 @@ class protocolo(CrawJUD):
                 self.driver.execute_script("return window.location.href = '{link}';".format(link=link))
                 sleep(5)
 
-            except:
+            except Exception:
 
                 button_enterproc:WebElement = WebDriverWait(self.driver, 5).until(EC. presence_of_element_located((By.CSS_SELECTOR, '#processoSelecionado')))
                 button_enterproc.click()
@@ -100,7 +100,7 @@ class protocolo(CrawJUD):
                 link = button_peticionamento.get_attribute('onclick').split("'")[1]
                 self.driver.execute_script("return window.location.href = '{link}';".format(link=link))
                 
-        except:
+        except Exception:
             raise ErroDeExecucao("Erro ao inicializar peticionamento") 
     
     def set_tipo_protocolo(self) -> None:
@@ -120,7 +120,7 @@ class protocolo(CrawJUD):
             sleep(1.5)
             self.interact.send_key(input_tipo_peticao, Keys.ENTER)
         
-        except:
+        except Exception:
             raise ErroDeExecucao("Erro ao informar tipo de protocolo") 
     
     def set_subtipo_protocolo(self) -> None:
@@ -138,7 +138,7 @@ class protocolo(CrawJUD):
             input_categoria_peticao_option.click()
             sleep(1)
         
-        except:
+        except Exception:
             raise ErroDeExecucao("Erro ao informar subtipo de protocolo") 
     
     def set_petition_file(self) -> None:
@@ -170,7 +170,7 @@ class protocolo(CrawJUD):
                 
             self.prt.print_log('log', 'Petição do processo anexada com sucesso')
         
-        except:
+        except Exception:
             raise ErroDeExecucao("Erro ao enviar petição") 
     
     def vincular_parte(self) -> None:
@@ -213,7 +213,7 @@ class protocolo(CrawJUD):
             elif not partes:
                 raise ErroDeExecucao("Não foi possivel vincular parte a petição") 
                 
-        except:
+        except Exception:
             raise ErroDeExecucao("Não foi possivel vincular parte a petição") 
     
     def finish_petition(self) -> None:

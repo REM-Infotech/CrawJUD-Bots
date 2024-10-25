@@ -1,16 +1,9 @@
-""" Crawler ELAW Cadastro"""
-
 import os
 import time
 from time import sleep
 from typing import Type
 from contextlib import suppress
-
-
-""" Imports do Projeto """
 from bot.head import CrawJUD
-
-
 from bot.head.common.exceptions import ErroDeExecucao
 
 
@@ -19,7 +12,7 @@ from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.common.exceptions import  NoSuchElementException, TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.support import expected_conditions as EC
 
 type_doc = {
@@ -27,9 +20,10 @@ type_doc = {
     14: "cnpj"
 }
 
-lista1 = ["NUMERO_PROCESSO", "UNIDADE_CONSUMIDORA", "DIVISAO", 
+lista1 = ["NUMERO_PROCESSO", "UNIDADE_CONSUMIDORA", "DIVISAO",
           "DATA_CITACAO", "PROVIMENTO", "FASE", "FATO_GERADOR",
           "DESC_OBJETO", "OBJETO"]
+
 
 class complement(CrawJUD):
 
@@ -45,7 +39,7 @@ class complement(CrawJUD):
         
         for pos, value in enumerate(frame):
             
-            self.row = pos+2
+            self.row = pos + 2
             self.bot_data = value
             if self.thread._is_stopped:
                 break
@@ -104,7 +98,7 @@ class complement(CrawJUD):
             
             end_time = time.perf_counter()
             execution_time = end_time - start_time
-            calc = execution_time/60
+            calc = execution_time / 60
             splitcalc = str(calc).split(".")
             minutes = int(splitcalc[0])
             seconds = int(float(f"0.{splitcalc[1]}") * 60)
@@ -118,11 +112,8 @@ class complement(CrawJUD):
         
             self.append_success([self.bot_data.get("NUMERO_PROCESSO"), self.message, name_comprovante], self.message)
             
-        elif not search is True:
-            self.message = "Processo não encontrado!"
-            self.type_log = "error"
-            self.prt(self)
-            self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
+        elif search is not True:
+            raise ErroDeExecucao("Processo não encontrado!")
 
     def unidade_consumidora(self) -> None:
 
@@ -211,7 +202,7 @@ class complement(CrawJUD):
 
         self.message = "Fase informada!"
         self.type_log = "log"
-        self.prt(self) 
+        self.prt(self)
 
     def provimento(self) -> None:
 
@@ -237,7 +228,7 @@ class complement(CrawJUD):
         
         self.message = "Provimento antecipatório informado!"
         self.type_log = "log"
-        self.prt(self)    
+        self.prt(self)
 
     def fato_gerador(self) -> None:
 
@@ -260,7 +251,7 @@ class complement(CrawJUD):
 
         self.message = "Fato gerador informado!"
         self.type_log = "log"
-        self.prt(self)    
+        self.prt(self)
     
     def desc_objeto(self) -> None:
         
@@ -321,7 +312,7 @@ class complement(CrawJUD):
         wait_confirm_save = None
 
         with suppress(TimeoutException):
-            wait_confirm_save:WebElement = WebDriverWait(self.driver, 20).until(
+            wait_confirm_save: WebElement = WebDriverWait(self.driver, 20).until(
                 EC.url_to_be(("https://amazonas.elaw.com.br/processoView.elaw")))
 
         if wait_confirm_save:
@@ -329,13 +320,25 @@ class complement(CrawJUD):
 
         elif not wait_confirm_save:
             div_messageerro_css = 'div[id="messages"]'
-            try:
-                message: WebElement = self.wait.until(EC.presence_of_element_located(
-                    (By.CSS_SELECTOR, div_messageerro_css))).find_element(By.TAG_NAME, "ul").text
+            ErroElaw: WebElement | str = None
+            with suppress(TimeoutException, NoSuchElementException):
+                ErroElaw = self.wait.until(EC.presence_of_element_located(
+                    (By.CSS_SELECTOR, div_messageerro_css)), message="Erro ao encontrar elemento").find_element(By.TAG_NAME, "ul").text
+            
+            if not ErroElaw:
+                ErroElaw = "Cadastro do processo nao finalizado, verificar manualmente"
                 
-                raise ErroDeExecucao(self.message)
+            raise ErroDeExecucao(ErroElaw)
 
-            except Exception as e:
-                self.message = "Processo Não cadastrado"
-                raise ErroDeExecucao(self.message)
+        # elif not wait_confirm_save:
+        #     div_messageerro_css = 'div[id="messages"]'
+        #     try:
+        #         message: WebElement = self.wait.until(EC.presence_of_element_located(
+        #             (By.CSS_SELECTOR, div_messageerro_css))).find_element(By.TAG_NAME, "ul").text
+                
+        #         raise ErroDeExecucao(self.message)
+
+        #     except Exception as e:
+        #         self.message = "Processo Não cadastrado"
+        #         raise ErroDeExecucao(self.message)
             

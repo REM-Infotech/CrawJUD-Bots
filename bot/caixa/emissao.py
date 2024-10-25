@@ -46,7 +46,7 @@ class emissao(CrawJUD):
         
         for pos, value in enumerate(frame):
             
-            self.row = pos+2
+            self.row = pos + 2
             self.bot_data = value
             if self.thread._is_stopped:
                 break
@@ -346,7 +346,7 @@ class emissao(CrawJUD):
                 
                 # Adicione os números encontrados à lista
                 numeros_encontrados.extend(numeros)
-            except:
+            except Exception:
                 pass
             
         # Imprima os números encontrados

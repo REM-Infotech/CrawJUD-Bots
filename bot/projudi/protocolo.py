@@ -41,7 +41,7 @@ class protocolo(CrawJUD):
         
         for pos, value in enumerate(frame):
             
-            self.row = pos+2
+            self.row = pos + 2
             self.bot_data = value
             if self.thread._is_stopped:
                 break
@@ -320,7 +320,7 @@ class protocolo(CrawJUD):
                 sleep(1)
                 try: # adicionar um suppress StaleElementReferenceException
                     get_style = divprogressbar.get_attribute("style")
-                except:
+                except Exception:
                     break
                 
                 if get_style != '':
@@ -329,7 +329,7 @@ class protocolo(CrawJUD):
                 elif get_style == '':
                     break
                 
-            except:
+            except Exception:
                 break
             
             

@@ -1,5 +1,3 @@
-from typing import ClassVar
-
 class caixa:
     
     bot = ""
@@ -11,13 +9,14 @@ class caixa:
     
     def __call__(self) -> None:
         try:
-            self.execution = globals().get(self.bot)
-            if self.execution:
-                self.execution(self.Master).execution()
+            
+            self.execution = getattr(self.bot)(self.Master)
+            self.execution.execution()
             
         except Exception as e:
             print(e)
             raise e
+            raise e
         
-from bot.caixa.emissao import emissao as emissor
-from bot.caixa.common.elements import elements_caixa
+    from bot.caixa.emissao import emissao as emissor
+    from bot.caixa.common.elements import elements_caixa

@@ -39,7 +39,7 @@ def handle_join(data):
         join_room(room)
         emit('log_message', data, room=room)
         # print(f"Client {request.sid} joined room {room}")
-    except:
+    except Exception:
         emit('log_message', data, room=room)
 
 @io.on('leave', namespace='/log')

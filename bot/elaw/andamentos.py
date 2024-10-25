@@ -38,7 +38,7 @@ class andamentos(CrawJUD):
         
         for pos, value in enumerate(frame):
             
-            self.row = pos+2
+            self.row = pos + 2
             self.bot_data = value
             if self.thread._is_stopped:
                 break
@@ -170,5 +170,5 @@ class andamentos(CrawJUD):
 
                 self.append_success([self.numproc, 'Andamento salvo com sucesso!', ""], 'Andamento salvo com sucesso!')
                 
-        except:
+        except Exception:
             raise ErroDeExecucao("Aviso: não foi possivel validar salvamento de andamento")
