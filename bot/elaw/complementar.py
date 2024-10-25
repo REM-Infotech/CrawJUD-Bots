@@ -103,7 +103,10 @@ class complement(CrawJUD):
             minutes = int(splitcalc[0])
             seconds = int(float(f"0.{splitcalc[1]}") * 60)
 
-            self.prt.print_log("log", f"Formulário preenchido em {minutes} minutos e {seconds} segundos")
+            self.message = f"Formulário preenchido em {minutes} minutos e {seconds} segundos"
+            self.type_log = "log"
+            self.prt(self)
+            
             self.salvar_tudo()
             
             if self.confirm_save() is True:
@@ -297,7 +300,9 @@ class complement(CrawJUD):
         css_salvar_proc = 'button[id="btnSalvarOpen"]'
         salvartudo: WebElement = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, css_salvar_proc)))
-        self.prt.print_log("log", "Salvando processo novo")
+        self.type_log = "log"
+        self.message = "Salvando processo novo"
+        self.prt(self)
         salvartudo.click()
 
     def print_comprovante(self) -> str:

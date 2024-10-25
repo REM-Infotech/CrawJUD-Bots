@@ -73,8 +73,9 @@ class provisao(CrawJUD):
         check_cadastro = self.search(self)
         if check_cadastro is True:
             
-            self.prt.print_log("log", "Processo encontrado! Informando valores...")
-            
+            self.type_log = "log"
+            self.message = "Processo encontrado! Informando valores..."
+            self.prt(self)
             module = "get_valores_proc"
             get_valores = self.get_valores_proc()
             css_btn_edit = 'button[id="tabViewProcesso:j_id_i3_c_1_5_2:processoValoresEditarBtn"]'

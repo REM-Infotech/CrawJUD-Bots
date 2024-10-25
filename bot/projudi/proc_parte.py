@@ -111,7 +111,7 @@ class proc_parte(CrawJUD):
             except Exception:
                 polo_ativo = 'Não consta ou processo em sigilo'
                 
-            try:  
+            try:
                 polo_passivo = processo.find_elements(By.TAG_NAME, 'td')[7].text
             except Exception:
                 polo_passivo = 'Não consta ou processo em sigilo'

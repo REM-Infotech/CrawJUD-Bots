@@ -90,10 +90,17 @@ class SetStatus:
         with open(path_args, "w") as f:
             f.write(json.dumps(data))
         
+        name_column = Executions.__table__.columns['arquivo_xlsx']
+        max_length = name_column.type.length
+        xlsx_ = str(data.get("xlsx", "Sem Arquivo"))
+        
+        if len(data.get("xlsx", "Sem Arquivo")) > int(max_length):
+            xlsx_ = xlsx_[:int(max_length)]
+        
         execut = Executions(
             pid=self.pid,
             status="Em Execução",
-            arquivo_xlsx=data.get("xlsx"),
+            arquivo_xlsx=xlsx_,
             url_socket=data.get("url_socket"),
             total_rows=rows,
             data_execucao=datetime.now(pytz.timezone('Etc/GMT+4')),

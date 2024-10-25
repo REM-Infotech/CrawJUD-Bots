@@ -22,7 +22,7 @@ from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import  NoSuchElementException, TimeoutException, StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 
 from bot.head import CrawJUD
 
@@ -72,7 +72,7 @@ class protocolo(CrawJUD):
         
         search = self.search(self)
         
-        if not search is True:
+        if search is not True:
             raise ErroDeExecucao("Processo não encontrado!")
         
         self.detect_intimacao()
@@ -106,18 +106,20 @@ class protocolo(CrawJUD):
             with suppress(TimeoutException):
                 alert: Type[Alert] = WebDriverWait(self.driver, 5).until(EC.alert_is_present())
             
-            if alert: 
-                alert.accept() 
+            if alert:
+                alert.accept()
 
-            self.prt.print_log("log", 'Informando tipo de protocolo...')
-            input_tipo_move: WebElement = self.wait.until(EC.presence_of_element_located ((By.CSS_SELECTOR, 'input[name="descricaoTipoDocumento"]')))
+            self.message = 'Informando tipo de protocolo...'
+            self.type_log = "log"
+            self.prt(self)
+            input_tipo_move: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[name="descricaoTipoDocumento"]')))
             input_tipo_move.click()
             sleep(1)
             input_tipo_move.send_keys(self.bot_data.get("TIPO_PROTOCOLO"))
 
             sleep(1.5)
             
-            input_move_option: WebElement = self.wait.until(EC.presence_of_element_located ((By.XPATH, '//div[@id="ajaxAuto_descricaoTipoDocumento"]/ul/li')))
+            input_move_option: WebElement = self.wait.until(EC.presence_of_element_located((By.XPATH, '//div[@id="ajaxAuto_descricaoTipoDocumento"]/ul/li')))
             input_move_option.click()
             
         except Exception as e:
@@ -141,9 +143,9 @@ class protocolo(CrawJUD):
             self.prt(self)
             
             css_inptfile = 'input[id="conteudo"]'
-            input_file_element:WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, css_inptfile)))
+            input_file_element: WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, css_inptfile)))
             
-            file_to_upload = "".join([c for c in unicodedata.normalize('NFKD', file.replace(" ", "").replace("_","")) if not unicodedata.combining(c)])
+            file_to_upload = "".join([c for c in unicodedata.normalize('NFKD', file.replace(" ", "").replace("_", "")) if not unicodedata.combining(c)])
             
             path_file = os.path.join(pathlib.Path(self.path_args).parent.resolve(), file_to_upload)
             
@@ -153,10 +155,10 @@ class protocolo(CrawJUD):
 
             self.message = "Arquivo enviado com sucesso!"
             self.type_log = "log"
-            self.prt(self)       
+            self.prt(self)
 
             sleep(1)
-            type_file: WebElement = self.wait.until(EC.presence_of_element_located((By.ID, f'tipo0')))
+            type_file: WebElement = self.wait.until(EC.presence_of_element_located((By.ID, 'tipo0')))
             type_file.click()
             sleep(0.25)
             type_options = type_file.find_elements(By.TAG_NAME, 'option')
@@ -171,8 +173,8 @@ class protocolo(CrawJUD):
     def set_file_principal(self) -> None:
 
         try:
-            tablefiles : WebElement = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'resultTable')))
-            checkfiles = tablefiles.find_element(By.TAG_NAME, 'tbody').find_elements(By.TAG_NAME,'tr')[0]
+            tablefiles: WebElement = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'resultTable')))
+            checkfiles = tablefiles.find_element(By.TAG_NAME, 'tbody').find_elements(By.TAG_NAME, 'tr')[0]
             radiobutton = checkfiles.find_elements(By.TAG_NAME, 'td')[0].find_element(By.CSS_SELECTOR, 'input[type="radio"]')
             radiobutton.click()
 
@@ -191,10 +193,10 @@ class protocolo(CrawJUD):
             for file in anexos_list:
                 
                 self.message = f"Enviando arquivo '{file}'"
-                file_to_upload = "".join([c for c in unicodedata.normalize('NFKD', file.replace(" ", "").replace("_","")) if not unicodedata.combining(c)])
+                file_to_upload = "".join([c for c in unicodedata.normalize('NFKD', file.replace(" ", "").replace("_", "")) if not unicodedata.combining(c)])
                 self.type_log = "log"
                 self.prt(self)
-                input_file_element:WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="conteudo"]')))
+                input_file_element: WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="conteudo"]')))
                 input_file_element.send_keys(f'{os.path.join(pathlib.Path(self.path_args).parent.resolve())}/{file_to_upload}')
                 self.wait_progressbar()
                 self.message = f"Arquivo '{file}' enviado com sucesso!"
@@ -202,8 +204,8 @@ class protocolo(CrawJUD):
             self.prt(self)
             
             sleep(3)
-            tablefiles : WebElement = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'resultTable')))
-            checkfiles = tablefiles.find_element(By.TAG_NAME, 'tbody').find_elements(By.TAG_NAME,'tr')
+            tablefiles: WebElement = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'resultTable')))
+            checkfiles = tablefiles.find_element(By.TAG_NAME, 'tbody').find_elements(By.TAG_NAME, 'tr')
             
             for pos, file in enumerate(checkfiles):
                 numbertipo = pos
@@ -211,7 +213,7 @@ class protocolo(CrawJUD):
                 try:
                     type_file = self.driver.find_element(By.ID, f'tipo{numbertipo}')
                     type_file.click()
-                except Exception as e:
+                except Exception:
                     break
                 sleep(0.25)
                 type_options = type_file.find_elements(By.TAG_NAME, 'option')
@@ -226,7 +228,9 @@ class protocolo(CrawJUD):
     def sign_files(self) -> None:
 
         try:
-            self.prt.print_log("log", 'Assinando arquivos...')
+            self.message = 'Assinando arquivos...'
+            self.type_log = "log"
+            self.prt(self)
             password_input = self.driver.find_element(By.ID, 'senhaCertificado')
             password_input.click()
             senhatoken = f'{self.senhacert}'
@@ -237,9 +241,10 @@ class protocolo(CrawJUD):
 
             check_password = ''
             with suppress(TimeoutException):
-                check_password:WebElement = WebDriverWait(self.driver, 5, 0.01).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#errorMessages > div.box-content')))
+                check_password: WebElement = WebDriverWait(self.driver, 5, 0.01).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, '#errorMessages > div.box-content')))
 
-            if check_password != '':    
+            if check_password != '':
                 raise ErroDeExecucao("Senha Incorreta!")
             
             confirm_button = self.driver.find_element(By.CSS_SELECTOR, 'input#closeButton[value="Confirmar Inclusão"]')
@@ -247,14 +252,19 @@ class protocolo(CrawJUD):
             sleep(1)
 
             self.driver.switch_to.default_content()
-            self.prt.print_log("log", 'Arquivos assinados')
-        
+            self.message = 'Arquivos assinados'
+            self.type_log = "log"
+            self.prt(self)
+            
         except Exception as e:
             raise ErroDeExecucao(e=e)
 
     def finish_move(self) -> None:
 
-        self.prt.print_log("log", f'Concluindo peticionamento do processo {self.bot_data.get("NUMERO_PROCESSO")}')
+        self.message = f'Concluindo peticionamento do processo {self.bot_data.get("NUMERO_PROCESSO")}'
+        self.type_log = "log"
+        self.prt(self)
+        
         finish_button = self.driver.find_element(By.CSS_SELECTOR, 'input#editButton[value="Concluir Movimento"]')
         finish_button.click()
         
@@ -282,12 +292,12 @@ class protocolo(CrawJUD):
         
         tablefiles = None
         with suppress(TimeoutException):
-            tablefiles : WebElement = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'resultTable')))
+            tablefiles: WebElement = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'resultTable')))
 
         if tablefiles:
         
             sleep(1)
-            checkfiles = tablefiles.find_element(By.TAG_NAME, 'tbody').find_elements(By.TAG_NAME,'tr')
+            checkfiles = tablefiles.find_element(By.TAG_NAME, 'tbody').find_elements(By.TAG_NAME, 'tr')
             
             for file in checkfiles:
 
@@ -302,7 +312,7 @@ class protocolo(CrawJUD):
                     with suppress(TimeoutException):
                         alert: Type[Alert] = WebDriverWait(self.driver, 5).until(EC.alert_is_present())
                     
-                    if alert: 
+                    if alert:
                         alert.accept()
                 
                 sleep(2)
@@ -318,7 +328,8 @@ class protocolo(CrawJUD):
                 divprogressbar: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_containerprogressbar)))
                 divprogressbar = divprogressbar.find_element(By.CSS_SELECTOR, css_divprogressbar)
                 sleep(1)
-                try: # adicionar um suppress StaleElementReferenceException
+                try:
+                    # adicionar um suppress StaleElementReferenceException
                     get_style = divprogressbar.get_attribute("style")
                 except Exception:
                     break
@@ -331,6 +342,3 @@ class protocolo(CrawJUD):
                 
             except Exception:
                 break
-            
-            
-            

@@ -91,10 +91,10 @@ class CrawJUD(WorkerThread):
         
         self.__dict__ = worker_thread.__dict__.copy()
         self.setBots()
-        self.prt = self.printtext(self)
     
     def setup(self, app: Flask, path_args: str = None):
         
+        self.prt = self.printtext(self)
         self.graphicMode = 'doughnut'
         self.driver = None
         with open(path_args, "rb") as f:

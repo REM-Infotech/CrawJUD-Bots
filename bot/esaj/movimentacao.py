@@ -98,7 +98,9 @@ class movimentacao(CrawJUD):
             
         for termo in termos:
             
-            self.prt.print_log("log", f'Buscando movimentações que contenham "{termo}"')
+            self.message = f'Buscando movimentações que contenham "{termo}"'
+            self.type_log = "log"
+            
             for item in itens:
                 td_tr = item.find_elements(By.TAG_NAME, 'td')
                 mov = td_tr[2].text

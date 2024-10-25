@@ -7,10 +7,7 @@ from typing import Type
 from contextlib import suppress
 import unicodedata
 
-""" Imports do Projeto """
 from bot.head import CrawJUD
-
-
 from bot.head.common.exceptions import ErroDeExecucao
 
 
@@ -21,12 +18,12 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import  NoSuchElementException, TimeoutException
 
 type_doc = {
     11: "cpf",
     14: "cnpj"
 }
+
 
 class sol_pags(CrawJUD):
 
@@ -363,7 +360,7 @@ class sol_pags(CrawJUD):
                 insert_doc: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_2_1_9_g_1:uploadGedEFile_input"]')))
                 insert_doc.send_keys(f"{self.output_dir_path}/{doc}")
                 
-                wait_upload:WebElement = WebDriverWait(self.driver, 20).until(
+                wait_upload: WebElement = WebDriverWait(self.driver, 20).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, 'div[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_2_1_9_g_1:gedEFileDataTable"]'))).find_element(By.TAG_NAME, 'table').find_element(By.TAG_NAME, 'tbody').find_elements(By.TAG_NAME, 'tr')
                 
                 if len(wait_upload) == len(docs):
@@ -396,7 +393,7 @@ class sol_pags(CrawJUD):
                     
                     sleep(0.5)
                     item.click()
-                    break 
+                    break
 
             sleep(1)
             self.message = "Informando data para pagamento"
@@ -502,8 +499,8 @@ class sol_pags(CrawJUD):
             for item in check_solicitacoes:
                 
                 if item.text == 'Nenhum registro encontrado!':
-                    self.prt.print_log('error', "Pagamento não solicitado")
-                    return
+                    raise ErroDeExecucao("Pagamento não solicitado")
+            
                 elif item.text != 'Nenhum registro encontrado!':
                     
                     tipo_pgto = str(self.bot_data.get("TIPO_PAGAMENTO"))
@@ -519,5 +516,4 @@ class sol_pags(CrawJUD):
                     break
                 
         except Exception as e:
-            raise ErroDeExecucao(e=e)   
-    
+            raise ErroDeExecucao(e=e)

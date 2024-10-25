@@ -92,7 +92,10 @@ class emissao(CrawJUD):
         
         self.driver.get('https://consultasaj.tjam.jus.br/ccpweb/iniciarCalculoDeCustas.do?cdTipoCusta=7&flTipoCusta=0&&cdServicoCalculoCusta=690003')
         
-        self.prt.print_log(self.pid, 'log', "Informando foro", self.row)
+        self.message = "Informando foro"
+        self.type_log = "log"
+        self.prt(self)
+        
         set_foro: WebElement = self.wait.until(EC.presence_of_element_located((By. CSS_SELECTOR, self.elements.ome_foro)))
         set_foro.send_keys(self.bot_data.get("FORO"))
         
@@ -208,7 +211,8 @@ class emissao(CrawJUD):
             self.driver.close()
             sleep(0.7)
             self.driver.switch_to.window(original_window)
-            self.prt.print_log(self.pid, 'error', 'Esaj não gerou a guia', self.row)
+            raise ErroDeExecucao('Esaj não gerou a guia')
+        
         elif not check:
             return f"https://consultasaj.tjam.jus.br{url}"
               
@@ -232,12 +236,17 @@ class emissao(CrawJUD):
         self.driver.close()
         sleep(0.7)
         self.driver.switch_to.window(self.original_window)
-        self.prt.print_log(self.pid, 'log', f"Boleto Nº{self.bot_data.get('NUMERO_PROCESSO')} emitido com sucesso!", self.row)
+        self.message = f"Boleto Nº{self.bot_data.get('NUMERO_PROCESSO')} emitido com sucesso!"
+        self.type_log = "log"
+        self.prt(self)
     
     def get_barcode(self) -> None:
         
         try:
-            self.prt.print_log(self.pid, 'log', 'Extraindo código de barras', self.row)
+            self.message = 'Extraindo código de barras'
+            self.type_log = "log"
+            self.prt(self)
+            
             sleep(2)
             # Inicialize uma lista para armazenar os números encontrados
             bar_code = ''
