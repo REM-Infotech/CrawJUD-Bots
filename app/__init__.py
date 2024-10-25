@@ -14,7 +14,6 @@ from datetime import timedelta
 ## APP Imports
 from configs import csp
 from app import default_config
-
 src_path = os.path.join(os.getcwd(), "static")
 
 db = SQLAlchemy()
@@ -31,6 +30,8 @@ allowed_origins = [
     r"https:\/\/.*\.rhsolutions\.info",
     r"https:\/\/.*\.rhsolut\.com\.br"
 ]
+
+
 def check_allowed_origin(origin: str = "https://google.com"):
     
     if not origin:
@@ -44,27 +45,28 @@ def check_allowed_origin(origin: str = "https://google.com"):
 
     return False
 
-def init_app():
+
+class init_app:
     
-    with app.app_context():
-        
-        age = timedelta(days=31).max.seconds
-        db.init_app(app)
-        
-        from app.models import init_database
-        init_database()
-        
-        mail.init_app(app)
-        io.init_app(app, cors_allowed_origins=check_allowed_origin)
-        tlsm.init_app(app, content_security_policy=csp(),
-                    session_cookie_http_only=True,
-                    session_cookie_samesite='Lax',
-                    strict_transport_security=True,
-                    strict_transport_security_max_age=age,
-                    x_content_type_options= True,
-                    x_xss_protection=True)
-    
-        
-        
-from app import routes
-init_app()
+    def __call__(self):
+        with app.app_context():
+            
+            age = timedelta(days=31).max.seconds
+            db.init_app(app)
+            
+            from app.models import init_database
+            init_database()()
+            
+            mail.init_app(app)
+            io.init_app(app, cors_allowed_origins=check_allowed_origin)
+            tlsm.init_app(app, content_security_policy=csp(),
+                          session_cookie_http_only=True,
+                          session_cookie_samesite='Lax',
+                          strict_transport_security=True,
+                          strict_transport_security_max_age=age,
+                          x_content_type_options=True,
+                          x_xss_protection=True)
+    from app import routes
+
+
+init_app()()

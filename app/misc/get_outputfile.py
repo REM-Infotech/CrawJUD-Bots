@@ -1,6 +1,5 @@
-import json
-
 from app.misc import storageClient, bucketGcs
+
 
 def get_file(pid: str) -> str:
     
@@ -22,5 +21,3 @@ def get_file(pid: str) -> str:
             arquivo = blobnames
                 
     return arquivo
-                
-                

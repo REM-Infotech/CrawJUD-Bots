@@ -8,4 +8,3 @@ class Servers(db.Model):
     name = db.Column(db.String(length=45), nullable=False)
     address = db.Column(db.String(length=45), nullable=False)
     system = db.Column(db.String(length=45), nullable=False)
-    

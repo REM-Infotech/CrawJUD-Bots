@@ -3,6 +3,7 @@ from app import db
 import pytz
 from datetime import datetime
 
+
 class BotsCrawJUD(db.Model):
     
     __tablename__ = 'bots'
@@ -28,11 +29,12 @@ class Credentials(db.Model):
     password = db.Column(db.String(length=45))
     key = db.Column(db.String(length=45))
     certficate = db.Column(db.String(length=45))
-    certficate_blob = db.Column(db.LargeBinary(length=(2**32)-1))
+    certficate_blob = db.Column(db.LargeBinary(length=(2**32) - 1))
     
     license_id = db.Column(db.Integer, db.ForeignKey('licenses_users.id'))
     license_usr = db.relationship('LicensesUsers', backref=db.backref('credentials', lazy=True))
     
+
 class Executions(db.Model):
     
     __tablename__ = 'executions'
@@ -85,4 +87,3 @@ class ThreadBots(db.Model):
         
         self.pid = pid
         self.thread_id = thread_id
-    
