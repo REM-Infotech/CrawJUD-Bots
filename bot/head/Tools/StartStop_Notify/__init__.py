@@ -54,7 +54,7 @@ class SetStatus:
         if self.files:
             for f, value in self.files.items():
                 
-                if f != "xlsx":
+                if "xlsx" not in f:
                     f = self.format_String(f)
                     
                 filesav = os.path.join(path_pid, secure_filename(f))

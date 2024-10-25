@@ -233,7 +233,7 @@ class protocolo(CrawJUD):
             self.prt(self)
             password_input = self.driver.find_element(By.ID, 'senhaCertificado')
             password_input.click()
-            senhatoken = f'{self.senhacert}'
+            senhatoken = f'{self.token}'
             password_input.send_keys(senhatoken)
 
             sign_button = self.driver.find_element(By.CSS_SELECTOR, 'input[name="assinarButton"]')

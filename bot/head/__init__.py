@@ -247,8 +247,18 @@ class CrawJUD(WorkerThread):
             
         for col in df.select_dtypes(include=["float"]).columns.to_list():
             df[col] = df[col].apply(lambda x: "{:.2f}".format(x).replace(".", ","))
-            
-        return df.to_dict(orient="records")
+        
+        vars_df = []
+        
+        df_dicted = df.to_dict(orient="records")
+        for item in df_dicted:
+            for key, value in item.items():
+                if str(value) == "nan":
+                    item.update({key: None})
+                    
+            vars_df.append(item)
+        
+        return vars_df
     
     def elawFormats(self, data: dict[str, str]) -> dict[str, str]:
         
@@ -273,6 +283,8 @@ class CrawJUD(WorkerThread):
             elif type(value) is int or type(value) is float:
                 data.update({key: "{:.2f}".format(value).replace(".", ",")})
                 
+            elif key == "CNPJ_FAVORECIDO" and not value:
+                data.update({key: "04.812.509/0001-90"})
             
         return data
 
@@ -466,7 +478,7 @@ class CrawJUD(WorkerThread):
     def install_cert(self) -> None:
 
         path_cert = str(os.path.join(self.output_dir_path, self.name_cert))
-        comando = ["certutil", "-importpfx", "-user", "-f", "-p", self.senhacert, "-silent", path_cert]
+        comando = ["certutil", "-importpfx", "-user", "-f", "-p", self.password, "-silent", path_cert]
         try:
             # Quando você passa uma lista, você geralmente não deve usar shell=True
             resultado = subprocess.run(comando, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
