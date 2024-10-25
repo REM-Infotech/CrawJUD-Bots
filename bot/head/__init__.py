@@ -378,8 +378,7 @@ class CrawJUD(WorkerThread):
         return "".join([c for c in unicodedata.normalize('NFKD', string.lower().replace(" ", "").replace("_", "")) if not unicodedata.combining(c)])
 
     def finalize_execution(self) -> None:
-
-        self.row += 1
+        
         self.driver.delete_all_cookies()
         self.driver.close()
 
