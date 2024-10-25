@@ -5,22 +5,18 @@ import time
 from time import sleep
 from typing import Type
 from contextlib import suppress
-
-
-""" Imports do Projeto """
 from bot.head import CrawJUD
-
-
 from bot.head.common.exceptions import ErroDeExecucao
-
-
-# Selenium Imports
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.common.exceptions import  NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
+
+# Selenium Imports
+
 
 type_doc = {
     11: "cpf",
@@ -42,7 +38,7 @@ class cadastro(CrawJUD):
         
         for pos, value in enumerate(frame):
             
-            self.row = pos+2
+            self.row = pos + 2
             self.bot_data = value
             if self.thread._is_stopped:
                 break
@@ -81,7 +77,7 @@ class cadastro(CrawJUD):
             self.prt(self)
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
             
-        elif not search is True:
+        elif search is not True:
         
             self.message = "Processo não encontrado, inicializando cadastro..."
             self.type_log = "log"
@@ -115,7 +111,7 @@ class cadastro(CrawJUD):
             
             end_time = time.perf_counter()
             execution_time = end_time - start_time
-            calc = execution_time/60
+            calc = execution_time / 60
             splitcalc = str(calc).split(".")
             minutes = int(splitcalc[0])
             seconds = int(float(f"0.{splitcalc[1]}") * 60)
@@ -139,7 +135,7 @@ class cadastro(CrawJUD):
         self.type_log = "log"
         self.prt(self)
         
-        label_area:WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_label_area)), message="Erro ao encontrar elemento")
+        label_area: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_label_area)), message="Erro ao encontrar elemento")
         label_area.click()
         text = str(self.bot_data.get("AREA_DIREITO"))
         sleep(0.5)
@@ -180,7 +176,7 @@ class cadastro(CrawJUD):
 
     def info_localizacao(self) -> None:
 
-        css_esfera_judge = 'div[id="j_id_3k_1:j_id_3k_4_2_2_1_9_u_1:comboRito"]'     
+        css_esfera_judge = 'div[id="j_id_3k_1:j_id_3k_4_2_2_1_9_u_1:comboRito"]'
         elemento = 'div[id="j_id_3k_1:j_id_3k_4_2_2_1_9_u_1:comboRito_panel"]'
         
         self.message = 'Informando esfera do processo'
@@ -316,7 +312,7 @@ class cadastro(CrawJUD):
         self.driver.execute_script(f'document.querySelector("{css_campo_processo}").blur()')
         self.interact.sleep_load('div[id="j_id_3x"]')
         
-        self.message = f'Número do processo informado!'
+        self.message = 'Número do processo informado!'
         self.type_log = "log"
         self.prt(self)
 
@@ -324,7 +320,6 @@ class cadastro(CrawJUD):
         
         """Declaração dos CSS em variáveis"""
         
-        key = "EMPRESA"
         comboClientProcessoParte = self.elements.empresa_combo
         elemento = self.elements.empresa_panel
         
@@ -441,10 +436,10 @@ class cadastro(CrawJUD):
                 self.driver.switch_to.default_content()
                 self.interact.sleep_load('div[id="j_id_3x"]')
 
-            except:
-                raise ErroDeExecucao("Não foi possível cadastrar parte")
+            except Exception as e:
+                raise ErroDeExecucao("Não foi possível cadastrar parte", e)
 
-        messsage = 'Parte adicionada!'
+        self.messsage = 'Parte adicionada!'
         self.type_log = "log"
         self.prt(self)
 
@@ -514,7 +509,7 @@ class cadastro(CrawJUD):
         
         self.message = 'Data de distribuição informada!'
         self.type_log = "log"
-        self.prt(self)  
+        self.prt(self)
 
     def advogado_responsavel(self) -> None:
 
@@ -532,7 +527,7 @@ class cadastro(CrawJUD):
         wait_adv = None
         
         with suppress(TimeoutException):
-            wait_adv:WebElement = WebDriverWait(self.driver, 25).until(
+            wait_adv: WebElement = WebDriverWait(self.driver, 25).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, css_wait_adv)))
 
         if wait_adv:
@@ -588,7 +583,8 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         with suppress(TimeoutException):
-            check_adv:WebElement = WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.CSS_SELECTOR, css_check_adv)), message="Erro ao encontrar elemento").text
+            check_adv: WebElement = WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((
+                By.CSS_SELECTOR, css_check_adv)), message="Erro ao encontrar elemento").text
             self.interact.send_key(campo_adv, Keys.ENTER)
             self.driver.execute_script(f"document.querySelector('{css_input_adv}').blur()")
 
@@ -644,7 +640,7 @@ class cadastro(CrawJUD):
 
         self.message = "Escritório externo informado!"
         self.type_log = "log"
-        self.prt(self) 
+        self.prt(self)
 
     def tipo_contingencia(self) -> None:
 
@@ -687,13 +683,10 @@ class cadastro(CrawJUD):
 
             xpath = '//*[@id="j_id_3k_1:lawyerOutraParteNovoButtom_dlg"]/div[2]/iframe'
             
-            iframe:WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
+            iframe: WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
                 (By.XPATH, xpath)), message="Erro ao encontrar elemento")
             
             self.driver.switch_to.frame(iframe)
-            table_tipo_doc:WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
-                (By.CSS_SELECTOR, 'table[id="cpfCnpjTipoNoGrid-lawyerOutraParte"]')), message="Erro ao encontrar elemento")
-            itensintotable = table_tipo_doc.find_elements(By.TAG_NAME, 'td')
 
             sleep(0.5)
 
@@ -730,7 +723,7 @@ class cadastro(CrawJUD):
             self.interact.sleep_load('div[id="j_id_3x"]')
 
         except Exception as e:
-            raise ErroDeExecucao(f'Não foi possível cadastrar advogado')
+            raise ErroDeExecucao('Não foi possível cadastrar advogado', e)
 
     def cad_parte(self) -> None:
 
@@ -749,7 +742,7 @@ class cadastro(CrawJUD):
 
             xpath_iframe = '//*[@id="j_id_3k_1:j_id_3k_4_2_2_5_9_9_1:parteContrariaMainGridBtnNovo_dlg"]/div[2]/iframe'
             
-            iframe:WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
+            iframe: WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
                 (By.XPATH, xpath_iframe)), message="Erro ao encontrar elemento")
 
             self.driver.switch_to.frame(iframe)
@@ -760,7 +753,7 @@ class cadastro(CrawJUD):
 
                 set_infomar_cpf.click()
 
-            table_tipo_doc:WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
+            table_tipo_doc: WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
                 (By.CSS_SELECTOR, 'table[id="cpfCnpjTipoNoGrid-"]')), message="Erro ao encontrar elemento")
             itensintotable = table_tipo_doc.find_elements(By.TAG_NAME, 'td')
 
@@ -859,7 +852,7 @@ class cadastro(CrawJUD):
         wait_confirm_save = None
 
         with suppress(TimeoutException):
-            wait_confirm_save:WebElement = WebDriverWait(self.driver, 20).until(
+            wait_confirm_save: WebElement = WebDriverWait(self.driver, 20).until(
                 EC.url_to_be(("https://amazonas.elaw.com.br/processoView.elaw")), message="Erro ao encontrar elemento")
 
         if wait_confirm_save:
@@ -871,16 +864,12 @@ class cadastro(CrawJUD):
 
         elif not wait_confirm_save:
             div_messageerro_css = 'div[id="messages"]'
-            try:
-                self.message: WebElement = self.wait.until(EC.presence_of_element_located(
+            ErroElaw: WebElement | str = None
+            with suppress(TimeoutException, NoSuchElementException):
+                ErroElaw = self.wait.until(EC.presence_of_element_located(
                     (By.CSS_SELECTOR, div_messageerro_css)), message="Erro ao encontrar elemento").find_element(By.TAG_NAME, "ul").text
-
-            except Exception as e:
-                self.message = "Processo Não cadastrado"
-
-            self.type_log = "error"
-            self.prt(self)
-            self.append_error(
-                [self.bot_data.get("NUMERO_PROCESSO"), self.message])
             
-            return False
+            if not ErroElaw:
+                ErroElaw = "Cadastro do processo nao finalizado, verificar manualmente"
+                
+            raise ErroDeExecucao(ErroElaw)

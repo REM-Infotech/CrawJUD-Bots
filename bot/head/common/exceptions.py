@@ -1,15 +1,19 @@
 from bot.head.common.selenium_excepts import exeptionsBot
+
+
 class CrawJUDExceptions(Exception):
     """Exceção base personalizada."""
     def __init__(self, message):
         super().__init__(message)
         self.message = message
 
+
 class ItemNaoEcontrado(CrawJUDExceptions):
     """Exceção para quando um recurso não é encontrado."""
-    def __init__(self, message = "Item não encontrado"):
+    def __init__(self, message="Item não encontrado"):
         super().__init__(message)
         
+
 class ErroDeExecucao(CrawJUDExceptions):
     """Exceção para quando um recurso não é encontrado."""
     def __init__(self, message: str = "Erro ao executar operação", e: Exception = None):
@@ -26,5 +30,4 @@ class ErroDeExecucao(CrawJUDExceptions):
         if message_error:
             message = message_error
             
-        super().__init__(message)    
-        
+        super().__init__(message)

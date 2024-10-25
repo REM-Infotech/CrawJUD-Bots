@@ -3,7 +3,6 @@ from bot.head.common.exceptions import ItemNaoEcontrado
 from bot.head import CrawJUD
 
 from time import sleep
-from typing import Type
 from contextlib import suppress
 
 from selenium.webdriver import Keys
@@ -111,7 +110,7 @@ class Interact(CrawJUD):
             
             style = elemento.get_attribute("style")
             
-            if not "display: none;" in style:
+            if "display: none;" not in style:
                 sleep(0.01)
                 break
             

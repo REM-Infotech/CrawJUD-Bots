@@ -1,11 +1,6 @@
-import pytz
-import os
 import openpyxl
-from pytz import timezone
-from datetime import datetime
 from openpyxl.styles import Font
 from openpyxl.styles import PatternFill
-
 from bot.head.Tools.MakeTemplate.appends import listas
 
 
@@ -51,7 +46,7 @@ class MakeXlsx:
 
         # Escrever os cabeçalhos na primeira linha da planilha e aplicar estilo
         for pos, coluna in enumerate(cabecalhos):
-            item = sheet.cell(row=1, column=pos+1, value=coluna.upper())
+            item = sheet.cell(row=1, column=pos + 1, value=coluna.upper())
             item.font = bold_font
             item.fill = my_fill
 
@@ -63,8 +58,8 @@ class MakeXlsx:
                 try:  # Necessary to avoid error on empty cells
                     if len(str(cell.value)) > max_length:
                         max_length = len(str(cell.value))
-                except:
-                    pass
+                except Exception as e:
+                    raise e
             adjusted_width = (max_length + 2) * 1.2
             sheet.column_dimensions[column].width = adjusted_width
 
@@ -72,10 +67,3 @@ class MakeXlsx:
         workbook.save(path_template)
 
         return cabecalhos
-
-# from datetime import datetime
-# namefile = f'Busca Esaj Capa - {datetime.now(pytz.timezone('Etc/GMT+4')).strftime("%d-%m-%y")}.xlsx'
-# localtosave = f"{os.path.join(pathlib.Path(__file__).parent.resolve(), namefile)}"
-# args = 'esaj_emite_guia'
-
-# MakeXlsx().make_template(args, localtosave)

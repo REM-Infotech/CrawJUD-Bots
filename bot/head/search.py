@@ -1,17 +1,16 @@
 from time import sleep
-from typing import Type
 from contextlib import suppress
 from bot.head.common.exceptions import ErroDeExecucao
 
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.common.exceptions import  NoSuchElementException, TimeoutException
-from bot.head.interator import Interact
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 from bot.head import CrawJUD
+
 
 class SeachBot(CrawJUD):
     
@@ -38,13 +37,13 @@ class SeachBot(CrawJUD):
         
             self.driver.get("https://amazonas.elaw.com.br/processoList.elaw")
         
-        campo_numproc: WebElement = self.wait.until(EC.presence_of_element_located((By.ID,'tabSearchTab:txtSearch')))
+        campo_numproc: WebElement = self.wait.until(EC.presence_of_element_located((By.ID, 'tabSearchTab:txtSearch')))
         campo_numproc.clear()
         sleep(0.15)
         self.interact.send_key(campo_numproc, self.bot_data.get("NUMERO_PROCESSO"))
         
         self.driver.find_element(By.ID, 'btnPesquisar').click()
-        search_result: WebElement = self.wait.until(EC.presence_of_element_located((By.ID,'dtProcessoResults_data')))
+        search_result: WebElement = self.wait.until(EC.presence_of_element_located((By.ID, 'dtProcessoResults_data')))
         
         open_proc = None
         with suppress(NoSuchElementException):
@@ -76,7 +75,7 @@ class SeachBot(CrawJUD):
             self.driver.get(self.elements.consultaproc_grau2)
             id_consultar = 'pbConsultar'
             
-        elif not grau or grau != 1 or grau !=2:
+        elif not grau or grau != 1 or grau != 2:
             
             raise ErroDeExecucao("Informar instancia!")
         
@@ -128,7 +127,7 @@ class SeachBot(CrawJUD):
                         allowacess = self.driver.find_element(
                             By.CSS_SELECTOR, '#habilitacaoProvisoriaButton')
                         
-                    if allowacess:    
+                    if allowacess:
                         allowacess.click()
                         sleep(1)
 
@@ -146,18 +145,18 @@ class SeachBot(CrawJUD):
             
         if self.typebot == "proc_parte":
             
-            allprocess = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'input[value="qualquerAdvogado"]')))
+            allprocess = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[value="qualquerAdvogado"]')))
             allprocess.click()
             
             data_inicio_formatted = self.data_inicio.strftime("%d/%m/%Y")
             data_fim_formatted = self.data_fim.strftime("%d/%m/%Y")
             
             if self.vara == 'TODAS AS COMARCAS':
-                alljudge = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR,'input[name="pesquisarTodos"]')))
+                alljudge = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[name="pesquisarTodos"]')))
                 alljudge.click()
                 
             elif self.vara != 'TODAS AS COMARCAS':
-                search_vara = self.driver.find_element(By.ID, 'descricaoVara') #32801
+                search_vara = self.driver.find_element(By.ID, 'descricaoVara')
                 search_vara.click()
                 search_vara.send_keys(self.vara)
                 sleep(3)

@@ -57,7 +57,7 @@ def csp() -> dict[str]:
         'https://avatars.githubusercontent.com'
         
     ]
-}   
+}
     if srvs:
         for srv in srvs:
             csp_vars.get('connect-src').append(f"https://{srv.address}")

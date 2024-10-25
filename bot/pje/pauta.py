@@ -19,53 +19,55 @@ from bot.head.common.exceptions import ErroDeExecucao
 class pauta(CrawJUD):
 
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
-        
+
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
-        
+
     def execution(self) -> None:
-        
+
         frame = self.dataFrame()
         self.max_rows = len(frame)
-        
+
         self.row = 2
         self.current_date = self.data_inicio
-        
+
         while not self.thread._is_stopped\
-            and self.current_date <= self.data_fim:
-            
+                and self.current_date <= self.data_fim:
+
             if self.driver.title.lower() == "a sessao expirou":
                 self.auth(self)
-            
+
             try:
                 self.queue()
-                
+
             except Exception as e:
-                
+
                 old_message = self.message
                 message_error = str(e)
-                
+
                 self.type_log = "error"
-                self.message_error = f'{message_error}. | Operação: {old_message}'
+                self.message_error = f'{
+                    message_error}. | Operação: {old_message}'
                 self.prt(self)
-                
+
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
-                
+
                 self.message_error = None
 
         self.finalize_execution()
 
     def queue(self) -> None:
-        
+
         try:
-            
-            self.message = f"Buscando pautas na data {self.current_date.strftime('%d/%m/%Y')}"
+
+            self.message = f"Buscando pautas na data {
+                self.current_date.strftime('%d/%m/%Y')}"
             self.type_log = "log"
             self.prt(self)
             varas: list[str] = self.varas
             for vara in varas:
-                
+
                 date = self.current_date.strftime('%Y-%m-%d')
                 self.data_append.update({vara: {date: []}})
 
@@ -75,27 +77,26 @@ class pauta(CrawJUD):
                 data_append = self.data_append[vara][date]
                 if len(data_append) == 0:
                     self.data_append[vara].pop(date)
-                
+
                 elif len(data_append) > 0:
                     vara = vara.replace("#", "").upper()
-                    fileN = f"{vara} - {date.replace("-", ".")} - {self.pid}.xlsx"
+                    fileN = f'{vara} - {date.replace("-", ".")} - {self.pid}.xlsx'
                     self.append_success(data=data_append, fileN=fileN)
-            
-            
+
             data_append = self.group_date_all(self.data_append)
             fileN = os.path.basename(self.path)
             if len(data_append) > 0:
                 self.append_success(data=[data_append], fileN=fileN,
                                     message="Dados extraídos com sucesso!")
-                
+
             elif len(data_append) == 0:
                 self.message = "Nenhuma pauta encontrada"
                 self.type_log = "error"
-                self.prt(self)        
-        
+                self.prt(self)
+
         except Exception as e:
             raise e
-                
+
     def get_pautas(self, current_date: Type[datetime], vara: str):
 
         try:
@@ -125,7 +126,8 @@ class pauta(CrawJUD):
                 times = 6
 
                 for item in itens_pautas:
-                    vara_name = self.driver.find_element(By.CSS_SELECTOR, 'span[class="ng-tns-c11-1 ng-star-inserted"]').text
+                    vara_name = self.driver.find_element(
+                        By.CSS_SELECTOR, 'span[class="ng-tns-c11-1 ng-star-inserted"]').text
                     with suppress(StaleElementReferenceException):
                         item: WebElement = item
                         itens_tr = item.find_elements(By.TAG_NAME, 'td')
@@ -141,8 +143,7 @@ class pauta(CrawJUD):
                                    "SITUACAO": itens_tr[6].text}
 
                         self.data_append[vara][current_date].append(appends)
-                        self.message = f"Processo {
-                            appends["NUMERO_PROCESSO"]} adicionado!"
+                        self.message = f'Processo {appends["NUMERO_PROCESSO"]} adicionado!'
                         self.type_log = "log"
                         self.prt(self)
 
@@ -168,5 +169,3 @@ class pauta(CrawJUD):
 
         except Exception as e:
             raise ErroDeExecucao(e=e)
-
-    

@@ -1,5 +1,5 @@
 from selenium.common.exceptions import (
-    TimeoutException, StaleElementReferenceException, 
+    TimeoutException, StaleElementReferenceException,
     NoSuchElementException, ElementNotInteractableException,
     ElementClickInterceptedException)
 

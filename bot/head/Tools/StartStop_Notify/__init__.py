@@ -9,20 +9,18 @@ import pathlib
 import logging
 import platform
 import openpyxl
+
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
-
-from app.models import Users, BotsCrawJUD, Executions, LicensesUsers
 from openpyxl.worksheet.worksheet import Worksheet
 
-url_cache = []
-from bot.head.Tools.ClearCache import DelCache
+from app.models import Users, BotsCrawJUD, Executions, LicensesUsers
 from bot.head.Tools.StartStop_Notify.makefile import makezip
-from bot.head.Tools.StartStop_Notify.uninstall_cert import uninstall
 from bot.head.Tools.StartStop_Notify.upload_zip import enviar_arquivo_para_gcs
 from bot.head.Tools.StartStop_Notify.send_email import email_stop, email_start
 
+url_cache = []
 
 
 class SetStatus:
@@ -30,7 +28,7 @@ class SetStatus:
     
     
     def __init__(self, form: dict[str, str] = {}, files: dict[str, FileStorage] = {},
-                 id: int  = None, system: str = None, typebot: str = None,
+                 id: int = 0, system: str = None, typebot: str = None,
                  usr: str = None, pid: str = None, status: str = "Finalizado") -> str:
         
 
@@ -53,7 +51,7 @@ class SetStatus:
                 filesav = os.path.join(path_pid, secure_filename(f))
                 value.save(filesav)
         
-        data = {} 
+        data = {}
         path_args = os.path.join(path_pid, f"{self.pid}.json")
         if self.form:
             for key, value in self.form.items():
@@ -80,7 +78,7 @@ class SetStatus:
                 data.get("data_fim"), "%Y-%m-%d")
             
             diff = data_fim_formated - data_inicio_formated
-            rows = diff.days+2
+            rows = diff.days + 2
             
         elif data.get("typebot") == "proc_parte":
             
@@ -90,16 +88,16 @@ class SetStatus:
         data.update({"total_rows": rows})
         
         with open(path_args, "w") as f:
-            f.write(json.dumps(data))   
+            f.write(json.dumps(data))
         
         execut = Executions(
-            pid = self.pid,
-            status = "Em Execução",
-            arquivo_xlsx = data.get("xlsx"),
-            url_socket = data.get("url_socket"),
-            total_rows = rows,
-            data_execucao = datetime.now(pytz.timezone('Etc/GMT+4')),
-            file_output = "Arguardando Arquivo"
+            pid=self.pid,
+            status="Em Execução",
+            arquivo_xlsx=data.get("xlsx"),
+            url_socket=data.get("url_socket"),
+            total_rows=rows,
+            data_execucao=datetime.now(pytz.timezone('Etc/GMT+4')),
+            file_output="Arguardando Arquivo"
         )
         
         usr = Users.query.filter(Users.login == self.user).first()
@@ -162,8 +160,3 @@ class SetStatus:
             
         except Exception as e:
             logging.error(f'Exception: {e}', exc_info=True)
-
-
-
-
-

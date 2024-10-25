@@ -17,9 +17,11 @@ from initbot import WorkerThread
 path_template = os.path.join(pathlib.Path(__file__).parent.resolve(), "templates")
 bot = Blueprint("bot", __name__, template_folder=path_template)
 
-@bot.route("/bot/<id>/<system>/<typebot>", methods = ["POST"])
+
+@bot.route("/bot/<id>/<system>/<typebot>", methods=["POST"])
 def botlaunch(id: int, system: str, typebot: str):
     
+    message = {"success": "success"}
     from bot.head.Tools.StartStop_Notify import SetStatus
     with app.app_context():
         try:
@@ -39,10 +41,12 @@ def botlaunch(id: int, system: str, typebot: str):
             is_started = worker_thread.start(path_args, display_name)
             
         except Exception as e:
-            is_started = 500    
+            message = {"error": str(e)}
+            is_started = 500
         
-    resp = make_response(jsonify({"ok": "ok"}), is_started)
+    resp = make_response(jsonify(message), is_started)
     return resp
+
 
 @bot.route('/stop/<user>/<pid>', methods=["POST"])
 def stop_bot(user: str, pid: str):
@@ -57,6 +61,7 @@ def stop_bot(user: str, pid: str):
         
         elif set_stop != 200:
             return jsonify({'mensagem': 'erro'}), set_stop
+
 
 def stop_execution(user: str, pid: str) -> int:
 
@@ -98,4 +103,3 @@ def stop_execution(user: str, pid: str) -> int:
     except Exception as e:
         print(e)
         return 500
-

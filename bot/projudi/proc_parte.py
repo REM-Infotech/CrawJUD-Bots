@@ -1,3 +1,5 @@
+""" bot.projudi.proc_parte.py """
+
 import os
 import re
 import time
@@ -5,7 +7,7 @@ from typing import Type
 from datetime import datetime
 from contextlib import suppress
 
-""" Imports do Projeto """
+
 
 
 from bot.head.common.exceptions import ErroDeExecucao
@@ -29,9 +31,11 @@ class proc_parte(CrawJUD):
         
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
+        self.data_append = []
         
     def execution(self) -> None:
         
+        self.graphicMode = "bar"
         while not self.thread._is_stopped:
             
             if self.driver.title.lower() == "a sessao expirou":
@@ -81,7 +85,9 @@ class proc_parte(CrawJUD):
                 with suppress(NoSuchElementException):
                     next_page = self.driver.find_element(By.CLASS_NAME, 'navRight').find_element(By.XPATH, './/a[@class="arrowNextOn"]')
                 
-                self.append_success(data2=self.data_append, fileN=os.path.basename(self.path))
+                self.type_log = "info"
+                self.append_success(self.data_append, "Processos salvos na planilha!",
+                                    fileN=os.path.basename(self.path))
                 if next_page:
                     next_page.click()
                     self.get_process_list()
@@ -122,8 +128,9 @@ class proc_parte(CrawJUD):
                  "POLO_PASSIVO": polo_passivo,
                  "JUIZO": juizo}
             )
+            self.row += 1
             self.message = f"Processo {numero_processo} salvo!"
-            self.type_log = "log"
+            self.type_log = "success"
             self.prt(self)
 
 

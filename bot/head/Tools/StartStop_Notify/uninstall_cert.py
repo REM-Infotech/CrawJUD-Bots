@@ -1,6 +1,7 @@
 import subprocess
 from tqdm import tqdm
 
+
 def uninstall(nome_do_certificado: str):
     
     certs = {}
@@ -31,14 +32,13 @@ def uninstall(nome_do_certificado: str):
                     break
 
     except subprocess.CalledProcessError as e:
-        tqdm.write("Erro ao remover o certificado:")
+        raise e
            
     try:
         thumbprint = certs[nome_do_certificado]
         comando = ["certutil", "-delstore", "-user", "my", thumbprint]
         resultado = subprocess.run(comando, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        tqdm.write("Certificado removido com sucesso.")
+        tqdm.write(resultado.stdout, resultado.stderr)
         
     except subprocess.CalledProcessError as e:
-        tqdm.write("Erro ao remover o certificado:")
-        
+        raise e

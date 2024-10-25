@@ -1,10 +1,6 @@
-from google.cloud import storage
-from google.oauth2 import service_account
-
 import os
-import json
-from dotenv import dotenv_values
 from app.misc import storageClient, bucketGcs
+
 
 def enviar_arquivo_para_gcs(zip_file: str) -> bool:
         
@@ -25,5 +21,4 @@ def enviar_arquivo_para_gcs(zip_file: str) -> bool:
         return True
         
     except Exception as e:
-        
-        return False
+        raise e

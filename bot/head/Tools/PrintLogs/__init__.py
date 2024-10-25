@@ -1,3 +1,5 @@
+""" bot.head.Tools.PrintLogs.py """
+
 from app import io, db
 # Importações necessárias
 import os
@@ -11,7 +13,7 @@ from bot.head import CrawJUD
 from app.models import CacheLogs, Executions
 
 # Define a codificação de caracteres como UTF-8
-codificacao = 'utf-8'
+codificacao = 'UTF-8'
 mensagens = []
 
 
@@ -48,7 +50,7 @@ class printtext(CrawJUD):
     def file_log(self) -> None:
 
         try:
-            savelog = os.path.join(os.getcwd(), 'Temp' , self.pid, f'LogFile - PID {self.pid}.txt')
+            savelog = os.path.join(os.getcwd(), 'Temp', self.pid, f'LogFile - PID {self.pid}.txt')
             with open(savelog, "a") as f:
                 for mensagem in self.list_messages:
                     
@@ -69,10 +71,12 @@ class printtext(CrawJUD):
     def socket_message(self) -> None:
     
         try:
-            data: dict[str, str | int] = {'message': self.prompt,
-                    'pid': self.pid, 
-                    "type": self.type_log, 
-                    "pos": self.row}
+            data: dict[str, str | int] = {
+                'message': self.prompt,
+                'pid': self.pid,
+                "type": self.type_log,
+                "pos": self.row,
+                "graphicMode": self.graphicMode}
             
             self.emitMessage(data)
             
@@ -87,14 +91,14 @@ class printtext(CrawJUD):
                 
                 execut = Executions.query.filter(Executions.pid == self.pid).first()
                 log_pid = CacheLogs(
-                    pid = self.pid,
-                    pos = int(data["pos"]),
-                    total = int(execut.total_rows)-1,
-                    remaining = int(execut.total_rows)-1,
-                    success = 0,
-                    errors = 0,
-                    status = execut.status,
-                    last_log = data["message"]
+                    pid=self.pid,
+                    pos=int(data["pos"]),
+                    total=int(execut.total_rows) - 1,
+                    remaining=int(execut.total_rows) - 1,
+                    success=0,
+                    errors=0,
+                    status=execut.status,
+                    last_log=data["message"]
                 )
                 db.session.add(log_pid)
                 
@@ -102,15 +106,12 @@ class printtext(CrawJUD):
                 
                 log_pid.pos = int(data["pos"])
                 
-                typeSuccess = (
-                    data["type"] == "success"
-                    or
-                    data["type"] == "info")
+                typeSuccess = (data["type"] == "success" or data["type"] == "info")
                 
                 if typeSuccess:
                     
                     log_pid.remaining -= 1
-                    if not "fim da execução" in data["message"].lower():
+                    if "fim da execução" not in data["message"].lower():
                         log_pid.success += 1
                         
                     log_pid.last_log = data["message"]
@@ -130,15 +131,15 @@ class printtext(CrawJUD):
                     log_pid.status = "Finalizado"
             
             db.session.commit()
-            data.update(
-                {"pid" : data["pid"],
-                "pos" : int(data["pos"]),
-                "total" : log_pid.total,
-                "remaining" : log_pid.remaining,
-                "success" : log_pid.success,
-                "errors" : log_pid.errors,
-                "status" : log_pid.status,
-                "last_log" : log_pid.last_log}
+            data.update({
+                "pid": data["pid"],
+                "pos": int(data["pos"]),
+                "total": log_pid.total,
+                "remaining": log_pid.remaining,
+                "success": log_pid.success,
+                "errors": log_pid.errors,
+                "status": log_pid.status,
+                "last_log": log_pid.last_log}
             )
             
             io.emit('log_message', data, namespace='/log', room=self.pid)

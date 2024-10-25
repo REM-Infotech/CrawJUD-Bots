@@ -3,7 +3,8 @@ import shutil
 import psutil
 from psutil import Process
 
-def DelCache(pid = None):
+
+def DelCache(pid=None):
 
     for root, dirs, files in os.walk(os.path.join(os.getcwd())):
         
@@ -11,10 +12,13 @@ def DelCache(pid = None):
             
             try:
                 shutil.rmtree(root)
+                
             except PermissionError as e:
+                print(e)
                 stop_exec(find_open_files(root))
                 shutil.rmtree(root)
-            
+                
+
 def find_open_files(filename):
     
     """
@@ -45,17 +49,12 @@ def find_open_files(filename):
 
     return open_files
 
+
 def stop_exec(to_stop):
     
     for process in to_stop:
         try:
-            Process.kill(process)  
-        except psutil.NoSuchProcess as e: 
-            pass
-                    
-                    
-                        
-                
-                        
-                
+            Process.kill(process)
             
+        except psutil.NoSuchProcess:
+            continue

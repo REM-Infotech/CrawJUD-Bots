@@ -12,7 +12,7 @@ import unicodedata
 import pandas as pd
 from datetime import datetime
 from pandas import Timestamp
-from typing import Type, Union, Callable
+from typing import Callable
 
 
 # Selenium Imports
@@ -20,14 +20,10 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.firefox.service import Service
-
 from bot.head.WebDriverManager import GetDriver
 from bot.head.common.exceptions import ErroDeExecucao
 
 from initbot import WorkerThread
-
 
 
 class CrawJUD(WorkerThread):
@@ -38,21 +34,47 @@ class CrawJUD(WorkerThread):
         "version": 2
     }
 
-
-    def __init__(self, worker_thread: WorkerThread):
+    def setBots(self):
+        
+        ## FuncBots
+        from bot.head.auth import AuthBot
+        from bot.head.search import SeachBot
+        from bot.head.interator import Interact
+        from bot.head.Tools.PrintLogs import printtext
+        from bot.head.Tools.MakeTemplate import MakeXlsx
+        from bot.head.Tools.StartStop_Notify import SetStatus
+        from bot.head.Tools.dicionarios import cities_Amazonas
+        
+        ## Bots
+        from bot.pje import pje, elements_pje
+        from bot.esaj import esaj, elements_esaj
+        from bot.elaw import elaw, elements_elaw
+        from bot.caixa import caixa, elements_caixa
+        from bot.projudi import projudi, elements_projudi
+        
+        for item in [pje, elements_pje, AuthBot,
+                     esaj, elements_esaj, SeachBot,
+                     elaw, elements_elaw, Interact,
+                     caixa, elements_caixa, printtext,
+                     projudi, elements_projudi, MakeXlsx,
+                     SetStatus, cities_Amazonas]:
             
-        self.__dict__ = worker_thread.__dict__.copy()
-        self.prt: Type[printtext] = printtext(self)
+            setattr(self, item.__class__.__name__, item)
     
-    def __getattr__(self, nome_do_atributo: str) -> Union[
-        Callable[[], None], list[dict[str, str]], list[str], 
-        str, int, datetime]:
-        item = getattr(self.argbot, nome_do_atributo, None) 
+    def __getattr__(self, nome_do_atributo: str) -> Callable[[], str | None]:
+        
+        item = getattr(self.argbot, nome_do_atributo, None)
         return item
     
+    def __init__(self, worker_thread: WorkerThread):
+        
+        self.setBots()
+        self.__dict__ = worker_thread.__dict__.copy()
+        self.prt = self.printtext(self)
     
     def setup(self, app: Flask, path_args: str = None):
         
+        self.graphicMode = 'doughnut'
         self.driver = None
         with open(path_args, "rb") as f:
             json_f: dict[str, str | int] = json.load(f)
@@ -63,8 +85,10 @@ class CrawJUD(WorkerThread):
                 setattr(self, key, value)
         
         time.sleep(10)
-        self.list_args = ['--ignore-ssl-errors=yes', '--ignore-certificate-errors', "--display=:99", "--window-size=1600,900", 
-                 "--no-sandbox", "--disable-blink-features=AutomationControlled", '--kiosk-printing']    
+        self.list_args = ['--ignore-ssl-errors=yes', '--ignore-certificate-errors',
+                          "--display=:99", "--window-size=1600,900",
+                          "--no-sandbox", "--disable-blink-features=AutomationControlled",
+                          '--kiosk-printing']
 
         ## Definição de variaveis utilizadas pelos robôs
         self.row = int(0)
@@ -92,8 +116,8 @@ class CrawJUD(WorkerThread):
         namefile_erro = f"Erros - PID {self.pid} {time_xlsx}.xlsx"
         self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
         
-        self.name_colunas = MakeXlsx("sucesso", self.typebot).make_output(self.path)
-        MakeXlsx("erro", self.typebot).make_output(self.path_erro)
+        self.name_colunas = self.MakeXlsx("sucesso", self.typebot).make_output(self.path)
+        self.MakeXlsx("erro", self.typebot).make_output(self.path_erro)
         
         if not self.xlsx:
             
@@ -107,7 +131,8 @@ class CrawJUD(WorkerThread):
             if not cl:
                 cl = self.client.split(" ")[0]
             
-            self.elements = elements_bot(self.system, cl)
+            self.elements: Callable[[], Callable[[], str]] = (
+                getattr(self, f"elements_{self.system}")(cl))
             
             args = self.DriverLaunch()
             if not args:
@@ -117,7 +142,7 @@ class CrawJUD(WorkerThread):
                 self.prt(self)
                 return
 
-            self.interact = Interact(self)
+            self.interact = self.Interact(self)
             
             Get_Login = self.login()
             if Get_Login is True:
@@ -135,14 +160,16 @@ class CrawJUD(WorkerThread):
                 self.prt(self)
                 
                 with app.app_context():
-                    SetStatus(status='Falha ao iniciar', pid=self.pid, 
-                            system=self.system, typebot=self.typebot).botstop()
+                    self.SetStatus(status='Falha ao iniciar',
+                                   pid=self.pid,
+                                   system=self.system,
+                                   typebot=self.typebot).botstop()
                 
                 return
 
-            self.search = SeachBot(self)
+            self.search = self.SeachBot(self)
             
-            bot = master_bots(self.system, self.typebot, self)
+            bot = getattr(self, self.system)(self.typebot, self)
             bot()
             
         except Exception as e:
@@ -152,11 +179,13 @@ class CrawJUD(WorkerThread):
                 self.driver.quit()
             
             with app.app_context():
-                SetStatus(status='Falha ao iniciar', pid=self.pid, 
-                        system=self.system, typebot=self.typebot).botstop()
+                self.SetStatus(status='Falha ao iniciar',
+                               system=self.system,
+                               pid=self.pid,
+                               typebot=self.typebot).botstop()
 
             self.row = 0
-            self.message = f'Falha ao iniciar. Informe a mensagem de erro ao suporte'
+            self.message = 'Falha ao iniciar. Informe a mensagem de erro ao suporte'
             self.type_log = "error"
             self.prt(self)
             self.message_error = str(e)
@@ -174,7 +203,7 @@ class CrawJUD(WorkerThread):
                 self.type_log = "log"
                 self.prt(self)
                 
-                self.auth = AuthBot(self)
+                self.auth = self.AuthBot(self)
                 Get_Login = self.auth(self)
 
         except Exception as e:
@@ -192,8 +221,8 @@ class CrawJUD(WorkerThread):
         df.columns = df.columns.str.upper()
         
         for col in df.columns.to_list():
-            df[col] = df[col].apply(lambda x: x.strftime('%d/%m/%Y') if type(x)\
-                == datetime or type(x) == Timestamp else x)
+            df[col] = df[col].apply(lambda x: x.strftime('%d/%m/%Y')
+                                    if type(x) is datetime or type(x) is Timestamp else x)
             
         for col in df.select_dtypes(include=["float"]).columns.to_list():
             df[col] = df[col].apply(lambda x: "{:.2f}".format(x).replace(".", ","))
@@ -211,14 +240,14 @@ class CrawJUD(WorkerThread):
                     data.update({"TIPO_PARTE_CONTRARIA": "Autor"})
                     
             elif key.upper() == "COMARCA":
-                set_locale = cities_Amazonas().get(value, None)
+                set_locale = self.cities_Amazonas().get(value, None)
                 if not set_locale:
                     set_locale = "Outro Estado"
 
                 data.update({"CAPITAL_INTERIOR": set_locale})
                 
             elif key == "DATA_LIMITE" and not data.get("DATA_INICIO"):
-                data.update({"DATA_INICIO": value})   
+                data.update({"DATA_INICIO": value})
                 
             
         return data
@@ -227,7 +256,7 @@ class CrawJUD(WorkerThread):
 
         end_time = time.perf_counter()
         execution_time = end_time - self.start_time
-        calc = execution_time/60
+        calc = execution_time / 60
         splitcalc = str(calc).split(".")
         minutes = int(splitcalc[0])
         seconds = int(float(f"0.{splitcalc[1]}") * 60)
@@ -238,13 +267,15 @@ class CrawJUD(WorkerThread):
 
         if len(self.appends) > 0:
             self.append_success(
-                self.appends, f'Movimentação salva na planilha com sucesso!!')
+                self.appends, 'Movimentação salva na planilha com sucesso!!')
 
         elif len(self.appends) == 0:
             raise ErroDeExecucao("Nenhuma Movimentação encontrada")
-
-    def append_success(self, data: list[dict[str, str]] = None,
-                        message: str = None, fileN: str = None,):
+    
+    def append_success(self,
+                       data: list[dict[str, str]] = None,
+                       message='Execução do processo efetuada com sucesso!',
+                       fileN: str = None,):
         
         def save_info(data: list[dict[str, str]]):
             if not self.path:
@@ -259,14 +290,13 @@ class CrawJUD(WorkerThread):
                 
                 df = pd.read_excel(self.path)
                 df = df.to_dict(orient="records")
-                df.extend(data)   
+                df.extend(data)
             
             new_data = pd.DataFrame(df)
             new_data.to_excel(self.path, index=False)
         
-        typeD = (type(data) == list
-            and
-            all(isinstance(item, dict) for item in data))
+        typeD = (type(data) is list and all(
+            isinstance(item, dict) for item in data))
         
         if not typeD:
             
@@ -275,7 +305,7 @@ class CrawJUD(WorkerThread):
             for item in self.name_colunas:
                 data2.update({item: ""})
             
-            for item in data:    
+            for item in data:
                 for key, value in list(data2.items()):
                     if not value:
                         data2.update({key: item})
@@ -284,10 +314,7 @@ class CrawJUD(WorkerThread):
             data.clear()
             data.append(data2)
 
-        save_info(data)                
-
-        if not message:
-            message = f'Execução do processo efetuada com sucesso!'
+        save_info(data)
 
         if message:
             if self.type_log == "log":
@@ -327,8 +354,11 @@ class CrawJUD(WorkerThread):
         seconds = int((calc - minutes) * 60)
         
         with self.app.app_context():
-            SetStatus(status='Finalizado', pid=self.pid, 
-                    system=self.system, typebot=self.typebot).botstop()
+            self.SetStatus(
+                status='Finalizado',
+                pid=self.pid,
+                system=self.system,
+                typebot=self.typebot).botstop()
             
         self.type_log = "success"
         self.message = f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos"
@@ -350,11 +380,13 @@ class CrawJUD(WorkerThread):
             if platform.system() == "Windows" and self.login_method == "cert":
                 state = str(self.state)
                 self.path_accepted = str(os.path.join(os.getcwd(), "Browser", state, self.argbot['login'], "chrome"))
-                path_exist =  os.path.exists(self.path_accepted)
+                path_exist = os.path.exists(self.path_accepted)
                 if path_exist:
                     try:
-                        resultados = subprocess.run(["xcopy", self.path_accepted, self.user_data_dir, "/E", "/H", "/C", "/I"],
-                        check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.splitlines()
+                        resultados = subprocess.run(
+                            ["xcopy", self.path_accepted, self.user_data_dir, "/E", "/H", "/C", "/I"],
+                            check=True, text=True, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE).stdout.splitlines()
                         
                         for item in resultados:
                             print(item)
@@ -376,6 +408,7 @@ class CrawJUD(WorkerThread):
                     if ".crx" in file_:
                         path_plugin = os.path.join(root, file_)
                         chrome_options.add_extension(path_plugin)
+                        
             chrome_prefs = {
                 "download.prompt_for_download": False,
                 "plugins.always_open_pdf_externally": True,
@@ -384,6 +417,7 @@ class CrawJUD(WorkerThread):
                 "download.default_directory": "{}".format(os.path.join(self.output_dir_path))
             }
             
+            chrome_options.add_experimental_option(chrome_prefs)
             pid_path = pathlib.Path(self.path_args).parent.resolve()
             getdriver = GetDriver(destination=pid_path)
             path_chrome = os.path.join(pid_path, getdriver())
@@ -441,45 +475,8 @@ class CrawJUD(WorkerThread):
         for pos, entry in enumerate(data):
             for key, value in entry.items():
                     
-                if not record.get(key):   
+                if not record.get(key):
                     record.update({key: {}})
                     
                 record.get(key).update({str(pos): value})
         return record
-
-from bot.pje import pje, elements_pje
-from bot.esaj import esaj, elements_esaj
-from bot.elaw import elaw, elements_elaw
-from bot.caixa import caixa, elements_caixa
-from bot.projudi import projudi, elements_projudi
-
-def master_bots(system: str, type_bot: str, master: CrawJUD) -> Callable[[], str]:
-    
-    call_act: Callable[[], None] | None = globals().get(system.lower())
-    
-    if call_act:
-        call_act = call_act(type_bot, master)
-    
-    return call_act
-        
-def elements_bot(system: str, state: str) -> Callable[[], str]:
-    
-    call_act: Callable[
-        [], None] | None = globals().get(f"elements_{system.lower()}")
-    
-    if call_act:
-        call_act = call_act(state)()
-    
-    return call_act
-
-
-
-from bot.head.auth import AuthBot
-from bot.head.search import SeachBot
-from bot.head.interator import Interact
-from bot.head.nome_colunas import nomes_colunas
-from bot.head.Tools.MakeTemplate import MakeXlsx
-from bot.head.Tools.PrintLogs import printtext
-from bot.head.Tools.dicionarios import cities_Amazonas
-from bot.head.common.exceptions import ErroDeExecucao
-from bot.head.Tools.StartStop_Notify import SetStatus

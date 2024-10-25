@@ -8,8 +8,8 @@ from app.models import Users, Executions
 
 app = current_app
 values = dotenv_values()
-from app import db
   
+
 def email_start(execution: Executions) -> None:
     
     admins: list[str] = []
@@ -33,7 +33,7 @@ def email_start(execution: Executions) -> None:
         sendermail = values['MAIL_DEFAULT_SENDER']
 
         robot = f"Notificações do Robô <{sendermail}>"
-        assunto = "Notificação de inicializaçã"
+        assunto = "Notificação de inicialização"
         destinatario = usr.email
         mensagem = f"""  <h1>Notificação de inicialização - PID {pid}</h1>
                         <p>Olá {usr.nome_usuario}, sua execução foi iniciada com sucesso!</p>
@@ -46,7 +46,7 @@ def email_start(execution: Executions) -> None:
         """
         
         msg = Message(assunto, sender=robot, recipients=[destinatario], html=mensagem)
-        if not usr.email in admins:
+        if usr.email not in admins:
             msg = Message(assunto, sender=robot, recipients=[destinatario], html=mensagem, cc=admins)
         
         mail.send(msg)
@@ -88,9 +88,7 @@ def email_stop(execution: Executions) -> None:
         """
 
         msg = Message(assunto, sender=robot, recipients=[destinatario], html=mensagem)
-        if not usr.email in admins:
+        if usr.email not in admins:
             msg = Message(assunto, sender=robot, recipients=[destinatario], html=mensagem, cc=admins)
         
         mail.send(msg)
-            
-            

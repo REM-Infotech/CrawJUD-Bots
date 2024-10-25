@@ -1,4 +1,5 @@
-def elaw_data() -> dict[str, str]: return {
+def elaw_data() -> dict[str, str]:
+    return {
     "NUMERO_PROCESSO": "", "AREA_DIREITO": "", "SUBAREA_DIREITO": "", "ESTADO": "", "COMARCA": "", "FORO": "",
     "VARA": "", "DATA_DISTRIBUICAO": "", "PARTE_CONTRARIA": "", "TIPO_PARTE_CONTRARIA": "", "DOC_PARTE_CONTRARIA": "",
     "EMPRESA": "", "TIPO_EMPRESA": "", "DOC_EMPRESA": "", "UNIDADE_CONSUMIDORA": "", "CAPITAL_INTERIOR": "",
@@ -7,7 +8,8 @@ def elaw_data() -> dict[str, str]: return {
 }
 
 
-def cities_Amazonas() -> dict[str, str]: return {
+def cities_Amazonas() -> dict[str, str]:
+    return {
     "Alvarães": "Interior",
     "Amaturá": "Interior",
     "Anamã": "Interior",

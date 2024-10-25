@@ -1,8 +1,6 @@
 import os
 import time
-from time import sleep
 from typing import Type
-from contextlib import suppress
 
 
 """ Imports do Projeto """
@@ -13,11 +11,8 @@ from bot.head.common.exceptions import ErroDeExecucao
 
 
 # Selenium Imports
-from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.common.exceptions import  NoSuchElementException, TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 
 
@@ -36,7 +31,7 @@ class audiencia(CrawJUD):
         
         for pos, value in enumerate(frame):
             
-            self.row = pos+2
+            self.row = pos + 2
             self.bot_data = value
             if self.thread._is_stopped:
                 break
@@ -71,7 +66,7 @@ class audiencia(CrawJUD):
             raise ErroDeExecucao("Não Encontrado!")
             
         comprovante = ""
-        self.data_Concat = f"{self.bot_data["DATA_AUDIENCIA"]} {self.bot_data["HORA_AUDIENCIA"]}"
+        self.data_Concat = f'{self.bot_data["DATA_AUDIENCIA"]} {self.bot_data["HORA_AUDIENCIA"]}'
         self.message = "Processo Encontrado!"
         self.type_log = "log"
         self.prt(self)
@@ -85,7 +80,7 @@ class audiencia(CrawJUD):
             chk_lancamento.update({
                 "MENSAGEM_COMCLUSAO": "REGISTROS ANTERIORES EXISTENTES!"})
             
-            comprovante = chk_lancamento 
+            comprovante = chk_lancamento
             
         if not comprovante:
             self.NovaPauta()
@@ -226,7 +221,7 @@ class audiencia(CrawJUD):
                     
                     data = {
                     "NUMERO_PROCESSO": str(self.bot_data["NUMERO_PROCESSO"]),
-                    "MENSAGEM_COMCLUSAO": f"PRAZO LANÇADO",
+                    "MENSAGEM_COMCLUSAO": "PRAZO LANÇADO",
                     "ID_PRAZO": idPrazo,
                     "NOME_COMPROVANTE": nameComprovante}
             
@@ -234,5 +229,3 @@ class audiencia(CrawJUD):
         
         except Exception as e:
             raise ErroDeExecucao(e=e)
-
-        

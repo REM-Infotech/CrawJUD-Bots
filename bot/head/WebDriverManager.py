@@ -83,9 +83,9 @@ class GetDriver:
             self.file_path += ".exe"
         
         self.destination = os.path.join(self.destination, self.fileN)
+        root_path = str(Path(self.file_path).parent.resolve())
         if not os.path.exists(self.file_path):
             
-            root_path = str(Path(self.file_path).parent.resolve())
             if not os.path.exists(root_path):
                 os.makedirs(root_path)
                 
