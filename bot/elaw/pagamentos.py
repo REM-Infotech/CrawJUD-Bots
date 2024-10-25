@@ -75,13 +75,13 @@ class sol_pags(CrawJUD):
             
             if search is True:
 
-                namedef = self.format_String(self.bot_data.get("TIPO_PAGAMENTO"))
-                self.new_payment()
-                self.set_pgto(namedef)
-                pgto = getattr(self, namedef)
-                pgto()
+                # namedef = self.format_String(self.bot_data.get("TIPO_PAGAMENTO"))
+                # self.new_payment()
+                # self.set_pgto(namedef)
+                # pgto = getattr(self, namedef)
+                # pgto()
                 
-                self.save_changes()
+                # self.save_changes()
                 self.confirm_save()
                 
             elif search is not True:
@@ -511,16 +511,20 @@ class sol_pags(CrawJUD):
                 open_details.click()
                 
                 sleep(1)
+                id_task = item.find_elements(By.TAG_NAME, "td")[2].text
+                closeContext = self.wait.until(EC.presence_of_element_located((
+                    By.CSS_SELECTOR, 'div[id="tabViewProcesso:pvp-dtProcessoValorResults:0:pvp-pgBotoesValoresPagamentoBtnVer_dlg"]'
+                ).find_element(By.TAG_NAME, "a")))
+                
+                
+                
                 WaitFrame = WebDriverWait(self.driver, 5).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, 'iframe[title="Valor"]'))
                 )
-                
-                id_task = item.find_elements(By.TAG_NAME, "td")[2].text
-                
                 self.driver.switch_to.frame(WaitFrame)
                 
-                closeContext = self.driver.find_element(
-                    By.CSS_SELECTOR, 'a[class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all"]')
+                
+                
                 
                 tipoCusta = None
                 cod_bars = None

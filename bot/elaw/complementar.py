@@ -70,6 +70,7 @@ class complement(CrawJUD):
     def queue(self) -> None:
 
         search = self.search(self)
+        self.bot_data = self.elawFormats(self.bot_data)
         
         if search is True:
                 
@@ -80,21 +81,18 @@ class complement(CrawJUD):
             edit_proc_button.click()
             
             start_time = time.perf_counter()
-
-            complement_list = list(self.bot_data)
-            
-            ordenada_lista1 = [x for _, x in zip(complement_list, lista1)]
-            for name in ordenada_lista1:
+            for item in lista1:
+                check_column = self.bot_data.get(item.upper())
                 
-                name = str(name)
-                func = None
-                with suppress(AttributeError):
-                    func = getattr(self, name.lower())
-                
-                if func is None:
-                    continue
+                if check_column:
+                    func = None
+                    with suppress(AttributeError):
+                        func = getattr(self, item.lower())
                     
-                func()
+                    if func is None:
+                        continue
+                    
+                    func()
             
             end_time = time.perf_counter()
             execution_time = end_time - start_time
