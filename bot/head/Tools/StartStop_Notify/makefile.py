@@ -30,7 +30,7 @@ def makezip(pid: str) -> str:
                     file_paths.append(file_path)
     
     # Empacotar os arquivos em um arquivo zip para facilitar o envio
-    zip_file = f"Archives/PID {pid} {datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%d-%m-%Y-%H.%M')}.zip"
+    zip_file = f"Archives/PID {pid} {datetime.now(pytz.timezone('America/Manaus')).strftime('%d-%m-%Y-%H.%M')}.zip"
     with zipfile.ZipFile(zip_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for file in file_paths:
             zipf.write(file)

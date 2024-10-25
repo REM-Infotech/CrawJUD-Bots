@@ -36,7 +36,7 @@ class printtext(CrawJUD):
         if self.row > 0:
             self.row -= 1
             
-        self.prompt = f"({self.pid}, {self.type_log}, pos:{self.row}, {datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%H:%M:%S')}) {log}"
+        self.prompt = f"({self.pid}, {self.type_log}, pos:{self.row}, {datetime.now(pytz.timezone('America/Manaus')).strftime('%H:%M:%S')}) {log}"
         tqdm.write(self.prompt)
         
         self.socket_message()

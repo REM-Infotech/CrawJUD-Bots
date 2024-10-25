@@ -88,7 +88,7 @@ def stop_execution(user: str, pid: str) -> int:
             if filename != "":
                 get_info.status = 'Finalizado'
                 get_info.file_output = filename
-                get_info.data_finalizacao = datetime.now(pytz.timezone('Etc/GMT+4'))
+                get_info.data_finalizacao = datetime.now(pytz.timezone('America/Manaus'))
                 db.session.commit()
                 db.session.close()
                 return 200

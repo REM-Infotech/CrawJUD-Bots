@@ -44,8 +44,8 @@ class Executions(db.Model):
     file_output = db.Column(db.String(length=512))
     total_rows = db.Column(db.String(length=45))
     url_socket = db.Column(db.String(length=64))
-    data_execucao = db.Column(db.DateTime, default=datetime.now(pytz.timezone('Etc/GMT+4')))
-    data_finalizacao = db.Column(db.DateTime, default=datetime.now(pytz.timezone('Etc/GMT+4')))
+    data_execucao = db.Column(db.DateTime, default=datetime.now(pytz.timezone('America/Manaus')))
+    data_finalizacao = db.Column(db.DateTime, default=datetime.now(pytz.timezone('America/Manaus')))
     arquivo_xlsx = db.Column(db.String(length=64))
     
     bot_id = db.Column(db.Integer, db.ForeignKey('bots.id'))

@@ -35,7 +35,11 @@ class listas:
     def movimentacao_sucesso(self) -> list[str]:
 
         return ["Data movimentação", "Nome Movimentação", "Texto da movimentação", "Nome peticionante", "Classiicação Peticionante"]
+    
+    def sols_pag_sucesso(self) -> list[str]:
         
+        return ["MENSAGEM_COMCLUSAO", "TIPO_PGTO", "COMPROVANTE_1", "ID_PGTO", "COMPROVANTE_2"]
+    
     def sucesso(self) -> list[str]:
         
         return ["MENSAGEM_COMCLUSAO", "NOME_COMPROVANTE"]

@@ -2,6 +2,7 @@
 from bot.head import CrawJUD
 from typing import Type
 import time
+import pytz
 from datetime import datetime
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -12,7 +13,7 @@ class busca_pags(CrawJUD):
 
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
         
-        self.datetimeNOW = datetime.now().strftime("%d-%m-%Y")
+        self.datetimeNOW = datetime.now(pytz.timezone('America/Manaus')).strftime("%d-%m-%Y")
         self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
     

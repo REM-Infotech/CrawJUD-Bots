@@ -129,7 +129,7 @@ class CrawJUD(WorkerThread):
         ## Abertura da planilha de input
         self.path_args = path_args
         ## Criação das planilhas de output
-        time_xlsx = datetime.now(pytz.timezone('Etc/GMT+4')).strftime('%d-%m-%y')
+        time_xlsx = datetime.now(pytz.timezone('America/Manaus')).strftime('%d-%m-%y')
         
         namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
         self.path = f"{self.output_dir_path}/{namefile}"

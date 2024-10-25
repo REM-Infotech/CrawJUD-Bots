@@ -22,7 +22,7 @@ class Users(db.Model):
     nome_usuario = db.Column(db.String(length=64), nullable=False, unique=True)
     email = db.Column(db.String(length=50), nullable=False, unique=True)
     password = db.Column(db.String(length=60), nullable=False)
-    login_time = db.Column(db.DateTime, default=datetime.now(pytz.timezone('Etc/GMT+4')))
+    login_time = db.Column(db.DateTime, default=datetime.now(pytz.timezone('America/Manaus')))
     verification_code = db.Column(db.String(length=45), unique=True)
     login_id = db.Column(db.String(length=64), nullable=False, default=str(uuid4()))
     filename = db.Column(db.String(length=128))

@@ -112,7 +112,7 @@ class SetStatus:
             arquivo_xlsx=xlsx_,
             url_socket=data.get("url_socket"),
             total_rows=rows,
-            data_execucao=datetime.now(pytz.timezone('Etc/GMT+4')),
+            data_execucao=datetime.now(pytz.timezone('America/Manaus')),
             file_output="Arguardando Arquivo"
         )
         
@@ -170,7 +170,7 @@ class SetStatus:
                     
             execution.status = self.status
             execution.file_output = objeto_destino
-            execution.data_finalizacao = datetime.now(pytz.timezone('Etc/GMT+4'))
+            execution.data_finalizacao = datetime.now(pytz.timezone('America/Manaus'))
             db.session.commit()
             db.session.close()
             

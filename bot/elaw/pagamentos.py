@@ -8,8 +8,9 @@ from contextlib import suppress
 import unicodedata
 
 from bot.head import CrawJUD
+from pytz import timezone
 from bot.head.common.exceptions import ErroDeExecucao
-
+from datetime import datetime
 
 # Selenium Imports
 from selenium.webdriver import Keys
@@ -18,6 +19,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 type_doc = {
     11: "cpf",
@@ -80,7 +82,7 @@ class sol_pags(CrawJUD):
                 pgto()
                 
                 self.save_changes()
-                self.check_sucess()
+                self.confirm_save()
                 
             elif search is not True:
                 self.message = "Processo não encontrado!"
@@ -94,10 +96,12 @@ class sol_pags(CrawJUD):
     def new_payment(self) -> None:
         
         try:
-            tab_pagamentos: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a[href="#tabViewProcesso:processoValorPagamento"]')))
+            tab_pagamentos: WebElement = self.wait.until(EC.presence_of_element_located((
+                By.CSS_SELECTOR, 'a[href="#tabViewProcesso:processoValorPagamento"]')))
             tab_pagamentos.click()
             
-            novo_pgto: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'button[id="tabViewProcesso:pvp-pgBotoesValoresPagamentoBtnNovo"]')))
+            novo_pgto: WebElement = self.wait.until(EC.presence_of_element_located((
+                By.CSS_SELECTOR, 'button[id="tabViewProcesso:pvp-pgBotoesValoresPagamentoBtnNovo"]')))
             novo_pgto.click()
         
         except Exception as e:
@@ -144,7 +148,7 @@ class sol_pags(CrawJUD):
             self.prt(self)
             
             text = self.bot_data.get("VALOR_GUIA")
-            css_element =  'input[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_1_1_9_1f_1:processoValorRateioAmountAllDt:0:j_id_2m_1_i_1_1_9_1f_2_2_q_input"]'
+            css_element = 'input[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_1_1_9_1f_1:processoValorRateioAmountAllDt:0:j_id_2m_1_i_1_1_9_1f_2_2_q_input"]'
             element: WebElement = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, css_element)))
             
             sleep(0.5)
@@ -156,7 +160,7 @@ class sol_pags(CrawJUD):
             self.interact.sleep_load('div[id="j_id_2x"]')
             
             type_doc_css = 'div[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_2_1_9_g_1:eFileTipoCombo"]'
-            div_type_doc: WebElement = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,  type_doc_css)))
+            div_type_doc: WebElement = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, type_doc_css)))
             div_type_doc.click()
             sleep(0.5)
             
@@ -256,14 +260,14 @@ class sol_pags(CrawJUD):
             self.prt(self)
             
             css_inputfavorecido = 'input[id="processoValorPagamentoEditForm:pvp:processoValorFavorecido_input"]'
-            input_favorecido:WebElement = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, css_inputfavorecido)))
+            input_favorecido: WebElement = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, css_inputfavorecido)))
             input_favorecido.click()
             input_favorecido.clear()
             sleep(2)
             
             input_favorecido.send_keys(self.bot_data.get("CNPJ_FAVORECIDO", "00.360.305/0001-04"))
             
-            result_favorecido: WebElement =  WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'li[class="ui-autocomplete-item ui-autocomplete-list-item ui-corner-all ui-state-highlight"]')))
+            result_favorecido: WebElement = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'li[class="ui-autocomplete-item ui-autocomplete-list-item ui-corner-all ui-state-highlight"]')))
             result_favorecido.click()
               
             self.interact.sleep_load('div[id="j_id_2x"]')
@@ -275,7 +279,7 @@ class sol_pags(CrawJUD):
             label_forma_pgto.click()
             
             sleep(1)
-            boleto = self.driver.find_element(By.CSS_SELECTOR,'li[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_8_1_9_26_1_2_1:pvpEFSpgTypeSelectField1CombosCombo_1"]')
+            boleto = self.driver.find_element(By.CSS_SELECTOR, 'li[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_8_1_9_26_1_2_1:pvpEFSpgTypeSelectField1CombosCombo_1"]')
             boleto.click()
             
             self.interact.sleep_load('div[id="j_id_2x"]')
@@ -335,7 +339,7 @@ class sol_pags(CrawJUD):
             element.send_keys(valor_doc)
             
             css_Valor_guia = 'input[id="processoValorPagamentoEditForm:pvp:valorField_input"]'
-            self.driver.execute_script(f"document.querySelector('{css_Valor_guia}').blur()")       
+            self.driver.execute_script(f"document.querySelector('{css_Valor_guia}').blur()")
         
             sleep(0.5)
             
@@ -346,7 +350,7 @@ class sol_pags(CrawJUD):
             
             css_gru = 'li[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_2_1_9_g_1:eFileTipoCombo_35"]'
             set_gru = self.driver.find_element(By.CSS_SELECTOR, css_gru)
-            set_gru.click()   
+            set_gru.click()
             
             sleep(2)
             self.message = "Inserindo documento"
@@ -357,7 +361,7 @@ class sol_pags(CrawJUD):
             
             for doc in docs:
                 
-                doc = "".join([c for c in unicodedata.normalize('NFKD', str(doc).replace(" ", "").replace("_","")) if not unicodedata.combining(c)])
+                doc = "".join([c for c in unicodedata.normalize('NFKD', str(doc).replace(" ", "").replace("_", "")) if not unicodedata.combining(c)])
                 insert_doc: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_2_1_9_g_1:uploadGedEFile_input"]')))
                 insert_doc.send_keys(f"{self.output_dir_path}/{doc}")
                 
@@ -365,7 +369,7 @@ class sol_pags(CrawJUD):
                     EC.presence_of_element_located((By.CSS_SELECTOR, 'div[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_2_1_9_g_1:gedEFileDataTable"]'))).find_element(By.TAG_NAME, 'table').find_element(By.TAG_NAME, 'tbody').find_elements(By.TAG_NAME, 'tr')
                 
                 if len(wait_upload) == len(docs):
-                    break             
+                    break
             
             solicitante = str(self.bot_data.get("SOLICITANTE")).lower()
             if "monitoria" == solicitante or "monitória" == solicitante.lower():
@@ -488,7 +492,7 @@ class sol_pags(CrawJUD):
         except Exception as e:
             raise ErroDeExecucao(e=e)
                               
-    def check_sucess(self) -> None:
+    def confirm_save(self) -> None:
         
         try:
             tab_pagamentos: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a[href="#tabViewProcesso:processoValorPagamento"]')))
@@ -496,25 +500,96 @@ class sol_pags(CrawJUD):
             
             enter_table: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div[id="tabViewProcesso:pvp-dtProcessoValorResults"]'))).find_element(By.TAG_NAME, 'table').find_element(By.TAG_NAME, 'tbody')
             check_solicitacoes = enter_table.find_elements(By.TAG_NAME, 'tr')
-            
+            info_sucesso = [self.bot_data.get("NUMERO_PROCESSO"), "Pagamento solicitado com sucesso!!"]
             for item in check_solicitacoes:
+                
                 
                 if item.text == 'Nenhum registro encontrado!':
                     raise ErroDeExecucao("Pagamento não solicitado")
-            
-                elif item.text != 'Nenhum registro encontrado!':
-                    
-                    tipo_pgto = str(self.bot_data.get("TIPO_PAGAMENTO"))
-                    check_tipo_solicitacao = item.find_elements(By.TAG_NAME, 'td')[5].text
-                    if check_tipo_solicitacao.lower() == tipo_pgto.lower():
-                        get_id_solicitacao = item.find_elements(By.TAG_NAME, 'td')[2].text
-                        info_sucesso = [self.bot_data.get("NUMERO_PROCESSO"), "Pagamento solicitado com sucesso!!", get_id_solicitacao]
-                        self.append_success(info_sucesso)
-                    elif tipo_pgto.lower() == 'guias':
-                        # self.driver.get_screenshot_as_file(f"{self.output_dir_path}/[{desc_pagamento.upper()}]Solicitação - {self.bot_data.get("NUMERO_PROCESSO")}.png")
-                        info_sucesso = [self.bot_data.get("NUMERO_PROCESSO"), "Pagamento solicitado com sucesso!!", str(self.bot_data.get("TIPO_GUIA"))]
-                        self.append_success(info_sucesso)
-                    break
                 
+                open_details = item.find_element(By.CSS_SELECTOR, 'button[title="Ver"]')
+                open_details.click()
+                
+                sleep(1)
+                WaitFrame = WebDriverWait(self.driver, 5).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, 'iframe[title="Valor"]'))
+                )
+                
+                id_task = item.find_elements(By.TAG_NAME, "td")[2].text
+                
+                self.driver.switch_to.frame(WaitFrame)
+                
+                closeContext = self.driver.find_element(
+                    By.CSS_SELECTOR, 'a[class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all"]')
+                
+                tipoCusta = None
+                cod_bars = None
+                tipoCondenacao = None
+                now = datetime.now(timezone("America/Manaus")).strftime("%d-%m-%Y %H.%M.%S")
+                Name_Comprovante1 = f"COMPROVANTE 1 {self.bot_data.get("NUMERO_PROCESSO")} - {self.pid} - {now}.png"
+                
+                with suppress(TimeoutException):
+                    tipoCusta = self.wait.until(
+                        EC.presence_of_element_located((
+                            By.CSS_SELECTOR,
+                            r"#processoValorPagamentoView\:j_id_p_1_2_1_2_1 > table > tbody > tr:nth-child(5)"
+                        ))
+                    ).text.split(":")[-1]
+                    
+                with suppress(TimeoutException):
+                    cod_bars = self.wait.until(
+                        EC.presence_of_element_located((
+                            
+                            By.CSS_SELECTOR,
+                            r"#processoValorPagamentoView\:j_id_p_1_2_1_2_7_8_4_23_1\:j_id_p_1_2_1_2_7_8_4_23_2_1_2_1\:j_id_p_1_2_1_2_7_8_4_23_2_1_2_2_1_3 > table > tbody > tr:nth-child(3)"
+                        ))
+                    ).text.split(":")[-1]
+                
+                with suppress(TimeoutException):
+                    tipoCondenacao = self.wait.until(
+                        EC.presence_of_element_located((
+                            By.CSS_SELECTOR,
+                            r"#processoValorPagamentoView\:j_id_p_1_2_1_2_1 > table > tbody > tr:nth-child(4)"
+                        ))
+                    ).text.split(":")[-1]
+                
+                if self.bot_data.get("TIPO_CONDENACAO", ""):
+                    if tipoCondenacao:
+                        if self.bot_data.get("TIPO_CONDENACAO", "") == tipoCondenacao:
+                            
+                            if self.bot_data.get("COD_BARRAS").replace(".", "").replace(" ", "") == cod_bars:
+                                WaitFrame.screenshot(os.path.join(self.output_dir_path, Name_Comprovante1))
+                                
+                                closeContext.click()
+                                self.driver.switch_to.default_content()
+                                
+                                Name_Comprovante2 = f"COMPROVANTE 2 {self.bot_data.get("NUMERO_PROCESSO")} - {self.pid} - {now}.png"
+                                item.screenshot(self.output_dir_path, Name_Comprovante2)
+                                
+                                info_sucesso.extend([tipoCondenacao, Name_Comprovante1, id_task, Name_Comprovante2])
+                                return info_sucesso
+                
+                elif self.bot_data.get("TIPO_GUIA", ""):
+                    if tipoCusta:
+                        if self.bot_data.get("TIPO_GUIA", "") == tipoCusta:
+                            
+                            if self.bot_data.get("COD_BARRAS").replace(".", "").replace(" ", "") == cod_bars:
+                                WaitFrame.screenshot(os.path.join(self.output_dir_path, Name_Comprovante1))
+                                
+                                closeContext.click()
+                                self.driver.switch_to.default_content()
+                                
+                                Name_Comprovante2 = f"COMPROVANTE 2 {self.bot_data.get("NUMERO_PROCESSO")} - {self.pid} - {now}.png"
+                                item.screenshot(self.output_dir_path, Name_Comprovante2)
+                                
+                                info_sucesso.extend([tipoCusta, Name_Comprovante1, id_task, Name_Comprovante2])
+                                return info_sucesso
+                
+                closeContext.click()
+                self.driver.switch_to.default_content()
+                sleep(0.25)
+            
+            raise ErroDeExecucao("Pagamento não solicitado")
+          
         except Exception as e:
             raise ErroDeExecucao(e=e)
