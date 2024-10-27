@@ -1,6 +1,6 @@
 """ Imports do Projeto """
-from bot.head import CrawJUD
-from bot.head.count_doc import count_doc
+from bot import CrawJUD
+from bot.Utils.count_doc import count_doc
 from typing import Type
 import time
 import requests
@@ -9,7 +9,7 @@ from PyPDF2 import PdfReader
 import re
 from time import sleep
 from contextlib import suppress
-from bot.head.common.exceptions import ErroDeExecucao
+from bot.common.exceptions import ErroDeExecucao
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
@@ -24,6 +24,7 @@ type_docscss = {
     'preparo ri':
         {'cnpj': ['input[name="entity.flTipoPessoa"][value="J"]', 'tr[id="campoNuCnpj"]', 'input[name="entity.nuCpfCnpj"][rotulo="CNPJ"]'],
          'cpf': ['input[name="entity.flTipoPessoa"][value="F"]', 'tr[id="campoNuCpf"]', 'input[name="entity.nuCpfCnpj"][rotulo="CPF"]']}}
+
 
 
 class emissao(CrawJUD):

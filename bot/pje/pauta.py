@@ -11,8 +11,8 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, StaleElementReferenceException
 
-from bot.head import CrawJUD
-from bot.head.common.exceptions import ErroDeExecucao
+from bot import CrawJUD
+from bot.common.exceptions import ErroDeExecucao
 
 
 class pauta(CrawJUD):

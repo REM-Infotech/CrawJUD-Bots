@@ -6,16 +6,15 @@ from contextlib import suppress
 
 
 """ Imports do Projeto """
-from bot.head import CrawJUD
+from bot import CrawJUD
 
 
-from bot.head.common.exceptions import ErroDeExecucao
+from bot.common.exceptions import ErroDeExecucao
 
 
 # Selenium Imports
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support import expected_conditions as EC

@@ -10,10 +10,10 @@ from contextlib import suppress
 
 
 """ Imports do Projeto """
-from bot.head import CrawJUD
+from bot import CrawJUD
 
 
-from bot.head.common.exceptions import ErroDeExecucao
+from bot.common.exceptions import ErroDeExecucao
 
 
 # Selenium Imports

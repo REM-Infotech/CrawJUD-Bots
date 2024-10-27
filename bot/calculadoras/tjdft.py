@@ -8,10 +8,10 @@ import base64
 from time import sleep
 from typing import Type
 from contextlib import suppress
-from bot.head import CrawJUD
+from bot import CrawJUD
 
 
-from bot.head.common.exceptions import ErroDeExecucao
+from bot.common.exceptions import ErroDeExecucao
 from selenium.webdriver.common.print_page_options import PrintOptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait

@@ -3,12 +3,11 @@ import time
 from time import sleep
 from typing import Type
 from contextlib import suppress
-from bot.head import CrawJUD
-from bot.head.common.exceptions import ErroDeExecucao
+from bot import CrawJUD
+from bot.common.exceptions import ErroDeExecucao
 
 
 # Selenium Imports
-from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
@@ -73,13 +72,228 @@ class complement(CrawJUD):
             
             lista1 = list(self.bot_data.keys())
             
+            def unidade_consumidora() -> None:
+
+                self.message = "Informando unidade consumidora"
+                self.type_log = "log"
+                self.prt(self)
+
+                css_input_uc = 'textarea[id="j_id_3k_1:j_id_3k_4_2_2_6_9_44_2:j_id_3k_4_2_2_6_9_44_3_1_2_2_1_1:j_id_3k_4_2_2_6_9_44_3_1_2_2_1_13"]'
+
+                input_uc: WebElement = self.wait.until(EC.presence_of_element_located(
+                    (By.CSS_SELECTOR, css_input_uc)))
+                input_uc.click()
+                
+                self.interact.clear(input_uc)
+                
+                self.interact.send_key(input_uc, self.bot_data.get("UNIDADE_CONSUMIDORA"))
+
+                self.message = "Unidade consumidora informada!"
+                self.type_log = "log"
+                self.prt(self)
+
+            def divisao() -> None:
+
+                elementSelect = 'select[id="j_id_3k_1:j_id_3k_4_2_2_a_9_44_2:j_id_3k_4_2_2_a_9_44_3_1_2_2_1_1:fieldid_9241typeSelectField1CombosCombo_input"]'
+                self.message = "Informando divisão"
+                self.type_log = "log"
+                self.prt(self)
+
+                sleep(0.5)
+                text = str(self.bot_data.get("DIVISAO"))
+                
+                self.Select2_ELAW(elementSelect, text)
+                
+                self.interact.sleep_load('div[id="j_id_3x"]')
+
+                self.message = "Divisão informada!"
+                self.type_log = "log"
+                self.prt(self)
+
+            def data_citacao() -> None:
+
+                self.message = "Informando data de citação"
+                self.type_log = "log"
+                self.prt(self)
+
+                css_data_citacao = 'input[id="j_id_3k_1:dataRecebimento_input"]'
+
+                data_citacao: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_data_citacao)))
+                self.interact.clear(data_citacao)
+                self.interact.sleep_load('div[id="j_id_3x"]')
+                self.interact.send_key(data_citacao, self.bot_data.get("DATA_CITACAO"))
+                sleep(2)
+                self.driver.execute_script(f"document.querySelector('{css_data_citacao}').blur()")
+                self.interact.sleep_load('div[id="j_id_3x"]')
+                
+                self.message = "Data de citação informada!"
+                self.type_log = "log"
+                self.prt(self)
+                
+            def estado() -> None:
+
+                """Declaração dos CSS em variáveis"""
+                
+                key = "ESTADO"
+                elementSelect = self.elements.estado_input
+                text = str(self.bot_data.get(key, None))
+                
+                self.message = 'Informando estado do processo'
+                self.type_log = "log"
+                self.prt(self)
+                
+                
+                self.Select2_ELAW(elementSelect, text)
+                self.interact.sleep_load('div[id="j_id_3x"]')
+                
+                self.message = 'Estado do processo informado!'
+                self.type_log = "log"
+                self.prt(self)
+
+            def comarca() -> None:
+
+                """Declaração dos CSS em variáveis"""
+                
+                text = str(self.bot_data.get("COMARCA"))
+                elementSelect = self.elements.comarca_input
+                
+                self.message = 'Informando comarca do processo'
+                self.type_log = "log"
+                self.prt(self)
+
+                self.Select2_ELAW(elementSelect, text)
+                self.interact.sleep_load('div[id="j_id_3x"]')
+                
+                self.message = 'Comarca do processo informado!'
+                self.type_log = "log"
+                self.prt(self)
+
+            def foro() -> None:
+
+                """Declaração dos CSS em variáveis"""
+                
+                elementSelect = self.elements.foro_input
+                text = str(self.bot_data.get("FORO"))
+                
+                self.message = 'Informando foro do processo'
+                self.type_log = "log"
+                self.prt(self)
+                
+                self.Select2_ELAW(elementSelect, text)
+                self.interact.sleep_load('div[id="j_id_3x"]')
+
+                self.message = 'Foro do processo informado!'
+                self.type_log = "log"
+                self.prt(self)
+
+            def vara() -> None:
+
+                """Declaração dos CSS em variáveis"""
+                
+                text = self.bot_data.get("VARA")
+                elementSelect = self.elements.vara_input
+                
+                self.message = 'Informando vara do processo'
+                self.type_log = "log"
+                self.prt(self)
+                
+                self.Select2_ELAW(elementSelect, text)
+                self.interact.sleep_load('div[id="j_id_3x"]')
+
+                self.message = 'Vara do processo informado!'
+                self.type_log = "log"
+                self.prt(self)
+
+            def fase() -> None:
+
+                """Declaração dos CSS em variáveis"""
+                elementSelect = self.elements.fase_input
+                text = self.bot_data.get("FASE")
+                
+                self.message = "Informando fase do processo"
+                self.type_log = "log"
+                self.prt(self)
+                
+                self.Select2_ELAW(elementSelect, text)
+                self.interact.sleep_load('div[id="j_id_3x"]')
+
+                self.message = "Fase informada!"
+                self.type_log = "log"
+                self.prt(self)
+
+            def provimento() -> None:
+
+                """Declaração dos CSS em variáveis"""
+                text = self.bot_data.get("PROVIMENTO")
+                elementSelect = self.elements.provimento_input
+                
+                self.message = "Informando provimento antecipatório"
+                self.type_log = "log"
+                self.prt(self)
+                
+                self.Select2_ELAW(elementSelect, text)
+                self.interact.sleep_load('div[id="j_id_3x"]')
+                
+                self.message = "Provimento antecipatório informado!"
+                self.type_log = "log"
+                self.prt(self)
+
+            def fato_gerador() -> None:
+
+                """Declaração dos CSS em variáveis"""
+                self.message = "Informando fato gerador"
+                self.type_log = "log"
+                self.prt(self)
+                
+                elementSelect = self.elements.fato_gerador_input
+                text = self.bot_data.get("FATO_GERADOR")
+                
+                self.Select2_ELAW(elementSelect, text)
+                self.interact.sleep_load('div[id="j_id_3x"]')
+
+                self.message = "Fato gerador informado!"
+                self.type_log = "log"
+                self.prt(self)
+            
+            def desc_objeto() -> None:
+                
+                input_descobjeto_css = 'textarea[id="j_id_3k_1:j_id_3k_4_2_2_l_9_44_2:j_id_3k_4_2_2_l_9_44_3_1_2_2_1_1:j_id_3k_4_2_2_l_9_44_3_1_2_2_1_13"]'
+                
+                input_descobjeto = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, input_descobjeto_css)))
+                self.interact.click(input_descobjeto)
+                
+                text = self.bot_data.get("DESC_OBJETO")
+                
+                self.interact.clear(input_descobjeto)
+                self.interact.send_key(input_descobjeto, text)
+                self.driver.execute_script(f"document.querySelector('{input_descobjeto_css}').blur()")
+                self.interact.sleep_load('div[id="j_id_3x"]')
+                
+            def objeto() -> None:
+
+                """Declaração dos CSS em variáveis"""
+                self.message = "Informando objeto do processo"
+                self.type_log = "log"
+                self.prt(self)
+                
+                elementSelect = self.elements.objeto_input
+                text = self.bot_data.get("OBJETO")
+                
+                self.Select2_ELAW(elementSelect, text)
+                self.interact.sleep_load('div[id="j_id_3x"]')
+                
+                self.message = "Objeto do processo informado!"
+                self.type_log = "log"
+                self.prt(self)
+            
             start_time = time.perf_counter()
+            class_itens = list(locals().items())
+            
             for item in lista1:
                 check_column = self.bot_data.get(item.upper())
                 
                 if check_column:
                     func = None
-                    class_itens = list(self.__dict__.items())
                     
                     for name, func in class_itens:
                         if name.lower() == item.lower():
@@ -107,283 +321,6 @@ class complement(CrawJUD):
             
         elif search is not True:
             raise ErroDeExecucao("Processo não encontrado!")
-
-    def unidade_consumidora(self) -> None:
-
-        self.message = "Informando unidade consumidora"
-        self.type_log = "log"
-        self.prt(self)
-
-        css_input_uc = 'textarea[id="j_id_3k_1:j_id_3k_4_2_2_6_9_44_2:j_id_3k_4_2_2_6_9_44_3_1_2_2_1_1:j_id_3k_4_2_2_6_9_44_3_1_2_2_1_13"]'
-
-        input_uc: WebElement = self.wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, css_input_uc)))
-        input_uc.click()
-        
-        self.interact.clear(input_uc)
-        
-        self.interact.send_key(input_uc, self.bot_data.get("UNIDADE_CONSUMIDORA"))
-
-        self.message = "Unidade consumidora informada!"
-        self.type_log = "log"
-        self.prt(self)
-
-    def divisao(self) -> None:
-
-        css_set_divisao = 'div[id="j_id_3k_1:j_id_3k_4_2_2_a_9_44_2:j_id_3k_4_2_2_a_9_44_3_1_2_2_1_1:fieldid_9241typeSelectField1CombosCombo"]'
-        elemento = 'input[id="j_id_3k_1:j_id_3k_4_2_2_a_9_44_2:j_id_3k_4_2_2_a_9_44_3_1_2_2_1_1:fieldid_9241typeSelectField1CombosCombo_filter"]'
-        self.message = "Informando divisão"
-        self.type_log = "log"
-        self.prt(self)
-        
-        div_divisao: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_set_divisao)))
-        div_divisao.click()
-
-        sleep(0.5)
-        text = str(self.bot_data.get("DIVISAO"))
-        
-        elemento: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, elemento)))
-        elemento.click()
-        
-        self.interact.clear(elemento)
-        self.interact.send_key(elemento, text)
-        self.interact.send_key(elemento, Keys.ENTER)
-        
-        self.interact.sleep_load('div[id="j_id_3x"]')
-
-        self.message = "Divisão informada!"
-        self.type_log = "log"
-        self.prt(self)
-
-    def data_citacao(self) -> None:
-
-        self.message = "Informando data de citação"
-        self.type_log = "log"
-        self.prt(self)
-
-        css_data_citacao = 'input[id="j_id_3k_1:dataRecebimento_input"]'
-
-        data_citacao: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_data_citacao)))
-        self.interact.clear(data_citacao)
-        self.interact.sleep_load('div[id="j_id_3x"]')
-        self.interact.send_key(data_citacao, self.bot_data.get("DATA_CITACAO"))
-        sleep(2)
-        self.driver.execute_script(f"document.querySelector('{css_data_citacao}').blur()")
-        self.interact.sleep_load('div[id="j_id_3x"]')
-        
-        self.message = "Data de citação informada!"
-        self.type_log = "log"
-        self.prt(self)
-        
-    def estado(self) -> None:
-
-        """Declaração dos CSS em variáveis"""
-        
-        key = "ESTADO"
-        comboEstadoVara = self.elements.estado_combo
-        elemento = self.elements.estado_panel
-        
-        self.message = 'Informando estado do processo'
-        self.type_log = "log"
-        self.prt(self)
-        
-        set_estado: WebElement = self.wait.until(
-            EC.presence_of_element_located((
-                By.CSS_SELECTOR, comboEstadoVara)), message="Erro ao encontrar elemento")
-        
-        set_estado.click()
-        sleep(0.5)
-
-        
-        text = str(self.bot_data.get(key, None))
-        self.interact.select_item(elemento, text)
-        self.interact.sleep_load('div[id="j_id_3x"]')
-            
-        self.message = 'Estado do processo informado!'
-        self.type_log = "log"
-        self.prt(self)
-
-    def comarca(self) -> None:
-
-        """Declaração dos CSS em variáveis"""
-        
-        key = "COMARCA"
-        
-        comboComarcaVara = self.elements.comarca_combo
-        elemento = self.elements.comarca_panel
-        
-        self.message = 'Informando comarca do processo'
-        self.type_log = "log"
-        self.prt(self)
-
-        comarca: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboComarcaVara)), message="Erro ao encontrar elemento")
-        comarca.click()
-        sleep(0.5)
-        
-        text = str(self.bot_data.get(key))
-        self.interact.select_item(elemento, text)
-        self.interact.sleep_load('div[id="j_id_3x"]')
-        
-        self.message = 'Comarca do processo informado!'
-        self.type_log = "log"
-        self.prt(self)
-
-    def foro(self) -> None:
-
-        """Declaração dos CSS em variáveis"""
-        
-        key = "FORO"
-        
-        comboForoTribunal = self.elements.foro_combo
-        elemento = self.elements.foro_panel
-        
-        self.message = 'Informando foro do processo'
-        self.type_log = "log"
-        self.prt(self)
-        
-        foro: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboForoTribunal)), message="Erro ao encontrar elemento")
-        foro.click()
-        sleep(0.5)
-        
-        text = str(self.bot_data.get(key))
-        self.interact.select_item(elemento, text)
-        self.interact.sleep_load('div[id="j_id_3x"]')
-
-        self.message = 'Foro do processo informado!'
-        self.type_log = "log"
-        self.prt(self)
-
-    def vara(self) -> None:
-
-        """Declaração dos CSS em variáveis"""
-        key = "VARA"
-        
-        comboVara = self.elements.vara_combo
-        elemento = self.elements.vara_panel
-        
-        self.message = 'Informando vara do processo'
-        self.type_log = "log"
-        self.prt(self)
-        
-        vara: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboVara)), message="Erro ao encontrar elemento")
-        vara.click()
-        sleep(0.5)
-        text = str(self.bot_data.get(key))
-        self.interact.select_item(elemento, text)
-        self.interact.sleep_load('div[id="j_id_3x"]')
-
-        self.message = 'Vara do processo informado!'
-        self.type_log = "log"
-        self.prt(self)
-
-    def fase(self) -> None:
-
-        """Declaração dos CSS em variáveis"""
-        processoFaseCombo = 'div[id="j_id_3k_1:processoFaseCombo"]'
-        elemento = 'div[id="j_id_3k_1:processoFaseCombo_panel"]'
-        
-        self.message = "Informando fase do processo"
-        self.type_log = "log"
-        self.prt(self)
-        
-        div_fase: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, processoFaseCombo)))
-        self.interact.double_click(div_fase)
-        sleep(1)
-        
-        text = self.bot_data.get("FASE", "INICIAL")
-        self.interact.select_item(elemento, text)
-        self.interact.sleep_load('div[id="j_id_3x"]')
-
-        self.message = "Fase informada!"
-        self.type_log = "log"
-        self.prt(self)
-
-    def provimento(self) -> None:
-
-        """Declaração dos CSS em variáveis"""
-        provimentoCombo = 'div[id="j_id_3k_1:j_id_3k_4_2_2_g_9_44_2:j_id_3k_4_2_2_g_9_44_3_1_2_2_1_1:fieldid_8401typeSelectField1CombosCombo"]'
-        elemento = 'div[id="j_id_3k_1:j_id_3k_4_2_2_g_9_44_2:j_id_3k_4_2_2_g_9_44_3_1_2_2_1_1:fieldid_8401typeSelectField1CombosCombo_panel"]'
-        
-        self.message = "Informando provimento antecipatório"
-        self.type_log = "log"
-        self.prt(self)
-        
-        tipo_entrada_Css = 'div[id="j_id_3k_1:j_id_3k_4_2_2_e_9_44_2:j_id_3k_4_2_2_e_9_44_3_1_2_2_1_1:fieldid_9242typeSelectField1CombosCombo"]'
-        tipo_entrada = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, tipo_entrada_Css)))
-        self.interact.scroll_to(tipo_entrada)
-        
-        div_provimento: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, provimentoCombo)))
-        div_provimento.click()
-        sleep(1)
-        
-        text = self.bot_data.get("PROVIMENTO")
-        self.interact.select_item(elemento, text)
-        self.interact.sleep_load('div[id="j_id_3x"]')
-        
-        self.message = "Provimento antecipatório informado!"
-        self.type_log = "log"
-        self.prt(self)
-
-    def fato_gerador(self) -> None:
-
-        """Declaração dos CSS em variáveis"""
-        fatogeradorCombo = 'div[id="j_id_3k_1:j_id_3k_4_2_2_m_9_44_2:j_id_3k_4_2_2_m_9_44_3_1_2_2_1_1:fieldid_9239typeSelectField1CombosCombo"]'
-        elemento = 'div[id="j_id_3k_1:j_id_3k_4_2_2_m_9_44_2:j_id_3k_4_2_2_m_9_44_3_1_2_2_1_1:fieldid_9239typeSelectField1CombosCombo_panel"]'
-        
-        self.message = "Informando fato gerador"
-        self.type_log = "log"
-        self.prt(self)
-
-        
-        div_fatogerador: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, fatogeradorCombo)))
-        div_fatogerador.click()
-        sleep(1)
-        
-        text = self.bot_data.get("FATO_GERADOR")
-        self.interact.select_item(elemento, text)
-        self.interact.sleep_load('div[id="j_id_3x"]')
-
-        self.message = "Fato gerador informado!"
-        self.type_log = "log"
-        self.prt(self)
-    
-    def desc_objeto(self) -> None:
-        
-        input_descobjeto_css = 'textarea[id="j_id_3k_1:j_id_3k_4_2_2_l_9_44_2:j_id_3k_4_2_2_l_9_44_3_1_2_2_1_1:j_id_3k_4_2_2_l_9_44_3_1_2_2_1_13"]'
-        
-        input_descobjeto = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, input_descobjeto_css)))
-        self.interact.click(input_descobjeto)
-        
-        text = self.bot_data.get("OBJETO")
-        self.interact.clear(input_descobjeto)
-        self.interact.send_key(input_descobjeto, text)
-        self.driver.execute_script(f"document.querySelector('{input_descobjeto_css}').blur()")
-        self.interact.sleep_load('div[id="j_id_3x"]')
-        
-    def objeto(self) -> None:
-
-        """Declaração dos CSS em variáveis"""
-        objetoCombo = 'div[id="j_id_3k_1:j_id_3k_4_2_2_n_9_44_2:j_id_3k_4_2_2_n_9_44_3_1_2_2_1_1:j_id_3k_4_2_2_n_9_44_3_1_2_2_1_a"]'
-        elemento = 'input[id="j_id_3k_1:j_id_3k_4_2_2_n_9_44_2:j_id_3k_4_2_2_n_9_44_3_1_2_2_1_1:fieldid_8405typeSelectField1CombosCombo_filter"]'
-        
-        self.message = "Informando objeto do processo"
-        self.type_log = "log"
-        self.prt(self)
-        
-        div_objeto: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, objetoCombo)))
-        div_objeto.click()
-        
-        elemento = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, elemento)))
-        
-        text = self.bot_data.get("OBJETO")
-        self.interact.click(elemento)
-        self.interact.send_key(elemento, text)
-        self.interact.send_key(elemento, Keys.ENTER)
-        self.interact.sleep_load('div[id="j_id_3x"]')
-        
-        self.message = "Objeto do processo informado!"
-        self.type_log = "log"
-        self.prt(self)
 
     def salvar_tudo(self) -> None:
 
@@ -439,6 +376,10 @@ class complement(CrawJUD):
         #         raise ErroDeExecucao(self.message)
     
     def __init__(self, Initbot: Type[CrawJUD]) -> None:
+        
+        from clear import clear
+        clear()
+        print(self.__dict__.items())
         
         self.__dict__.update(Initbot.__dict__)
         self.start_time = time.perf_counter()

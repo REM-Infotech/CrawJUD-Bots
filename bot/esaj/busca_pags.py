@@ -1,5 +1,5 @@
 """ Imports do Projeto """
-from bot.head import CrawJUD
+from bot import CrawJUD
 from typing import Type
 import time
 import pytz

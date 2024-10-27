@@ -1,28 +1,16 @@
-""" bot.projudi.proc_parte.py """
-
 import os
-import re
 import time
 from typing import Type
-from datetime import datetime
 from contextlib import suppress
 
 
-
-
-from bot.head.common.exceptions import ErroDeExecucao
-
-# Selenium Imports
 # Selenium Imports
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
 from selenium.webdriver.remote.webelement import WebElement
-from bot.head.common.exceptions import ErroDeExecucao
-from selenium.webdriver.support import expected_conditions as EC
-from bot.head.common.exceptions import ErroDeExecucao
+from bot.common.exceptions import ErroDeExecucao
 from selenium.common.exceptions import NoSuchElementException
 
-from bot.head import CrawJUD
+from bot import CrawJUD
 
 
 class proc_parte(CrawJUD):
@@ -62,11 +50,15 @@ class proc_parte(CrawJUD):
         
     def queue(self) -> None:
         
-        for vara in self.varas:
-            self.vara: str = vara
-            search = self.search(self)
-            if search is True:
-                self.get_process_list()
+        try:
+            for vara in self.varas:
+                self.vara: str = vara
+                search = self.search(self)
+                if search is True:
+                    self.get_process_list()
+                    
+        except Exception as e:
+            raise ErroDeExecucao(e=e)
 
             
     def get_process_list(self) -> None:
@@ -116,9 +108,10 @@ class proc_parte(CrawJUD):
             except Exception:
                 polo_passivo = 'Não consta ou processo em sigilo'
                 
-            try:  
+            try:
                 juizo = processo.find_elements(By.TAG_NAME, 'td')[9].text
-            except Exception: juizo = 'Não consta ou processo em sigilo'    
+            except Exception:
+                juizo = 'Não consta ou processo em sigilo'
 
 
             self.data_append.append(
@@ -132,8 +125,3 @@ class proc_parte(CrawJUD):
             self.message = f"Processo {numero_processo} salvo!"
             self.type_log = "success"
             self.prt(self)
-
-
-
-
-

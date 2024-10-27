@@ -5,8 +5,8 @@ import time
 import shutil
 from time import sleep
 from typing import Type
-from bot.head import CrawJUD
-from bot.head.common.exceptions import ErroDeExecucao
+from bot import CrawJUD
+from bot.common.exceptions import ErroDeExecucao
 
 
 # Selenium Imports
@@ -53,22 +53,26 @@ class download(CrawJUD):
 
     def queue(self) -> None:
         
-        check_cadastro = self.search(self)
-        if check_cadastro is True:
-        
-            self.message = 'Processo encontrado!'
-            self.type_log = "log"
-            self.prt(self)
-            self.buscar_doc()
-            self.download_docs()
-            self.message = 'Arquivos salvos com sucesso!'
-            self.append_success([self.bot_data.get("NUMERO_PROCESSO"), self.message, self.list_docs], 'Arquivos salvos com sucesso!')
+        try:
+            check_cadastro = self.search(self)
+            if check_cadastro is True:
             
-        elif not check_cadastro:
-            self.message = "Processo não encontrado!"
-            self.type_log = "error"
-            self.prt(self)
-            self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
+                self.message = 'Processo encontrado!'
+                self.type_log = "log"
+                self.prt(self)
+                self.buscar_doc()
+                self.download_docs()
+                self.message = 'Arquivos salvos com sucesso!'
+                self.append_success([self.bot_data.get("NUMERO_PROCESSO"), self.message, self.list_docs], 'Arquivos salvos com sucesso!')
+                
+            elif not check_cadastro:
+                self.message = "Processo não encontrado!"
+                self.type_log = "error"
+                self.prt(self)
+                self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
+                
+        except Exception as e:
+            raise ErroDeExecucao(e=e)
         
     def buscar_doc(self) -> None:
           

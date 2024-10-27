@@ -1,27 +1,16 @@
 """ Crawler ELAW Andamentos"""
 
-import os
 import time
 from time import sleep
 from typing import Type
-from contextlib import suppress
-import unicodedata
 
-""" Imports do Projeto """
-from bot.head import CrawJUD
-
-
-from bot.head.common.exceptions import ErroDeExecucao
-
-
-# Selenium Imports
+from bot import CrawJUD
+from bot.common.exceptions import ErroDeExecucao
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import  NoSuchElementException, TimeoutException
 
 
 class andamentos(CrawJUD):
@@ -80,11 +69,11 @@ class andamentos(CrawJUD):
             self.info_observacao()
             
             if self.bot_data.get("ANEXOS", None):
-                    self.add_anexo()
+                self.add_anexo()
 
             self.save_andamento()
             
-        elif not search is True:
+        elif search is not True:
             self.message = "Processo não encontrado!"
             self.type_log = "error"
             self.prt(self)
@@ -120,7 +109,7 @@ class andamentos(CrawJUD):
             inpt_ocorrencia = 'textarea[id="j_id_2n:txtOcorrenciaAndamento"]'
             
             ocorrencia = self.driver.find_element(By.CSS_SELECTOR, inpt_ocorrencia)
-            text_andamento = str(self.bot_data.get("OCORRENCIA")).replace("\t","").replace("\n", "")
+            text_andamento = str(self.bot_data.get("OCORRENCIA")).replace("\t", "").replace("\n", "")
             
             self.interact.send_key(ocorrencia, text_andamento)
 
@@ -137,7 +126,7 @@ class andamentos(CrawJUD):
             inpt_obs = 'textarea[id="j_id_2n:txtObsAndamento"]'
             
             observacao = self.driver.find_element(By.CSS_SELECTOR, inpt_obs)
-            text_andamento = str(self.bot_data.get("OBSERVACAO")).replace("\t","").replace("\n", "")
+            text_andamento = str(self.bot_data.get("OBSERVACAO")).replace("\t", "").replace("\n", "")
             
             self.interact.send_key(observacao, text_andamento)
 
@@ -160,11 +149,11 @@ class andamentos(CrawJUD):
             save_button.click()
             
             
-        except Exception  as e:
-            raise ErroDeExecucao(f'Não foi possivel salvar andamento')
+        except Exception as e:
+            raise ErroDeExecucao('Não foi possivel salvar andamento', e=e)
  
         try:
-            check_save:WebElement = WebDriverWait(self.driver, 10).until(EC.url_to_be('https://amazonas.elaw.com.br/processoView.elaw'))
+            check_save: WebElement = WebDriverWait(self.driver, 10).until(EC.url_to_be('https://amazonas.elaw.com.br/processoView.elaw'))
             if check_save:
                 sleep(3)
 

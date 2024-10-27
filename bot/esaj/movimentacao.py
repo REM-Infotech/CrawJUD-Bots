@@ -2,8 +2,8 @@ import time
 from time import sleep
 from typing import Type
 from datetime import datetime
-from bot.head import CrawJUD
-from bot.head.common.exceptions import ErroDeExecucao
+from bot import CrawJUD
+from bot.common.exceptions import ErroDeExecucao
 
 # Selenium Imports
 from selenium.webdriver.common.by import By

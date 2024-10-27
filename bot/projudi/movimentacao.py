@@ -13,12 +13,12 @@ from PyPDF2 import *
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.remote.webelement import WebElement
-from bot.head.common.exceptions import ErroDeExecucao
+from bot.common.exceptions import ErroDeExecucao
 from selenium.webdriver.support import expected_conditions as EC
-from bot.head.common.exceptions import ErroDeExecucao
+from bot.common.exceptions import ErroDeExecucao
 from selenium.common.exceptions import NoSuchElementException
 
-from bot.head import CrawJUD
+from bot import CrawJUD
 
 class movimentacao(CrawJUD):
 

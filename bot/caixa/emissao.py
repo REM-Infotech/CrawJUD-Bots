@@ -2,38 +2,24 @@ import os
 import re
 import time
 import shutil
-import pathlib
-import openpyxl
-import platform
-import logging
-import subprocess
-import unicodedata
 from time import sleep
-from typing import Type
-from contextlib import suppress
+from bot import CrawJUD
+from bot.Utils.count_doc import count_doc
 
 
-""" Imports do Projeto """
-from bot.head import CrawJUD
-from bot.head.count_doc import count_doc
-
-
-from bot.head.common.exceptions import ErroDeExecucao
+from bot.common.exceptions import ErroDeExecucao
 
 
 # Selenium Imports
-from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.alert import Alert
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import  NoSuchElementException, TimeoutException, StaleElementReferenceException
 from PyPDF2 import PdfReader
+
 
 class emissao(CrawJUD):
 
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
+    def __init__(self, Initbot: CrawJUD) -> None:
         
         self.__dict__ = Initbot.__dict__.copy()
         
@@ -75,16 +61,20 @@ class emissao(CrawJUD):
      
     def queue(self) -> None:
         
-        nameboleto = None
-        self.get_site()
-        self.locale_proc()
-        self.proc_nattribut()
-        self.dados_partes()
-        self.info_deposito()
-        self.make_doc()
-        nameboleto = self.rename_pdf()
-        data = self.get_val_doc_and_codebar(nameboleto)
-        self.append_success(data)
+        try:
+            nameboleto = None
+            self.get_site()
+            self.locale_proc()
+            self.proc_nattribut()
+            self.dados_partes()
+            self.info_deposito()
+            self.make_doc()
+            nameboleto = self.rename_pdf()
+            data = self.get_val_doc_and_codebar(nameboleto)
+            self.append_success(data)
+            
+        except Exception as e:
+            raise ErroDeExecucao(e=e)
                                 
     def get_site(self) -> None:
         
@@ -108,7 +98,7 @@ class emissao(CrawJUD):
         inputcaptcha.send_keys(val_captcha.replace(",", ""))
         
         next_btn = self.driver.find_element(By.CSS_SELECTOR, 'input[class="hand btnConfirmar"]')
-        next_btn.click()   
+        next_btn.click()
         
         sleep(2)
         next_btn: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a[id="j_id5:filtroView:mensagemView:j_id77:btnProsseguir')))
@@ -129,7 +119,7 @@ class emissao(CrawJUD):
                 item.click()
                 break
 
-        self.interact.wait_caixa() 
+        self.interact.wait_caixa()
         
         self.message = "Informando comarca"
         self.type_log = "log"
@@ -137,13 +127,13 @@ class emissao(CrawJUD):
         
         lista_comarca: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'select[id="j_id5:filtroView:formFormulario:coComarca"]'))).find_elements(By.TAG_NAME, 'option')
         for item in lista_comarca:
-            item: Type[WebElement] = item
+            item: WebElement = item
             if str(self.bot_data.get("COMARCA")).lower() in item.text.lower():
                 item.click()
                 break
             
         
-        self.interact.wait_caixa() 
+        self.interact.wait_caixa()
         self.message = "Informando vara"
         self.type_log = "log"
         self.prt(self)
@@ -164,7 +154,7 @@ class emissao(CrawJUD):
             item: WebElement = item
             if str(self.bot_data.get("AGENCIA")).lower() in item.text.lower():
                 item.click()
-                break      
+                break
      
     def proc_nattribut(self) -> None:
         
@@ -189,7 +179,7 @@ class emissao(CrawJUD):
                 item.click()
                 break
 
-        self.interact.wait_caixa() 
+        self.interact.wait_caixa()
         self.message = "Informando natureza tributaria"
         self.type_log = "log"
         self.prt(self)
@@ -234,7 +224,7 @@ class emissao(CrawJUD):
         campo_doc_autor.send_keys(doc_autor)
 
         self.interact.wait_caixa()
-        meesage = "Informando réu"
+        self.meesage = "Informando réu"
         self.type_log = "log"
         self.prt(self)
         campo_nome_reu = self.driver.find_element(By.CSS_SELECTOR, 'input[id="j_id5:filtroView:formFormulario:nomeReu"]')
@@ -262,7 +252,7 @@ class emissao(CrawJUD):
         self.type_log = "log"
         self.prt(self)
         campo_doc_reu = self.driver.find_element(By.CSS_SELECTOR, 'input[id="j_id5:filtroView:formFormulario:codDocReu"]')
-        doc_reu = str(self.bot_data.get("CPF_CNPJ_REU")).replace(".","").replace("-","").replace("/","")
+        doc_reu = str(self.bot_data.get("CPF_CNPJ_REU")).replace(".", "").replace("-", "").replace("/", "")
         campo_doc_reu.send_keys(doc_reu)
             
     def info_deposito(self) -> None:
@@ -287,7 +277,7 @@ class emissao(CrawJUD):
         
         val_deposito = str(self.bot_data.get("VALOR_CALCULADO"))
         
-        if not "," in val_deposito:
+        if "," not in val_deposito:
             val_deposito = f"{val_deposito},00"
         campo_val_deposito.send_keys(val_deposito)
     
@@ -352,8 +342,10 @@ class emissao(CrawJUD):
         # Imprima os números encontrados
         for numero in numeros_encontrados:
             numero = str(numero)
-            bar_code = numero.replace("  ","").replace(" ","").replace(".", " ") 
+            bar_code = numero.replace("  ", "").replace(" ", "").replace(".", " ")
 
-        return [self.bot_data.get("NUMERO_PROCESSO"), self.bot_data.get("TEXTO_DESC", ""), self.bot_data.get("VALOR_CALCULADO"), self.bot_data.get("DATA_PGTO", ""), 
+        return [self.bot_data.get("NUMERO_PROCESSO"),
+                self.bot_data.get("TEXTO_DESC", ""),
+                self.bot_data.get("VALOR_CALCULADO"),
+                self.bot_data.get("DATA_PGTO", ""),
                 "condenação", "JEC", self.bot_data.get("VIA_CONDENACAO", ""), bar_code, pdf_name]
-                

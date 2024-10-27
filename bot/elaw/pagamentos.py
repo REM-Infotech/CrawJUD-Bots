@@ -7,9 +7,9 @@ from typing import Type
 from contextlib import suppress
 import unicodedata
 
-from bot.head import CrawJUD
+from bot import CrawJUD
 from pytz import timezone
-from bot.head.common.exceptions import ErroDeExecucao
+from bot.common.exceptions import ErroDeExecucao
 from datetime import datetime
 
 # Selenium Imports

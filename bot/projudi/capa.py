@@ -7,11 +7,11 @@ from datetime import datetime
 """ Imports do Projeto """
 
 
-from bot.head.common.exceptions import ErroDeExecucao
+from bot.common.exceptions import ErroDeExecucao
 
 # Selenium Imports
 from selenium.webdriver.common.by import By
-from bot.head import CrawJUD
+from bot import CrawJUD
 
 
 class capa(CrawJUD):

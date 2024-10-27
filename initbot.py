@@ -10,7 +10,7 @@ class WorkerThread:
     
     def __init__(self) -> None:
         
-        from bot.head import CrawJUD
+        from bot import CrawJUD
         self.thread = None
         self.thread_id = None
         self.crawjud = CrawJUD
