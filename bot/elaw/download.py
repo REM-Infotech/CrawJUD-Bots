@@ -122,7 +122,7 @@ class download(CrawJUD):
                               
                     self.rename_doc(get_name_file)
                     self.message = 'Arquivo baixado com sucesso!'
-                    self.type_log = "log"
+                    self.type_log = "info"
                     self.prt(self)
     
     def rename_doc(self, namefile: str):

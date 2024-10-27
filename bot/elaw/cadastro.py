@@ -139,7 +139,7 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3w"]')
         
         self.message = 'Área do direito selecionada!'
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
 
     def subarea_direito(self) -> None:
@@ -160,7 +160,7 @@ class cadastro(CrawJUD):
         self.interact.select_item(elemento, text)
         self.interact.sleep_load('div[id="j_id_3x"]')
         self.message = 'Sub-Área do direito selecionada!'
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
 
     def next_page(self) -> None:
@@ -186,7 +186,7 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = 'Esfera Informada!'
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
 
     def informa_estado(self) -> None:
@@ -214,7 +214,7 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
             
         self.message = 'Estado do processo informado!'
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
 
     def informa_comarca(self) -> None:
@@ -239,7 +239,7 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = 'Comarca do processo informado!'
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
 
     def informa_foro(self) -> None:
@@ -264,7 +264,7 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = 'Foro do processo informado!'
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
 
     def informa_vara(self) -> None:
@@ -287,7 +287,7 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = 'Vara do processo informado!'
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
 
     def informa_proceso(self) -> None:
@@ -308,7 +308,7 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = 'Número do processo informado!'
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
 
     def informa_empresa(self) -> None:
@@ -336,7 +336,7 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = "Empresa informada!"
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
 
     def set_classe_empresa(self) -> None:
@@ -362,7 +362,7 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = "Classificação da Empresa informada"
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
     
     def parte_contraria(self) -> None:
@@ -435,7 +435,7 @@ class cadastro(CrawJUD):
                 raise ErroDeExecucao("Não foi possível cadastrar parte", e)
 
         self.messsage = 'Parte adicionada!'
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
 
     def uf_proc(self) -> None:
@@ -481,7 +481,7 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = "Ação informada!"
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
     
     def data_distribuicao(self) -> None:
@@ -503,7 +503,7 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = 'Data de distribuição informada!'
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
 
     def advogado_responsavel(self) -> None:
@@ -552,11 +552,15 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = 'Advogado interno informado!'
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
     
     def adv_parte_contraria(self) -> None:
 
+        self.message = "Informando Adv. Parte contrária"
+        self.type_log = "log"
+        self.prt(self)
+        
         css_input_adv = 'input[id="j_id_3k_1:autoCompleteLawyerOutraParte_input"]'
         campo_adv: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_input_adv)), message="Erro ao encontrar elemento")
         campo_adv.click()
@@ -588,6 +592,10 @@ class cadastro(CrawJUD):
             self.driver.switch_to.default_content()
             
         self.interact.sleep_load('div[id="j_id_3x"]')
+
+        self.message = "Adv. parte contrária informado!"
+        self.type_log = "info"
+        self.prt(self)
     
     def info_valor_causa(self) -> None:
 
@@ -611,7 +619,7 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = "Valor da causa informado!"
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
         
     def escritorio_externo(self) -> None:
@@ -634,7 +642,7 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = "Escritório externo informado!"
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
 
     def tipo_contingencia(self) -> None:
@@ -659,7 +667,7 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = "Contingenciamento informado!"
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
 
     def cad_adv(self) -> None:
@@ -713,7 +721,7 @@ class cadastro(CrawJUD):
             salvar.click()
 
             self.message = 'Advogado cadastrado!'
-            self.type_log = "log"
+            self.type_log = "info"
             self.prt(self)
             self.interact.sleep_load('div[id="j_id_3x"]')
 
@@ -803,7 +811,7 @@ class cadastro(CrawJUD):
             save_parte.click()
             
             self.message = "Parte cadastrada!"
-            self.type_log = "log"
+            self.type_log = "info"
             self.prt(self)
             
         except Exception as e:
@@ -817,7 +825,7 @@ class cadastro(CrawJUD):
             (By.CSS_SELECTOR, css_salvar_proc)), message="Erro ao encontrar elemento")
         
         self.message = "Salvando processo novo"
-        self.type_log = "log"
+        self.type_log = "info"
         self.prt(self)
         
         salvartudo.click()

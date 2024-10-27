@@ -22,7 +22,7 @@ bot = Blueprint("bot", __name__, template_folder=path_template)
 def botlaunch(id: int, system: str, typebot: str):
     
     message = {"success": "success"}
-    from bot.head.Tools.StartStop_Notify import SetStatus
+    from bot.Utils.StartStop_Notify import SetStatus
     with app.app_context():
         try:
             
@@ -77,7 +77,7 @@ def stop_execution(user: str, pid: str) -> int:
             worker_thread.stop()
         
         
-            from bot.head.Tools.StartStop_Notify import SetStatus
+            from bot.Utils.StartStop_Notify import SetStatus
             user_id = Users.query.filter(Users.login == user).first().id
             get_info = db.session.query(Executions).join(Executions.user).filter(
                     Users.id == user_id,  # Supondo que você também queira filtrar por um user_id específico

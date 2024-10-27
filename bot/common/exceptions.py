@@ -1,4 +1,4 @@
-from bot.head.common.selenium_excepts import exeptionsBot
+from bot.common.selenium_excepts import exeptionsBot
 
 
 class CrawJUDExceptions(Exception):
