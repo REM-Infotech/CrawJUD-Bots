@@ -3,7 +3,7 @@ from bot.common.selenium_excepts import exeptionsBot
 
 class CrawJUDExceptions(Exception):
     """Exceção base personalizada."""
-    def __init__(self, message):
+    def __init__(self, message: str):
         super().__init__(message)
         self.message = message
 

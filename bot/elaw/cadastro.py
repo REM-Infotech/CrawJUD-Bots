@@ -194,100 +194,73 @@ class cadastro(CrawJUD):
         """Declaração dos CSS em variáveis"""
         
         key = "ESTADO"
-        comboEstadoVara = self.elements.estado_combo
-        elemento = self.elements.estado_panel
+        elementSelect = self.elements.estado_input
+        text = str(self.bot_data.get(key, None))
         
         self.message = 'Informando estado do processo'
         self.type_log = "log"
         self.prt(self)
         
-        set_estado: WebElement = self.wait.until(
-            EC.presence_of_element_located((
-                By.CSS_SELECTOR, comboEstadoVara)), message="Erro ao encontrar elemento")
         
-        set_estado.click()
-        sleep(0.5)
-
-        
-        text = str(self.bot_data.get(key, None))
-        self.interact.select_item(elemento, text)
+        self.Select2_ELAW(elementSelect, text)
         self.interact.sleep_load('div[id="j_id_3x"]')
-            
+        
         self.message = 'Estado do processo informado!'
-        self.type_log = "info"
+        self.type_log = "log"
         self.prt(self)
 
     def informa_comarca(self) -> None:
 
         """Declaração dos CSS em variáveis"""
         
-        key = "COMARCA"
-        
-        comboComarcaVara = self.elements.comarca_combo
-        elemento = self.elements.comarca_panel
+        text = str(self.bot_data.get("COMARCA"))
+        elementSelect = self.elements.comarca_input
         
         self.message = 'Informando comarca do processo'
         self.type_log = "log"
         self.prt(self)
 
-        comarca: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboComarcaVara)), message="Erro ao encontrar elemento")
-        comarca.click()
-        sleep(0.5)
-        
-        text = str(self.bot_data.get(key))
-        self.interact.select_item(elemento, text)
+        self.Select2_ELAW(elementSelect, text)
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = 'Comarca do processo informado!'
-        self.type_log = "info"
+        self.type_log = "log"
         self.prt(self)
 
     def informa_foro(self) -> None:
 
         """Declaração dos CSS em variáveis"""
         
-        key = "FORO"
-        
-        comboForoTribunal = self.elements.foro_combo
-        elemento = self.elements.foro_panel
+        elementSelect = self.elements.foro_input
+        text = str(self.bot_data.get("FORO"))
         
         self.message = 'Informando foro do processo'
         self.type_log = "log"
         self.prt(self)
         
-        foro: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboForoTribunal)), message="Erro ao encontrar elemento")
-        foro.click()
-        sleep(0.5)
-        
-        text = str(self.bot_data.get(key))
-        self.interact.select_item(elemento, text)
+        self.Select2_ELAW(elementSelect, text)
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = 'Foro do processo informado!'
-        self.type_log = "info"
+        self.type_log = "log"
         self.prt(self)
 
     def informa_vara(self) -> None:
 
         """Declaração dos CSS em variáveis"""
-        key = "VARA"
         
-        comboVara = self.elements.vara_combo
-        elemento = self.elements.vara_panel
+        text = self.bot_data.get("VARA")
+        elementSelect = self.elements.vara_input
         
         self.message = 'Informando vara do processo'
         self.type_log = "log"
         self.prt(self)
         
-        vara: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboVara)), message="Erro ao encontrar elemento")
-        vara.click()
-        sleep(0.5)
-        text = str(self.bot_data.get(key))
-        self.interact.select_item(elemento, text)
+        self.Select2_ELAW(elementSelect, text)
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = 'Vara do processo informado!'
-        self.type_log = "info"
+        self.type_log = "log"
         self.prt(self)
 
     def informa_proceso(self) -> None:

@@ -4,6 +4,7 @@ import os
 import pytz
 import json
 import pathlib
+import platform
 from datetime import datetime
 
 from app import db
@@ -35,6 +36,8 @@ def botlaunch(id: int, system: str, typebot: str):
             if isinstance(data_bot, str):
                 data_bot = json.loads(data_bot)
             
+            if system == "esaj" and platform.system() != "Windows":
+                raise
             start_rb = SetStatus(data_bot, request.files, id, system, typebot)
             path_args, display_name = start_rb.start_bot()
             worker_thread = WorkerThread()
