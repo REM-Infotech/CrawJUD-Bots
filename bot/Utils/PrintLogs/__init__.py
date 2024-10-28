@@ -106,7 +106,7 @@ class printtext(CrawJUD):
                 
                 log_pid.pos = int(data["pos"])
                 
-                typeSuccess = (data["type"] == "success" or data["type"] == "info")
+                typeSuccess = (data["type"] == "success" or data["type"] == "info" and data["graphicMode"] != "doughnut")
                 
                 if typeSuccess:
                     

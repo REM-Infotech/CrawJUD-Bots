@@ -286,26 +286,14 @@ class cadastro(CrawJUD):
 
     def informa_empresa(self) -> None:
         
-        """Declaração dos CSS em variáveis"""
-        
-        comboClientProcessoParte = self.elements.empresa_combo
-        elemento = self.elements.empresa_panel
+        text = self.bot_data.get("EMPRESA")
+        elementSelect = self.elements.empresa_input
         
         self.message = "Informando Empresa"
         self.type_log = "log"
         self.prt(self)
-
-        empresa_selector: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboClientProcessoParte)), message="Erro ao encontrar elemento")
-        empresa_selector.click()
         
-        sleep(0.5)
-        
-        text = self.bot_data.get("EMPRESA")
-        elemento = self.driver.find_element(By.CSS_SELECTOR, elemento)
-        elemento.click()
-        
-        self.interact.send_key(elemento, text)
-        self.interact.send_key(elemento, Keys.ENTER)
+        self.Select2_ELAW(elementSelect, text)
         self.interact.sleep_load('div[id="j_id_3x"]')
         
         self.message = "Empresa informada!"
@@ -317,21 +305,14 @@ class cadastro(CrawJUD):
         """Declaração dos CSS em variáveis"""
         
         key = "TIPO_EMPRESA"
-        comboClientProcessoParte = self.elements.tipo_empresa_combo
-        elemento = self.elements.tipo_empresa_panel
+        elementSelect = self.elements.tipo_empresa_input
+        text = self.bot_data.get(key).__str__().capitalize()
         
         self.message = "Informando classificação da Empresa"
         self.type_log = "log"
         self.prt(self)
-
-        empresa_selector: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, comboClientProcessoParte)), message="Erro ao encontrar elemento")
-        empresa_selector.click()
         
-        sleep(0.5)
-        
-        text = self.bot_data.get(key).__str__().capitalize()
-        
-        self.interact.select_item(elemento, text)
+        self.Select2_ELAW(elementSelect, text)
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = "Classificação da Empresa informada"
@@ -340,29 +321,13 @@ class cadastro(CrawJUD):
     
     def parte_contraria(self) -> None:
 
-        
         self.message = 'Preechendo informações da parte contrária'
         self.type_log = "log"
         self.prt(self)
 
-        self.interact.sleep_load('div[id="j_id_3x"]')
-        
-        list_tipo_parte: WebElement = self.wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, self.elements.css_list_tipo_parte)), message="Erro ao encontrar elemento")
-        list_tipo_parte.click()
-        sleep(0.5)
-        
-        search_tipo_parte: WebElement = self.wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, self.elements.seach_tipo_parte_css)), message="Erro ao encontrar elemento")
-        search_tipo_parte.click()
-        sleep(0.05)
-        
-        self.interact.send_key(search_tipo_parte, self.bot_data.get("TIPO_PARTE_CONTRARIA"))
-        self.interact.send_key(search_tipo_parte, Keys.ENTER)
-        self.driver.execute_script(
-            f"document.querySelector('{self.elements.css_list_tipo_parte}').blur()")
-        self.interact.sleep_load('div[id="j_id_3x"]')
-
+        text = self.bot_data.get("TIPO_PARTE_CONTRARIA")
+        elementSelect = self.elements.tipo_parte_contraria_input
+        self.Select2_ELAW(elementSelect, text)
         
         table_tipo_doc: WebElement = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.css_table_tipo_doc)), message="Erro ao encontrar elemento")
         table_tipo_doc = table_tipo_doc.find_elements(By.TAG_NAME, 'td')
