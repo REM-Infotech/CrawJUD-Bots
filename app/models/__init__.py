@@ -15,8 +15,6 @@ __all__ = [admins, execution_bots, Users, LicensesUsers, BotsCrawJUD,
 
 class init_database:
     
-    
-    
     def __call__(self):
         
         values = dotenv_values()
