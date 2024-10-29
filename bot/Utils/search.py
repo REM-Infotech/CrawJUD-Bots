@@ -33,6 +33,10 @@ class SeachBot(CrawJUD):
 
     def elaw_search(self) -> bool:
         
+        self.message = "Buscando Processo"
+        self.type_log = "log"
+        self.prt(self)
+        
         if self.driver.current_url != "https://amazonas.elaw.com.br/processoList.elaw":
         
             self.driver.get("https://amazonas.elaw.com.br/processoList.elaw")

@@ -67,10 +67,7 @@ class cadastro(CrawJUD):
         
         if search is True:
             
-            self.message = "Processo já cadastrado!"
-            self.type_log = "error"
-            self.prt(self)
-            self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
+            self.append_success([self.bot_data.get("NUMERO_PROCESSO"), "Processo já cadastrado!", self.pid])
             
         elif search is not True:
         
