@@ -88,9 +88,17 @@ class protocolo(CrawJUD):
         self.finish_move()
         
         confirm_protocol = self.confirm_protocol()
-        if confirm_protocol:
-            data = self.screenshot_sucesso()
+        if not confirm_protocol:
             
+            if self.set_parte() is not True:
+                raise ErroDeExecucao("Nao foi possivel confirmar protocolo")
+
+            self.finish_move()
+            confirm_protocol = self.confirm_protocol()
+            if not confirm_protocol:
+                raise ErroDeExecucao("Nao foi possivel confirmar protocolo")
+            
+        data = self.screenshot_sucesso()
         data.append(confirm_protocol)
         self.append_success(data)
     
@@ -100,7 +108,7 @@ class protocolo(CrawJUD):
         with suppress(TimeoutException):
             successMessage = self.wait.until(
                 EC.presence_of_element_located((
-                    By.CSS_SELECTOR, "#successMessages"))).text.split("Protocolo:")[1]
+                    By.CSS_SELECTOR, "#successMessages"))).text.split("Protocolo:")[1].replace(" ", "")
         
         return successMessage
     
@@ -123,20 +131,53 @@ class protocolo(CrawJUD):
         
         for pos, item in enumerate(table_partes):
             
+            
             td_partes = table_partes[pos + 1].find_element(By.TAG_NAME, "td")
             if "\n" in td_partes.text:
                 partes = td_partes.text.split("\n")
                 for enum, parte in enumerate(partes):
                     
                     if parte.upper() == self.bot_data.get("PARTE_PETICIONANTE").upper():
+                        
                         radio_item = item.find_element(By.CSS_SELECTOR, "input[type='radio']")
+                        id_radio = radio_item.get_attribute("id")
+                        
+                        command = f'document.getElementById("{id_radio}").removeAttribute("disabled");'
+                        self.driver.execute_script(command)
+                        
                         radio_item.click()
                         set_parte = td_partes.find_elements(By.TAG_NAME, "input")[enum]
-                        set_parte.click()
+                        
+                        self.id_part = set_parte.get_attribute("id")
+                        cmd2 = f"return document.getElementById(\'{self.id_part}\').checked"
+                        return_cmd = self.driver.execute_script(cmd2)
+                        if return_cmd is False:
+                            set_parte.click()
+                            cmd2 = f"return document.getElementById(\'{self.id_part}\').checked"
+                            return_cmd = self.driver.execute_script(cmd2)
+                            if return_cmd is False:
+                                raise ErroDeExecucao("Não é possivel selecionar parte")
+                            
                         selected_parte = True
                         break
                     
             elif td_partes.text.upper() == self.bot_data.get("PARTE_PETICIONANTE").upper():
+                
+                radio_item = item.find_element(By.CSS_SELECTOR, "input[type='radio']")
+                radio_item.click()
+                
+                set_parte = td_partes.find_element(By.TAG_NAME, "input")
+                
+                self.id_part = set_parte.get_attribute("id")
+                cmd2 = f"return document.getElementById(\'{self.id_part}\').checked"
+                return_cmd = self.driver.execute_script(cmd2)
+                if return_cmd is False:
+                    set_parte.click()
+                    cmd2 = f"return document.getElementById(\'{self.id_part}\').checked"
+                    return_cmd = self.driver.execute_script(cmd2)
+                    if return_cmd is False:
+                        raise ErroDeExecucao("Não é possivel selecionar parte")
+                
                 selected_parte = True
                 break
             
@@ -317,6 +358,11 @@ class protocolo(CrawJUD):
         self.message = f'Concluindo peticionamento do processo {self.bot_data.get("NUMERO_PROCESSO")}'
         self.type_log = "log"
         self.prt(self)
+        
+        cmd2 = f"return document.getElementById(\'{self.id_part}\').checked"
+        return_cmd = self.driver.execute_script(cmd2)
+        if return_cmd is False:
+            self.driver.find_element(By.ID, self.id_part).click()
         
         finish_button = self.driver.find_element(By.CSS_SELECTOR, 'input#editButton[value="Concluir Movimento"]')
         finish_button.click()
