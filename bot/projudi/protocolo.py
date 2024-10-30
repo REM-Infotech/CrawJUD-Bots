@@ -123,15 +123,21 @@ class protocolo(CrawJUD):
         
         for pos, item in enumerate(table_partes):
             
-            for parte in table_partes[pos + 1].find_elements(By.TAG_NAME, "td"):
-                
-                if parte.text.upper() == self.bot_data.get("PARTE_PETICIONANTE").upper():
-                    radio_item = item.find_element(By.CSS_SELECTOR, "input[type='radio']")
-                    radio_item.click()
+            td_partes = table_partes[pos + 1].find_element(By.TAG_NAME, "td")
+            if "\n" in td_partes.text:
+                partes = td_partes.text.split("\n")
+                for enum, parte in enumerate(partes):
                     
-                    set_parte = parte.find_element(By.CSS_SELECTOR, "input[type='checkbox']")
-                    set_parte.click()
-                    selected_parte = True
+                    if parte.upper() == self.bot_data.get("PARTE_PETICIONANTE").upper():
+                        radio_item = item.find_element(By.CSS_SELECTOR, "input[type='radio']")
+                        radio_item.click()
+                        set_parte = td_partes.find_elements(By.TAG_NAME, "input")[enum]
+                        set_parte.click()
+                        selected_parte = True
+                        break
+                    
+            elif td_partes.text.upper() == self.bot_data.get("PARTE_PETICIONANTE").upper():
+                selected_parte = True
                 break
             
             if selected_parte:
