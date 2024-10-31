@@ -10,20 +10,20 @@ app.register_blueprint(bot)
 __all__ = [handler]
 
 
-@io.on('connect', namespace='/log')
+@io.on("connect", namespace="/log")
 def handle_connect():
     pass
 
 
-@io.on('disconnect', namespace='/log')
+@io.on("disconnect", namespace="/log")
 def handle_disconnect():
     pass
 
 
-@io.on('join', namespace='/log')
+@io.on("join", namespace="/log")
 def handle_join(data):
-    
-    room = data['pid']
+
+    room = data["pid"]
     sleep(3)
     log_pid = CacheLogs.query.filter(CacheLogs.pid == room).first()
     if log_pid:
@@ -35,26 +35,27 @@ def handle_join(data):
             "success": log_pid.success,
             "errors": log_pid.errors,
             "status": log_pid.status,
-            "last_log": log_pid.last_log}
-    
+            "last_log": log_pid.last_log,
+        }
+
     try:
         join_room(room)
-        emit('log_message', data, room=room)
+        emit("log_message", data, room=room)
         # print(f"Client {request.sid} joined room {room}")
     except Exception:
-        emit('log_message', data, room=room)
+        emit("log_message", data, room=room)
 
 
-@io.on('leave', namespace='/log')
+@io.on("leave", namespace="/log")
 def handle_leave(data):
-    room = data['pid']
+    room = data["pid"]
     leave_room(room)
     # print(f"Client {request.sid} left room {room}")
 
 
-@io.on('log_message', namespace='/log')
+@io.on("log_message", namespace="/log")
 def handle_message(data: dict[str, str | int]):
-    
-    pid = data['pid']
-    emit('log_message', data, room=pid)
+
+    pid = data["pid"]
+    emit("log_message", data, room=pid)
     # print("mensagem enviada")

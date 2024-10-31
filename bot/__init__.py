@@ -24,6 +24,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.wait import WebDriverWait
 from .Utils.WebDriverManager import GetDriver
+
 from .common.exceptions import ErroDeExecucao
 
 from initbot import WorkerThread
@@ -46,7 +47,7 @@ class CrawJUD(WorkerThread):
     from .Utils.MakeTemplate import MakeXlsx
     from .Utils.StartStop_Notify import SetStatus
     from .Utils.dicionarios import cities_Amazonas
-
+    from .Utils.elements import ElementsBot as elements
     # Bots
     from .pje import pje
     from .esaj import esaj
