@@ -38,6 +38,9 @@ def botlaunch(id: int, system: str, typebot: str):
             
             if system == "esaj" and platform.system() != "Windows":
                 raise
+            
+            
+            
             start_rb = SetStatus(data_bot, request.files, id, system, typebot)
             path_args, display_name = start_rb.start_bot()
             worker_thread = WorkerThread()

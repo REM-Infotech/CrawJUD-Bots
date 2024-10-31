@@ -7,6 +7,7 @@ from app.models import CacheLogs
 from time import sleep
 
 app.register_blueprint(bot)
+__all__ = [handler]
 
 
 @io.on('connect', namespace='/log')
