@@ -98,7 +98,3 @@ class InfoGeoloc:
 class GeoLoc(InfoGeoloc):
     def __init__(self, *args, **kwrgs):
         super().__init__(*args, **kwrgs)
-
-
-if __name__ == "__main__":
-    print(GeoLoc().data)

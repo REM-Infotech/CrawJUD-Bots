@@ -175,13 +175,12 @@ class elements_esaj:
         "SP": SP,
         "AC": AC,
         "AM": AM
-    }    
+    }
     
     def __init__(self, state: str) -> Union[SP, AC, AM]:
         
         # Se o estado passado existir no dicionário, atualiza as variáveis
-        self.state_class: Union[elements_esaj.SP,\
-            elements_esaj.AC, elements_esaj.AM] = self.classes[state]
+        self.state_class = self.classes[state]
 
                 
     def __call__(self, *args, **kwds) -> Union[SP, AC, AM]:
