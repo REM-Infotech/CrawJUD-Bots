@@ -1,4 +1,4 @@
-from bot.Utils.elements import elements
+from bot.Utils.elements import projudi
 
 
-elements("AM")
+projudi("AM")

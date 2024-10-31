@@ -1,10 +1,9 @@
 class Configuracao:
-        
     """Define propriedades específicas para cada elemento esperado."""
-    
+
     def __init__(self, dados):
         self.dados = dados
-    
+
     @property
     def url_login(self) -> str:
         return self.dados.get("url_login", "")
@@ -28,7 +27,7 @@ class Configuracao:
     @property
     def chk_login(self) -> str:
         return self.dados.get("chk_login", "")
-    
+
     def __getattr__(self, name: str):
-        
+
         return self.dados.get(name)

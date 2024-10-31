@@ -16,5 +16,5 @@ class caixa:
         except Exception as e:
             raise e
         
-    from bot.caixa.emissao import emissao as emissor
-    from bot.caixa.common.elements import elements_caixa
+    from .emissao import emissao as emissor
+    from .common.elements import elements_caixa

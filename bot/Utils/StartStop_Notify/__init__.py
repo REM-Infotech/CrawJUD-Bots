@@ -18,9 +18,9 @@ from openpyxl.worksheet.worksheet import Worksheet
 
 from app.models import Users, BotsCrawJUD, Executions, LicensesUsers
 
-from bot.Utils.StartStop_Notify.makefile import makezip
-from bot.Utils.StartStop_Notify.upload_zip import enviar_arquivo_para_gcs
-from bot.Utils.StartStop_Notify.send_email import email_stop, email_start
+from .makefile import makezip
+from .upload_zip import enviar_arquivo_para_gcs
+from .send_email import email_stop, email_start
 
 url_cache = []
 

@@ -1,7 +1,7 @@
 import openpyxl
 from openpyxl.styles import Font
 from openpyxl.styles import PatternFill
-from bot.Utils.MakeTemplate.appends import listas
+from .appends import listas
 
 
 class MakeXlsx:

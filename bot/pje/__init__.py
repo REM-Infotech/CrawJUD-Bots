@@ -19,4 +19,3 @@ class pje:
     from bot.pje.pauta import pauta
     # from bot.pje.protocolo import protocolo
     # from bot.pje.movimentacao import movimentacao
-    from bot.pje.common.elements import elements_pje

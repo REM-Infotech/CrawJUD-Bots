@@ -16,4 +16,4 @@ class calculadoras:
         except Exception as e:
             raise e
         
-    from bot.calculadoras.tjdft import tjdft
+    from .tjdft import tjdft

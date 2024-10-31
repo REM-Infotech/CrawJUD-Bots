@@ -1,5 +1,10 @@
 class projudi:
     
+    from .capa import capa
+    from .protocolo import protocolo
+    from .proc_parte import proc_parte
+    from .movimentacao import movimentacao
+    
     bot = ""
     Master = ""
     
@@ -16,8 +21,4 @@ class projudi:
         except Exception as e:
             raise e
         
-    from bot.projudi.capa import capa
-    from bot.projudi.protocolo import protocolo
-    from bot.projudi.proc_parte import proc_parte
-    from bot.projudi.movimentacao import movimentacao
-    from bot.projudi.common.elements import elements_projudi
+    
