@@ -192,6 +192,8 @@ class movimentacao(CrawJUD):
         self.set_page_size()
         self.set_tablemoves()
 
+        trazerteor = str(self.bot_data.get("TRAZER_TEOR", "NÃO")).upper() == "SIM"
+
         palavras_chave = [str(self.bot_data.get("PALAVRA_CHAVE"))]
         if "," in self.bot_data.get("PALAVRA_CHAVE"):
             palavras_chave = str(self.bot_data.get("PALAVRA_CHAVE")).split(",")
@@ -211,11 +213,11 @@ class movimentacao(CrawJUD):
 
                         encontrado = True
                         intimado = self.bot_data.get("INTIMADO", None)
-                        if (
-                            intimado is not None
-                            and not intimado.lower() in text_mov.lower()
-                        ):
-                            continue
+
+                        if intimado is not None:
+                            if intimado.lower() not in text_mov.lower():
+                                continue
+
                         nome_mov = itensmove[3].find_element(By.TAG_NAME, "b").text
                         movimentador = itensmove[4].text
                         if "SISTEMA PROJUDI" in movimentador:
@@ -227,10 +229,7 @@ class movimentacao(CrawJUD):
                             movimentador = info_movimentador[0].replace("  ", "")
                             qualificacao_movimentador = info_movimentador[1]
 
-                        if (
-                            str(self.bot_data.get("TRAZER_TEOR", "NÃO")).upper()
-                            == "SIM"
-                        ):
+                        if trazerteor:
 
                             def checkifdoc(texto: str) -> list:
 

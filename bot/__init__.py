@@ -38,7 +38,7 @@ TypeHint = Union[
 
 class CrawJUD(WorkerThread):
 
-    ## FuncBots
+    # FuncBots
     from .Utils.auth import AuthBot
     from .Utils.search import SeachBot
     from .Utils.interator import Interact
@@ -47,7 +47,7 @@ class CrawJUD(WorkerThread):
     from .Utils.StartStop_Notify import SetStatus
     from .Utils.dicionarios import cities_Amazonas
 
-    ## Bots
+    # Bots
     from .pje import pje
     from .esaj import esaj
     from .elaw import elaw
@@ -98,7 +98,7 @@ class CrawJUD(WorkerThread):
             "--kiosk-printing",
         ]
 
-        ## Definição de variaveis utilizadas pelos robôs
+        # Definição de variaveis utilizadas pelos robôs
         self.row = int(0)
         self.app = app
         self.message_error = None
@@ -113,9 +113,9 @@ class CrawJUD(WorkerThread):
 
             self.install_cert()
 
-        ## Abertura da planilha de input
+        # Abertura da planilha de input
         self.path_args = path_args
-        ## Criação das planilhas de output
+        # Criação das planilhas de output
         time_xlsx = datetime.now(pytz.timezone("America/Manaus")).strftime("%d-%m-%y")
 
         namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
@@ -136,7 +136,7 @@ class CrawJUD(WorkerThread):
 
         try:
 
-            ## Carrega elementos do bot
+            # Carrega elementos do bot
             cl = self.state
             if not cl:
                 cl = self.client.split(" ")[0]

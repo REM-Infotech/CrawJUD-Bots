@@ -28,7 +28,7 @@ class Interact(CrawJUD):
                 send = ""
                 element.send_keys(word)
                 break
-            
+
         if send is None:
             element.click()
             sleep(0.05)
@@ -50,17 +50,27 @@ class Interact(CrawJUD):
     def select_item(self, elemento: str, text: str) -> bool | Exception:
 
         itens: WebElement = self.wait.until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, elemento)))
-        
+            EC.presence_of_element_located((By.CSS_SELECTOR, elemento))
+        )
+
         self.diplay_none(itens)
         sleep(0.5)
-        
+
         if not text.isupper():
-            itens = list(filter(lambda item: not item.text.isupper(), itens.find_element(By.CSS_SELECTOR, 'ul').find_elements(By.TAG_NAME, "li")))
-            
+            itens = list(
+                filter(
+                    lambda item: not item.text.isupper(),
+                    itens.find_element(By.CSS_SELECTOR, "ul").find_elements(
+                        By.TAG_NAME, "li"
+                    ),
+                )
+            )
+
         elif text.isupper():
-            itens = itens.find_element(By.TAG_NAME, 'ul').find_elements(By.TAG_NAME, 'li')
-            
+            itens = itens.find_element(By.TAG_NAME, "ul").find_elements(
+                By.TAG_NAME, "li"
+            )
+
         item = next(filter(lambda item: text == item.text, itens), None)
 
         if not item:
@@ -86,7 +96,8 @@ class Interact(CrawJUD):
             aria_value = None
             with suppress(TimeoutException):
                 load: WebElement = WebDriverWait(self.driver, 5).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, element)))
+                    EC.presence_of_element_located((By.CSS_SELECTOR, element))
+                )
 
             if load:
 
@@ -98,54 +109,64 @@ class Interact(CrawJUD):
 
                     break
 
-                if aria_value is None or any(value == aria_value for value in ["off", "true", "spinner--fullpage spinner--fullpage--show"]):
+                if aria_value is None or any(
+                    value == aria_value
+                    for value in [
+                        "off",
+                        "true",
+                        "spinner--fullpage spinner--fullpage--show",
+                    ]
+                ):
                     break
-                
+
             if not load:
                 break
-    
+
     def diplay_none(self, elemento: WebElement):
-        
+
         while True:
-            
+
             style = elemento.get_attribute("style")
-            
+
             if "display: none;" not in style:
                 sleep(0.01)
                 break
-            
+
     def wait_caixa(self) -> None:
-        
+
         while True:
-            
+
             check_wait = None
             with suppress(NoSuchElementException):
-                check_wait = self.driver.find_element(By.CSS_SELECTOR, 'div[id="modal:waitContainer"][style="position: absolute; z-index: 100; background-color: inherit; display: none;"]')
-                
+                check_wait = self.driver.find_element(
+                    By.CSS_SELECTOR,
+                    'div[id="modal:waitContainer"][style="position: absolute; z-index: 100; background-color: inherit; display: none;"]',
+                )
+
             if check_wait:
                 break
-            
+
     def wait_fileupload(self) -> None:
-        
+
         while True:
-            
+
             sleep(0.05)
             div1 = 'div[class="ui-fileupload-files"]'
             div2 = 'div[class="ui-fileupload-row"]'
             div0 = 'div[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_2_1_9_g_1:uploadGedEFile"]'
             progress_bar = None
-            
+
             div0progress_bar = self.driver.find_element(By.CSS_SELECTOR, div0)
             div1progress_bar = div0progress_bar.find_element(By.CSS_SELECTOR, div1)
-            
+
             with suppress(NoSuchElementException):
                 progress_bar = div1progress_bar.find_element(By.CSS_SELECTOR, div2)
-                
+
             if progress_bar is None:
                 break
-            
+
     def scroll_to(self, element: WebElement):
-        
+
         Action = ActionChains(self.driver)
         Action.scroll_to_element(element)
         sleep(0.5)

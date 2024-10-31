@@ -8,16 +8,16 @@ class MakeXlsx:
 
     def __init__(self, typebot: str, bot: str) -> list[str]:
         """
-        
-        #### type: Tipo da planilha (sucesso, erro)
-        #### bot: o sistema que está sendo executado a automação Ex.: PROJUDI, ESAJ, ELAW, ETC.
-            
+
+        ### type: Tipo da planilha (sucesso, erro)
+        ### bot: o sistema que está sendo executado a automação Ex.: PROJUDI, ESAJ, ELAW, ETC.
+
         """
         self.bot = bot
         self.typebot = typebot
         self.listas = listas()
         pass
-    
+
     def make_output(self, path_template: str):
 
         # Criar um novo workbook e uma planilha
@@ -28,11 +28,11 @@ class MakeXlsx:
         # Cabeçalhos iniciais
         cabecalhos = ["NUMERO_PROCESSO"]
         list_to_append = []
-        
+
         itens_append = self.listas(f"{self.bot}_{self.typebot}")
         if itens_append:
             list_to_append.extend(itens_append)
-        
+
         elif not itens_append:
             itens_append = self.listas(self.typebot)
             if itens_append:
@@ -40,9 +40,9 @@ class MakeXlsx:
 
         cabecalhos.extend(list_to_append)
         # Definir estilo
-        my_red = openpyxl.styles.colors.Color(rgb='A6A6A6')
-        my_fill = PatternFill(patternType='solid', fgColor=my_red)
-        bold_font = Font(name='Times New Roman', italic=True)
+        my_red = openpyxl.styles.colors.Color(rgb="A6A6A6")
+        my_fill = PatternFill(patternType="solid", fgColor=my_red)
+        bold_font = Font(name="Times New Roman", italic=True)
 
         # Escrever os cabeçalhos na primeira linha da planilha e aplicar estilo
         for pos, coluna in enumerate(cabecalhos):
