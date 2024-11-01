@@ -9,14 +9,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 
 
 class SeachBot(CrawJUD):
 
-    def __init__(self, Head: CrawJUD):
-
-        self.__dict__ = Head.__dict__.copy()
+    def __init__(self):
+        super().__init__()
 
     def __call__(self, Head: CrawJUD) -> None:
 

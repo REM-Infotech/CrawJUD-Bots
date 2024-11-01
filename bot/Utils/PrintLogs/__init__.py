@@ -10,7 +10,7 @@ from tqdm import tqdm
 from time import sleep
 from datetime import datetime
 
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 from app.models import CacheLogs, Executions
 
 # Define a codificação de caracteres como UTF-8

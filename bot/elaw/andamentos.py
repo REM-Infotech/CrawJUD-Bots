@@ -4,7 +4,7 @@ import time
 from time import sleep
 from typing import Type
 
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 from bot.common.exceptions import ErroDeExecucao
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By

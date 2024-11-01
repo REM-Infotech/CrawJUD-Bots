@@ -1,7 +1,6 @@
 import os
 import time
 import pathlib
-import unicodedata
 from PIL import Image
 from time import sleep
 from typing import Type
@@ -26,7 +25,7 @@ from selenium.common.exceptions import (
     StaleElementReferenceException,
 )
 
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 
 
 class protocolo(CrawJUD):

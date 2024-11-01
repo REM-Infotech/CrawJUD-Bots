@@ -4,7 +4,7 @@ from typing import Type
 from contextlib import suppress
 
 from bot.common.exceptions import ErroDeExecucao
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 
 # Selenium Imports
 from selenium.webdriver.common.by import By

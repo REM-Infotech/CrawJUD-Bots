@@ -23,6 +23,6 @@ class BaseElementsBot:
 
 
 class ElementsBot(BaseElementsBot):
-    
+
     def __init__(self, *args, **kwrgs):
         super().__init__(*args, **kwrgs)

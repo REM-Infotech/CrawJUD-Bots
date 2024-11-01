@@ -11,7 +11,7 @@ from bot.common.exceptions import ErroDeExecucao
 
 # Selenium Imports
 from selenium.webdriver.common.by import By
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 
 
 class capa(CrawJUD):

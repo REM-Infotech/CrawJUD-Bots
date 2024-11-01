@@ -14,7 +14,7 @@ from app.models import Users, Executions
 from app.misc.get_outputfile import get_file
 
 from app.misc.get_location import GeoLoc
-from initbot import WorkerThread
+from bot import WorkerThread
 
 path_template = os.path.join(pathlib.Path(__file__).parent.resolve(), "templates")
 bot = Blueprint("bot", __name__, template_folder=path_template)

@@ -17,7 +17,7 @@ if platform.system() == "Windows":
     from pywinauto import Application
 
 
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 
 
 class AuthBot(CrawJUD):

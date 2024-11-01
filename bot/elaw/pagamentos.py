@@ -5,9 +5,8 @@ import time
 from time import sleep
 from typing import Type
 from contextlib import suppress
-import unicodedata
 
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 from pytz import timezone
 from bot.common.exceptions import ErroDeExecucao
 from datetime import datetime

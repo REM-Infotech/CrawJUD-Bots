@@ -18,7 +18,7 @@ from bot.common.exceptions import ErroDeExecucao
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 
 
 class movimentacao(CrawJUD):

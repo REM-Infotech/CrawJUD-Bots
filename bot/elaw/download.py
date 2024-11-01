@@ -5,7 +5,7 @@ import time
 import shutil
 from time import sleep
 from typing import Type
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 from bot.common.exceptions import ErroDeExecucao
 
 
