@@ -53,9 +53,7 @@ class SetStatus:
         return "".join(
             [
                 c
-                for c in unicodedata.normalize(
-                    "NFKD", string.lower().replace(" ", "").replace("_", "")
-                )
+                for c in unicodedata.normalize("NFKD", string.upper())
                 if not unicodedata.combining(c)
             ]
         )
@@ -71,7 +69,7 @@ class SetStatus:
                 if "xlsx" not in f:
                     f = self.format_String(f)
 
-                filesav = os.path.join(path_pid, secure_filename(f))
+                filesav = os.path.join(path_pid, f)
                 value.save(filesav)
 
         data = {}

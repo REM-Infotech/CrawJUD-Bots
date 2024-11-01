@@ -213,16 +213,7 @@ class sol_pags(CrawJUD):
 
             for doc in docs:
 
-                doc = "".join(
-                    [
-                        c
-                        for c in unicodedata.normalize(
-                            "NFKD", str(doc).replace(" ", "").replace("_", "")
-                        )
-                        if not unicodedata.combining(c)
-                    ]
-                )
-
+                doc = self.format_String(doc.upper())
                 inputfilecss = 'input[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_2_1_9_g_1:uploadGedEFile_input"]'
                 insert_doc: WebElement = self.wait.until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, inputfilecss))
@@ -445,15 +436,7 @@ class sol_pags(CrawJUD):
 
             for doc in docs:
 
-                doc = "".join(
-                    [
-                        c
-                        for c in unicodedata.normalize(
-                            "NFKD", str(doc).replace(" ", "").replace("_", "")
-                        )
-                        if not unicodedata.combining(c)
-                    ]
-                )
+                doc = self.format_String(doc)
                 insert_doc: WebElement = self.wait.until(
                     EC.presence_of_element_located(
                         (

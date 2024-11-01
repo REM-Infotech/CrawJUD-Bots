@@ -273,15 +273,7 @@ class protocolo(CrawJUD):
                 EC.presence_of_element_located((By.CSS_SELECTOR, css_inptfile))
             )
 
-            file_to_upload = "".join(
-                [
-                    c
-                    for c in unicodedata.normalize(
-                        "NFKD", file.replace(" ", "").replace("_", "")
-                    )
-                    if not unicodedata.combining(c)
-                ]
-            )
+            file_to_upload = self.format_String(file)
 
             path_file = os.path.join(
                 pathlib.Path(self.path_args).parent.resolve(), file_to_upload
@@ -339,15 +331,7 @@ class protocolo(CrawJUD):
             for file in anexos_list:
 
                 self.message = f"Enviando arquivo '{file}'"
-                file_to_upload = "".join(
-                    [
-                        c
-                        for c in unicodedata.normalize(
-                            "NFKD", file.replace(" ", "").replace("_", "")
-                        )
-                        if not unicodedata.combining(c)
-                    ]
-                )
+                file_to_upload = self.format_String(file)
                 self.type_log = "log"
                 self.prt(self)
                 input_file_element: WebElement = WebDriverWait(self.driver, 10).until(

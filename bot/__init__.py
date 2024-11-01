@@ -13,7 +13,7 @@ from typing import Union
 from datetime import datetime
 from pandas import Timestamp
 from typing import Callable, Dict, List, Any
-
+from werkzeug.utils import secure_filename
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
@@ -382,9 +382,7 @@ class CrawJUD(WorkerThread):
         return "".join(
             [
                 c
-                for c in unicodedata.normalize(
-                    "NFKD", string.lower().replace(" ", "").replace("_", "")
-                )
+                for c in unicodedata.normalize("NFKD", string.upper())
                 if not unicodedata.combining(c)
             ]
         )
