@@ -12,7 +12,6 @@ import openpyxl
 import unicodedata
 
 from datetime import datetime
-from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 from openpyxl.worksheet.worksheet import Worksheet
 

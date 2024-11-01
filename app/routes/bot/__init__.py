@@ -13,6 +13,7 @@ from app.models import ThreadBots
 from app.models import Users, Executions
 from app.misc.get_outputfile import get_file
 
+from app.misc.get_location import GeoLoc
 from initbot import WorkerThread
 
 path_template = os.path.join(pathlib.Path(__file__).parent.resolve(), "templates")
@@ -28,6 +29,7 @@ def botlaunch(id: int, system: str, typebot: str):
     with app.app_context():
         try:
 
+            loc = GeoLoc().region_name
             if request.data:
                 data_bot = json.loads(request.data)
 
@@ -38,7 +40,10 @@ def botlaunch(id: int, system: str, typebot: str):
                 data_bot = json.loads(data_bot)
 
             if system == "esaj" and platform.system() != "Windows":
-                raise
+                raise Exception("Este servidor não pode executar este robô!")
+
+            elif system == "caixa" and loc != "Amazonas":
+                raise Exception("Este servidor não pode executar este robô!")
 
             start_rb = SetStatus(data_bot, request.files, id, system, typebot)
             path_args, display_name = start_rb.start_bot()
