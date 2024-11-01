@@ -7,45 +7,51 @@ TOKEN = dotenv_values().get("TOKEN_IP2")
 
 class GlobalExcept(Exception):
     """Exceção base personalizada."""
+
     def __init__(self, message: str):
         super().__init__(message)
         self.message = message
-        
+
 
 class NetworkError(GlobalExcept):
     """Exceção para quando um recurso não é encontrado."""
+
     def __init__(self, message: str = "You are not connected to the internet!!"):
         super().__init__(message)
 
 
 class InfoGeoloc:
-    
+
     data: dict[str, str, int | bool]
-    
+
     def __init__(self):
         ip_external = ip.external()
         if not ip_external:
             raise NetworkError()
-        
+
         get_geoloc = self.IP2Location(ip_external)
         self.data = get_geoloc
 
     def __getattr__(self, name: str) -> str:
-        
+
         item = self.data.get(name, None)
         if not item:
-            raise AttributeError(f"Atributo '{name}' não encontrado na classe '{self.__class__.__name__}'")
-        
+            raise AttributeError(
+                f"Atributo '{name}' não encontrado na classe '{self.__class__.__name__}'"
+            )
+
         return item
-        
+
     def IP2Location(self, ip: str) -> dict[str, str] | None:
-        data = httpx.get("https://api.ip2location.io/?key={key}&ip={ip}".format(key=TOKEN, ip=ip))
+        data = httpx.get(
+            "https://api.ip2location.io/?key={key}&ip={ip}".format(key=TOKEN, ip=ip)
+        )
         return data.json()
 
     @property
     def ip(self) -> str:
         return self._ip
-    
+
     @ip.setter
     def ip(self, new_info: str) -> None:
         self._ip = new_info

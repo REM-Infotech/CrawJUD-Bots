@@ -48,6 +48,7 @@ class CrawJUD(WorkerThread):
     from .Utils.StartStop_Notify import SetStatus
     from .Utils.dicionarios import cities_Amazonas
     from .Utils.elements import ElementsBot as elements
+
     # Bots
     from .pje import pje
     from .esaj import esaj
