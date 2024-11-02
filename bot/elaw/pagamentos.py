@@ -52,7 +52,7 @@ class sol_pags(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -80,7 +80,7 @@ class sol_pags(CrawJUD):
             elif search is not True:
                 self.message = "Processo não encontrado!"
                 self.type_log = "error"
-                self.prt(self)
+                self.prt()
                 self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
 
         except Exception as e:
@@ -117,7 +117,7 @@ class sol_pags(CrawJUD):
         try:
             self.message = "Informando tipo de pagamento"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             css_typeitens = 'div[id="processoValorPagamentoEditForm:pvp:processoValorPagamentoTipoCombo"]'
             type_itens: WebElement = self.wait.until(
@@ -154,7 +154,7 @@ class sol_pags(CrawJUD):
 
             self.message = "Informando o valor da guia"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             text = self.bot_data.get("VALOR_GUIA")
             css_element = 'input[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_1_1_9_1f_1:processoValorRateioAmountAllDt:0:j_id_2m_1_i_1_1_9_1f_2_2_q_input"]'
@@ -195,7 +195,7 @@ class sol_pags(CrawJUD):
             self.interact.sleep_load('div[id="j_id_2x"]')
             self.message = "Enviando guia"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             docs = [self.bot_data.get("DOC_GUIA")]
             calculo = self.bot_data.get("DOC_CALCULO", None)
@@ -223,7 +223,7 @@ class sol_pags(CrawJUD):
 
             self.message = "Informando tipo de condenação"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             css_div_condenacao_type = 'div[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_3_1_9_26_1_1_1:pvpEFBtypeSelectField1CombosCombo"]'
             div_condenacao_type: WebElement = self.wait.until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, css_div_condenacao_type))
@@ -250,7 +250,7 @@ class sol_pags(CrawJUD):
 
             self.message = "Informando descrição do pagamento"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             desc_pagamento = str(self.bot_data.get("DESC_PAGAMENTO"))
 
@@ -273,7 +273,7 @@ class sol_pags(CrawJUD):
 
             self.message = "Informando data para pagamento"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             css_data_lancamento = 'input[id="processoValorPagamentoEditForm:pvp:processoValorPagamentoVencData_input"]'
             data_lancamento: WebElement = self.wait.until(
@@ -289,7 +289,7 @@ class sol_pags(CrawJUD):
             self.interact.sleep_load('div[id="j_id_2x"]')
             self.message = "Informando favorecido"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             css_inputfavorecido = 'input[id="processoValorPagamentoEditForm:pvp:processoValorFavorecido_input"]'
             input_favorecido: WebElement = WebDriverWait(self.driver, 10).until(
@@ -316,7 +316,7 @@ class sol_pags(CrawJUD):
             self.interact.sleep_load('div[id="j_id_2x"]')
             self.message = "Informando forma de pagamento"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             label_forma_pgto = self.driver.find_element(
                 By.CSS_SELECTOR,
@@ -349,7 +349,7 @@ class sol_pags(CrawJUD):
             self.interact.sleep_load('div[id="j_id_2x"]')
             self.message = "Informando centro de custas"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             css_centro_custas = 'input[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_9_1_9_26_1_1_1:pvpEFBfieldText"]'
             centro_custas: WebElement = self.wait.until(
@@ -365,7 +365,7 @@ class sol_pags(CrawJUD):
             sleep(1)
             self.message = "Informando conta para débito"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             css_div_conta_debito = 'div[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_a_1_9_26_1_1_1:pvpEFBtypeSelectField1CombosCombo"]'
             div_conta_debito: WebElement = self.wait.until(
@@ -388,7 +388,7 @@ class sol_pags(CrawJUD):
 
             self.message = "Informando valor da guia"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             valor_doc = self.bot_data.get("VALOR_GUIA").replace(".", ",")
             valor_guia = (
@@ -427,7 +427,7 @@ class sol_pags(CrawJUD):
             sleep(2)
             self.message = "Inserindo documento"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             docs = [self.bot_data.get("DOC_GUIA")]
 
@@ -475,7 +475,7 @@ class sol_pags(CrawJUD):
 
             self.message = "Informando tipo de guia"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             css_tipocusta = 'div[id="processoValorPagamentoEditForm:pvp:j_id_2m_1_i_4_1_9_26_1_1_1:pvpEFBtypeSelectField1CombosCombo"]'
             div_tipo_custa = self.driver.find_element(By.CSS_SELECTOR, css_tipocusta)
@@ -500,7 +500,7 @@ class sol_pags(CrawJUD):
             sleep(1)
             self.message = "Informando data para pagamento"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             css_data_vencimento = 'input[id="processoValorPagamentoEditForm:pvp:processoValorPagamentoVencData_input"]'
             data_vencimento = self.driver.find_element(
@@ -537,7 +537,7 @@ class sol_pags(CrawJUD):
 
             self.message = "Informando favorecido"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             sleep(2)
             input_favorecido: WebElement = self.wait.until(
@@ -572,7 +572,7 @@ class sol_pags(CrawJUD):
 
             self.message = "Informando centro de custas"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             sleep(1)
 
@@ -617,7 +617,7 @@ class sol_pags(CrawJUD):
 
             self.message = "Salvando alterações"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             save: WebElement = self.wait.until(
                 EC.element_to_be_clickable(
                     (

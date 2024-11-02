@@ -37,7 +37,7 @@ class proc_parte(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -137,4 +137,4 @@ class proc_parte(CrawJUD):
             self.row += 1
             self.message = f"Processo {numero_processo} salvo!"
             self.type_log = "success"
-            self.prt(self)
+            self.prt()

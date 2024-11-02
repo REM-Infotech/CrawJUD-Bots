@@ -43,7 +43,7 @@ class andamentos(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -76,7 +76,7 @@ class andamentos(CrawJUD):
         elif search is not True:
             self.message = "Processo não encontrado!"
             self.type_log = "error"
-            self.prt(self)
+            self.prt()
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
 
     def info_data(self) -> None:
@@ -85,7 +85,7 @@ class andamentos(CrawJUD):
 
             self.message = "Informando data"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             css_Data = 'input[id="j_id_2n:j_id_2r_2_9_input"]'
             campo_data: WebElement = self.wait.until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, css_Data))
@@ -107,7 +107,7 @@ class andamentos(CrawJUD):
         try:
             self.message = "Informando ocorrência"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             inpt_ocorrencia = 'textarea[id="j_id_2n:txtOcorrenciaAndamento"]'
 
             ocorrencia = self.driver.find_element(By.CSS_SELECTOR, inpt_ocorrencia)
@@ -125,7 +125,7 @@ class andamentos(CrawJUD):
         try:
             self.message = "Informando observação"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             inpt_obs = 'textarea[id="j_id_2n:txtObsAndamento"]'
 
@@ -148,7 +148,7 @@ class andamentos(CrawJUD):
         try:
             self.message = "Salvando andamento..."
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             sleep(1)
             self.link = self.driver.current_url
             save_button = self.driver.find_element(By.ID, "btnSalvarAndamentoProcesso")

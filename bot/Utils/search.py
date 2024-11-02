@@ -25,7 +25,7 @@ class SeachBot:
 
         self.message = "Buscando Processo"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         if self.driver.current_url != "https://amazonas.elaw.com.br/processoList.elaw":
 
@@ -128,7 +128,7 @@ class SeachBot:
                     enterproc.click()
                     self.message = "Processo encontrado!"
                     self.type_log = "log"
-                    self.prt(self)
+                    self.prt()
 
                     with suppress(TimeoutException, NoSuchElementException):
 

@@ -43,7 +43,7 @@ class busca_pags(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -88,7 +88,7 @@ class busca_pags(CrawJUD):
 
                 self.message = "Extraindo dados..."
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 find_table_pgmt = divcorreta.find_element(
                     By.CSS_SELECTOR, 'table[class="spwTabelaGrid"]'

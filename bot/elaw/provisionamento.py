@@ -52,7 +52,7 @@ class provisao(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -70,7 +70,7 @@ class provisao(CrawJUD):
 
             self.type_log = "log"
             self.message = "Processo encontrado! Informando valores..."
-            self.prt(self)
+            self.prt()
             # module = "get_valores_proc"
             get_valores = self.get_valores_proc()
             css_btn_edit = (
@@ -108,13 +108,13 @@ class provisao(CrawJUD):
 
                 self.message = 'Provisão "Possível" já inserida'
                 self.type_log = "error"
-                self.prt(self)
+                self.prt()
                 self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
 
         if check_cadastro is not True:
             self.message = "Processo não encontrado!"
             self.type_log = "error"
-            self.prt(self)
+            self.prt()
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
 
     def get_valores_proc(self) -> str:
@@ -192,7 +192,7 @@ class provisao(CrawJUD):
 
             self.message = "Informando valores"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             css_val_inpt = 'input[id="j_id_2m:j_id_2p_2e:processoAmountObjetoDt:0:amountValor_input"][type="text"]'
             campo_valor_dml = self.wait.until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, css_val_inpt))
@@ -227,7 +227,7 @@ class provisao(CrawJUD):
 
             self.message = "Alterando risco"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             for item in filter_risk:
 
                 # label_risco = self.driver.find_element(By.CSS_SELECTOR, 'label[id="j_id_2m:j_id_2p_2e:processoAmountObjetoDt:0:j_id_2p_2i_5_1_6_5_k_2_2_1_label"]').text.lower()
@@ -254,7 +254,7 @@ class provisao(CrawJUD):
 
                 self.message = "Alterando datas de correção base e juros"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
                 if self.bot_data.get("DATA_ATUALIZACAO"):
 
                     DataCorrecaoCss = 'input[id="j_id_2m:j_id_2p_2e:processoAmountObjetoDt:0:amountDataCorrecao_input"]'
@@ -291,7 +291,7 @@ class provisao(CrawJUD):
 
             self.message = "Informando justificativa"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             informar_motivo: WebElement = self.wait.until(
                 EC.presence_of_element_located(
                     (

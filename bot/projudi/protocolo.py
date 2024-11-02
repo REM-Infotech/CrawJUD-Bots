@@ -59,7 +59,7 @@ class protocolo(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -130,7 +130,7 @@ class protocolo(CrawJUD):
         # self.driver.switch_to.frame(self.driver.find_element(By.CSS_SELECTOR, 'iframe[name="userMainFrame"]'))
         self.message = "Selecionando parte"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         table_partes = self.driver.find_element(
             By.CSS_SELECTOR, "#juntarDocumentoForm > table:nth-child(28)"
@@ -208,7 +208,7 @@ class protocolo(CrawJUD):
         try:
             self.message = "Inicializando peticionamento..."
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             button_add_move = self.driver.find_element(By.ID, "peticionarButton")
             button_add_move.click()
 
@@ -223,7 +223,7 @@ class protocolo(CrawJUD):
 
             self.message = "Informando tipo de protocolo..."
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             input_tipo_move: WebElement = self.wait.until(
                 EC.presence_of_element_located(
                     (By.CSS_SELECTOR, 'input[name="descricaoTipoDocumento"]')
@@ -251,7 +251,7 @@ class protocolo(CrawJUD):
             file = str(self.bot_data.get("PETICAO_PRINCIPAL"))
             self.message = "Inserindo Petição/Anexos..."
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             button_new_file = self.driver.find_element(
                 By.CSS_SELECTOR, 'input#editButton[value="Adicionar"]'
             )
@@ -264,7 +264,7 @@ class protocolo(CrawJUD):
             )
             self.message = f"Enviando arquivo '{file}'"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             css_inptfile = 'input[id="conteudo"]'
             input_file_element: WebElement = WebDriverWait(self.driver, 10).until(
@@ -283,7 +283,7 @@ class protocolo(CrawJUD):
 
             self.message = "Arquivo enviado com sucesso!"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             sleep(1)
             type_file: WebElement = self.wait.until(
@@ -331,7 +331,7 @@ class protocolo(CrawJUD):
                 self.message = f"Enviando arquivo '{file}'"
                 file_to_upload = self.format_String(file)
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
                 input_file_element: WebElement = WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located((By.XPATH, '//*[@id="conteudo"]'))
                 )
@@ -341,7 +341,7 @@ class protocolo(CrawJUD):
                 self.wait_progressbar()
                 self.message = f"Arquivo '{file}' enviado com sucesso!"
                 self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             sleep(3)
             tablefiles: WebElement = self.wait.until(
@@ -375,7 +375,7 @@ class protocolo(CrawJUD):
         try:
             self.message = "Assinando arquivos..."
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             password_input = self.driver.find_element(By.ID, "senhaCertificado")
             password_input.click()
             senhatoken = f"{self.token}"
@@ -406,7 +406,7 @@ class protocolo(CrawJUD):
             self.driver.switch_to.default_content()
             self.message = "Arquivos assinados"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
         except Exception as e:
             raise ErroDeExecucao(e=e)
@@ -415,7 +415,7 @@ class protocolo(CrawJUD):
 
         self.message = f'Concluindo peticionamento do processo {self.bot_data.get("NUMERO_PROCESSO")}'
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         cmd2 = f"return document.getElementById('{self.id_part}').checked"
         return_cmd = self.driver.execute_script(cmd2)
@@ -479,7 +479,7 @@ class protocolo(CrawJUD):
             self.message = f'Peticionamento do processo Nº{self.bot_data.get("NUMERO_PROCESSO")} concluído com sucesso!'
 
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             return [self.bot_data.get("NUMERO_PROCESSO"), self.message, comprovante1]
 

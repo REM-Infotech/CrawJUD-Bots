@@ -9,8 +9,6 @@ import logging
 from tqdm import tqdm
 from time import sleep
 from datetime import datetime
-
-from bot.CrawJUD import CrawJUD
 from app.models import CacheLogs, Executions
 
 # Define a codificação de caracteres como UTF-8
@@ -18,17 +16,12 @@ codificacao = "UTF-8"
 mensagens = []
 
 
-class printtext(CrawJUD):
+class printtext:
 
-    def __init__(self, Head: CrawJUD):
-        self.__dict__ = Head.__dict__.copy()
+    def __init__(self, **kwrgs):
+        self.__dict__.update(kwrgs)
 
-    def __call__(self, Head: CrawJUD):
-
-        self.__dict__ = Head.__dict__.copy()
-        self.log_message()
-
-    def log_message(self) -> None:
+    def __call__(self):
 
         log = self.message
         if self.message_error:

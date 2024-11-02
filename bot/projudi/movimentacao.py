@@ -53,7 +53,7 @@ class movimentacao(CrawJUD):
                 self.type_log = "error"
                 self.message_error = f"{
                     message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -76,7 +76,7 @@ class movimentacao(CrawJUD):
 
         self.message = "Buscando movimentações"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         nm_mv = self.bot_data.get("NOME_MOV", None)
         dt_lt = self.bot_data.get("DATA_LIMITE", None)

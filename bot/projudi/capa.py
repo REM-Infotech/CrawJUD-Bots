@@ -44,7 +44,7 @@ class capa(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -70,7 +70,7 @@ class capa(CrawJUD):
             f"Obtendo informações do processo {self.bot_data.get('NUMERO_PROCESSO')}..."
         )
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         btn_partes = self.driver.find_element(By.CSS_SELECTOR, self.elements.btn_partes)
         btn_partes.click()

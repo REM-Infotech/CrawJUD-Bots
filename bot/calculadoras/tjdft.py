@@ -53,7 +53,7 @@ class tjdft(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -78,7 +78,7 @@ class tjdft(CrawJUD):
         try:
             self.message = "Acessando Página de cálculo.."
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             self.driver.get(
                 "https://www.tjdft.jus.br/servicos/atualizacao-monetaria-1/calculo"
             )
@@ -116,7 +116,7 @@ class tjdft(CrawJUD):
             sleep(2)
             self.message = "Informando numero do processo"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             css_input_numproc = 'input[id="num_processo"][name="num_processo"]'
             get_input_process: WebElement = self.wait.until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, css_input_numproc))
@@ -126,7 +126,7 @@ class tjdft(CrawJUD):
 
             self.message = "numero do processo informado"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
         except Exception as e:
             raise ErroDeExecucao("Erro ao informar número do processo", e)
@@ -138,7 +138,7 @@ class tjdft(CrawJUD):
             css_name_requerente = 'input[name="requerente"][id="requerente"]'
             self.message = "Informando requerente"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             get_name_requerente: WebElement = self.wait.until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, css_name_requerente))
             )
@@ -147,7 +147,7 @@ class tjdft(CrawJUD):
 
             self.message = "Nome do requerente informado"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
         except Exception as e:
             raise ErroDeExecucao(e=e)
@@ -159,7 +159,7 @@ class tjdft(CrawJUD):
             css_name_requerido = 'input[name="requerido"][id="requerido"]'
             self.message = "Informado requerido"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             get_name_requerido: WebElement = self.wait.until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, css_name_requerido))
             )
@@ -168,7 +168,7 @@ class tjdft(CrawJUD):
 
             self.message = "Nome do requerido informado"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
         except Exception as e:
             raise ErroDeExecucao(e=e)
@@ -178,7 +178,7 @@ class tjdft(CrawJUD):
         try:
             self.message = "Informando incidencia de juros e data de incidencia"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             juros_partir = str(self.bot_data.get("JUROS_PARTIR")).upper()
 
@@ -233,7 +233,7 @@ class tjdft(CrawJUD):
             css_data_valor_devido = 'input[id="data-0"][name="parcela_data:list"]'
             self.message = "Informando data valor devido"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             data_valor_devido: WebElement = self.wait.until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, css_data_valor_devido))
             )
@@ -244,7 +244,7 @@ class tjdft(CrawJUD):
             css_valor_devido = 'input[id="valor-0"][name="parcela_valor:list"]'
             self.message = "Informando valor devido"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             valor_devido: WebElement = self.wait.until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, css_valor_devido))
             )
@@ -256,7 +256,7 @@ class tjdft(CrawJUD):
 
             self.message = "valor devido informado"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
         except Exception as e:
             raise ErroDeExecucao(e=e)
@@ -270,7 +270,7 @@ class tjdft(CrawJUD):
                 css_multa_percentual = 'input[name="multa_percent"][id="multa_percent"]'
                 self.message = "Informando multa percentual"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 if self.bot_data.get("MULTA_PERCENTUAL", None):
                     multa_percentual: WebElement = self.wait.until(
@@ -301,7 +301,7 @@ class tjdft(CrawJUD):
 
                 self.message = "Multa informada"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
             except Exception as e:
                 raise ErroDeExecucao(e=e)
@@ -314,7 +314,7 @@ class tjdft(CrawJUD):
                 )
                 self.message = "Informando Honorários de Sucumbência"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 disabled_state = ""
 
@@ -368,7 +368,7 @@ class tjdft(CrawJUD):
 
                 self.message = "Percentual Honorários de Sucumbência informado"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
             except Exception as e:
                 raise ErroDeExecucao(e=e)
@@ -392,7 +392,7 @@ class tjdft(CrawJUD):
                 css_honorario_exec = 'input[id="honor_exec_percent"]'
                 self.message = "Informando Honorários de Cumprimento"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 disabled_state = ""
 
@@ -446,7 +446,7 @@ class tjdft(CrawJUD):
 
                 self.message = "Informado Honorários de Cumprimento"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
             except Exception as e:
                 raise ErroDeExecucao(e=e)
@@ -457,7 +457,7 @@ class tjdft(CrawJUD):
                 css_data_custas = 'input[id="custas-data-0"]'
                 self.message = "Informando valor custas"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
                 data_custas: WebElement = self.driver.find_element(
                     By.CSS_SELECTOR, css_data_custas
                 )
@@ -468,7 +468,7 @@ class tjdft(CrawJUD):
                 css_custas_valor = 'input[id="custas-valor-0"]'
                 self.message = "Informando valor devido"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
                 custas_valor: WebElement = self.driver.find_element(
                     By.CSS_SELECTOR, css_custas_valor
                 )
@@ -480,7 +480,7 @@ class tjdft(CrawJUD):
 
                 self.message = "Valor custas informado"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
             except Exception as e:
                 raise ErroDeExecucao(e=e)

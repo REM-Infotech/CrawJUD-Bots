@@ -45,7 +45,7 @@ class download(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -62,7 +62,7 @@ class download(CrawJUD):
 
                 self.message = "Processo encontrado!"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
                 self.buscar_doc()
                 self.download_docs()
                 self.message = "Arquivos salvos com sucesso!"
@@ -78,7 +78,7 @@ class download(CrawJUD):
             elif not check_cadastro:
                 self.message = "Processo não encontrado!"
                 self.type_log = "error"
-                self.prt(self)
+                self.prt()
                 self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
 
         except Exception as e:
@@ -88,7 +88,7 @@ class download(CrawJUD):
 
         self.message = "Acessando página de anexos"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
         anexosbutton_css = 'a[href="#tabViewProcesso:files"]'
         anexosbutton: WebElement = self.wait.until(
             EC.presence_of_element_located((By.CSS_SELECTOR, anexosbutton_css))
@@ -97,7 +97,7 @@ class download(CrawJUD):
         sleep(1.5)
         self.message = "Acessando tabela de documentos"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
     def download_docs(self) -> None:
 
@@ -122,7 +122,7 @@ class download(CrawJUD):
 
         self.message = f'Buscando documentos que contenham "{self.bot_data.get("TERMOS").__str__().replace(",", ", ")}"'
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         for item in table_doc:
 
@@ -140,7 +140,7 @@ class download(CrawJUD):
 
                     self.message = f'Arquivo com termo de busca "{termo}" encontrado!'
                     self.type_log = "log"
-                    self.prt(self)
+                    self.prt()
 
                     baixar = item.find_elements(By.TAG_NAME, "td")[13].find_element(
                         By.CSS_SELECTOR, 'button[title="Baixar"]'
@@ -150,7 +150,7 @@ class download(CrawJUD):
                     self.rename_doc(get_name_file)
                     self.message = "Arquivo baixado com sucesso!"
                     self.type_log = "info"
-                    self.prt(self)
+                    self.prt()
 
     def rename_doc(self, namefile: str):
 

@@ -49,7 +49,7 @@ class emissao(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -79,7 +79,7 @@ class emissao(CrawJUD):
 
         self.message = "Acessando página de emissão"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         self.driver.get(
             "https://depositojudicial.caixa.gov.br/sigsj_internet/depositos-judiciais/justica-estadual/"
@@ -133,7 +133,7 @@ class emissao(CrawJUD):
 
         self.message = "Informando tribunal"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         lista_tribunal: WebElement = self.wait.until(
             EC.presence_of_element_located(
@@ -153,7 +153,7 @@ class emissao(CrawJUD):
 
         self.message = "Informando comarca"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         lista_comarca: WebElement = self.wait.until(
             EC.presence_of_element_located(
@@ -172,7 +172,7 @@ class emissao(CrawJUD):
         self.interact.wait_caixa()
         self.message = "Informando vara"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
         lista_vara: WebElement = self.wait.until(
             EC.presence_of_element_located(
                 (By.CSS_SELECTOR, 'select[id="j_id5:filtroView:formFormulario:coVara"]')
@@ -187,7 +187,7 @@ class emissao(CrawJUD):
         self.interact.wait_caixa()
         self.message = "Informando agencia"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
         lista_agencia: WebElement = self.wait.until(
             EC.presence_of_element_located(
                 (
@@ -212,7 +212,7 @@ class emissao(CrawJUD):
         self.interact.wait_caixa()
         self.message = "Informando numero do processo"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
         num_process: WebElement = self.wait.until(
             EC.presence_of_element_located(
                 (
@@ -226,7 +226,7 @@ class emissao(CrawJUD):
         self.interact.wait_caixa()
         self.message = "Informando tipo da ação do processo"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
         list_type_acao_process = self.driver.find_element(
             By.CSS_SELECTOR, 'select[id="j_id5:filtroView:formFormulario:idOrigemAcao"]'
         ).find_elements(By.TAG_NAME, "option")
@@ -239,7 +239,7 @@ class emissao(CrawJUD):
         self.interact.wait_caixa()
         self.message = "Informando natureza tributaria"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
         natureza_tributaria = self.driver.find_element(
             By.CSS_SELECTOR, 'select[id="j_id5:filtroView:formFormulario:naturezaAcao"]'
         ).find_elements(By.TAG_NAME, "option")[2]
@@ -250,7 +250,7 @@ class emissao(CrawJUD):
         self.interact.wait_caixa()
         self.message = "Informando nome do autor"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
         campo_nome_autor = self.driver.find_element(
             By.CSS_SELECTOR, 'input[id="j_id5:filtroView:formFormulario:nomeAutor"]'
         )
@@ -259,7 +259,7 @@ class emissao(CrawJUD):
         self.interact.wait_caixa()
         self.message = "Informando tipo de documento do autor"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
         doct_type = count_doc(self.bot_data.get("CPF_CNPJ_AUTOR"))
 
         if not doct_type:
@@ -278,7 +278,7 @@ class emissao(CrawJUD):
         self.interact.wait_caixa()
         self.message = "Informando documento do autor"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         self.interact.wait_caixa()
         campo_doc_autor = self.driver.find_element(
@@ -295,7 +295,7 @@ class emissao(CrawJUD):
         self.interact.wait_caixa()
         self.meesage = "Informando réu"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
         campo_nome_reu = self.driver.find_element(
             By.CSS_SELECTOR, 'input[id="j_id5:filtroView:formFormulario:nomeReu"]'
         )
@@ -322,7 +322,7 @@ class emissao(CrawJUD):
         self.interact.wait_caixa()
         self.message = "Informando tipo de documento réu"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
         campo_doc_reu = self.driver.find_element(
             By.CSS_SELECTOR, 'input[id="j_id5:filtroView:formFormulario:codDocReu"]'
         )
@@ -339,7 +339,7 @@ class emissao(CrawJUD):
         self.interact.wait_caixa()
         self.message = "Informando indicador depositante"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
         indicador_depositante = self.driver.find_element(
             By.CSS_SELECTOR,
             'select[id="j_id5:filtroView:formFormulario:idDepositante"]',
@@ -354,7 +354,7 @@ class emissao(CrawJUD):
         self.interact.wait_caixa()
         self.message = "Informando valor do depósito"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
         campo_val_deposito = self.driver.find_element(
             By.CSS_SELECTOR, 'input[id="j_id5:filtroView:formFormulario:valorDeposito"]'
         )
@@ -370,7 +370,7 @@ class emissao(CrawJUD):
         self.interact.wait_caixa()
         self.message = "Gerando documento"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
         make_id = self.driver.find_element(
             By.CSS_SELECTOR, 'input[id="j_id5:filtroView:formFormulario:j_id248"]'
         )
@@ -379,7 +379,7 @@ class emissao(CrawJUD):
         self.interact.wait_caixa()
         self.message = "Baixando documento"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
         download_pdf = self.driver.find_element(
             By.CSS_SELECTOR, 'a[id="j_id5:filtroView:formFormulario:j_id554"]'
         )

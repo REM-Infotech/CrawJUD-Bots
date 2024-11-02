@@ -75,7 +75,7 @@ class emissao(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -111,7 +111,7 @@ class emissao(CrawJUD):
 
         self.message = "Informando foro"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         set_foro: WebElement = self.wait.until(
             EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.ome_foro))
@@ -300,14 +300,14 @@ class emissao(CrawJUD):
             f"Boleto Nº{self.bot_data.get('NUMERO_PROCESSO')} emitido com sucesso!"
         )
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
     def get_barcode(self) -> None:
 
         try:
             self.message = "Extraindo código de barras"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             sleep(2)
             # Inicialize uma lista para armazenar os números encontrados

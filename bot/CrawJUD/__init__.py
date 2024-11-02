@@ -114,25 +114,11 @@ class CrawJUD:
     def wait(self, wait: WebDriverWait):
         self.wait = wait
 
-    def search(self):
-
-        self.type_log = "log"
-
-        self.message = f'Buscando processos pelo nome "{self.parte_name}"'
-        if self.typebot != "proc_parte":
-            self.message = f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}'
-
-        self.prt(self)
-        result = self.SearchBot(**self.kwrgs)
-        return result()
-
     def setup(self):
-
-        self.prt = self.printtext(self)
 
         self.message = str("Inicializando robô")
         self.type_log = str("log")
-        self.prt(self)
+        self.prt()
 
         self.graphicMode = "doughnut"
         with open(self.path_args, "rb") as f:
@@ -189,14 +175,14 @@ class CrawJUD:
 
                 self.message = "Login efetuado com sucesso!"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
             elif chk_logged is False:
 
                 self.driver.quit()
                 self.message = "Erro ao realizar login"
                 self.type_log = "error"
-                self.prt(self)
+                self.prt()
                 raise Exception(self.message)
 
         # try:
@@ -211,7 +197,7 @@ class CrawJUD:
 
         #         self.message = "Erro ao inicializar WebDriver"
         #         self.type_log = "error"
-        #         self.prt(self)
+        #         self.prt()
         #         return
 
         #     self.interact = self.Interact(self)
@@ -222,7 +208,7 @@ class CrawJUD:
 
         #             self.message = "Login efetuado com sucesso!"
         #             self.type_log = "log"
-        #             self.prt(self)
+        #             self.prt()
 
         #         elif Get_Login is False:
 
@@ -230,7 +216,7 @@ class CrawJUD:
 
         #             self.message = "Erro ao realizar login"
         #             self.type_log = "error"
-        #             self.prt(self)
+        #             self.prt()
 
         #             with app.app_context():
         #                 self.SetStatus(
@@ -264,10 +250,27 @@ class CrawJUD:
         #     self.row = 0
         #     self.message = "Falha ao iniciar. Informe a mensagem de erro ao suporte"
         #     self.type_log = "error"
-        #     self.prt(self)
+        #     self.prt()
         #     self.message_error = str(e)
-        #     self.prt(self)
+        #     self.prt()
         #     return
+
+    def search(self):
+
+        self.type_log = "log"
+
+        self.message = f'Buscando processos pelo nome "{self.parte_name}"'
+        if self.typebot != "proc_parte":
+            self.message = f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}'
+
+        self.prt()
+        result = self.SearchBot(**self.kwrgs)
+        return result()
+
+    def prt(self) -> None:
+
+        print_bot = self.printtext(**self.__dict__)
+        print_bot()
 
     def dataFrame(self) -> list[dict[str, str]]:
 
@@ -402,7 +405,7 @@ class CrawJUD:
                 self.type_log = "success"
 
             self.message = message
-            self.prt(self)
+            self.prt()
 
     def append_error(self, data: dict[str, str] = None):
 
@@ -449,14 +452,14 @@ class CrawJUD:
 
         self.type_log = "success"
         self.message = f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos"
-        self.prt(self)
+        self.prt()
 
     def DriverLaunch(self) -> WebDriver:
 
         try:
             self.message = "Inicializando WebDriver"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             chrome_options = Options()
             self.user_data_dir = str(
@@ -538,7 +541,7 @@ class CrawJUD:
 
             self.message = "WebDriver inicializado"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             return driver
 
@@ -570,7 +573,7 @@ class CrawJUD:
 
             self.message = str(resultado.stdout)
             self.type_log = str("log")
-            self.prt(self)
+            self.prt()
 
         except subprocess.CalledProcessError as e:
             raise e

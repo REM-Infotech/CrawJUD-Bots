@@ -51,7 +51,7 @@ class cadastro(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -79,7 +79,7 @@ class cadastro(CrawJUD):
 
             self.message = "Processo não encontrado, inicializando cadastro..."
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             btn_newproc = self.driver.find_element(
                 By.CSS_SELECTOR, 'button[id="btnNovo"]'
@@ -120,7 +120,7 @@ class cadastro(CrawJUD):
                 f"Formulário preenchido em {minutes} minutos e {seconds} segundos"
             )
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             self.salvar_tudo()
 
@@ -134,7 +134,7 @@ class cadastro(CrawJUD):
 
         self.message = "Informando área do direito"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         label_area: WebElement = self.wait.until(
             EC.presence_of_element_located((By.CSS_SELECTOR, css_label_area)),
@@ -149,7 +149,7 @@ class cadastro(CrawJUD):
 
         self.message = "Área do direito selecionada!"
         self.type_log = "info"
-        self.prt(self)
+        self.prt()
 
     def subarea_direito(self) -> None:
         """Declaração dos CSS em variáveis"""
@@ -158,7 +158,7 @@ class cadastro(CrawJUD):
 
         self.message = "Informando sub-área do direito"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         expand_areasub: WebElement = self.wait.until(
             EC.presence_of_element_located((By.CSS_SELECTOR, comboAreaSub_css)),
@@ -172,7 +172,7 @@ class cadastro(CrawJUD):
         self.interact.sleep_load('div[id="j_id_3x"]')
         self.message = "Sub-Área do direito selecionada!"
         self.type_log = "info"
-        self.prt(self)
+        self.prt()
 
     def next_page(self) -> None:
 
@@ -190,7 +190,7 @@ class cadastro(CrawJUD):
 
         self.message = "Informando esfera do processo"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         set_esfera_judge: WebElement = self.wait.until(
             EC.presence_of_element_located((By.CSS_SELECTOR, css_esfera_judge)),
@@ -204,7 +204,7 @@ class cadastro(CrawJUD):
 
         self.message = "Esfera Informada!"
         self.type_log = "info"
-        self.prt(self)
+        self.prt()
 
     def informa_estado(self) -> None:
         """Declaração dos CSS em variáveis"""
@@ -215,14 +215,14 @@ class cadastro(CrawJUD):
 
         self.message = "Informando estado do processo"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         self.Select2_ELAW(elementSelect, text)
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = "Estado do processo informado!"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
     def informa_comarca(self) -> None:
         """Declaração dos CSS em variáveis"""
@@ -232,14 +232,14 @@ class cadastro(CrawJUD):
 
         self.message = "Informando comarca do processo"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         self.Select2_ELAW(elementSelect, text)
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = "Comarca do processo informado!"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
     def informa_foro(self) -> None:
         """Declaração dos CSS em variáveis"""
@@ -249,14 +249,14 @@ class cadastro(CrawJUD):
 
         self.message = "Informando foro do processo"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         self.Select2_ELAW(elementSelect, text)
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = "Foro do processo informado!"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
     def informa_vara(self) -> None:
         """Declaração dos CSS em variáveis"""
@@ -266,14 +266,14 @@ class cadastro(CrawJUD):
 
         self.message = "Informando vara do processo"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         self.Select2_ELAW(elementSelect, text)
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = "Vara do processo informado!"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
     def informa_proceso(self) -> None:
 
@@ -282,7 +282,7 @@ class cadastro(CrawJUD):
 
         self.message = "Informando número do processo"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         campo_processo: WebElement = self.wait.until(
             EC.presence_of_element_located((By.CSS_SELECTOR, css_campo_processo)),
@@ -299,7 +299,7 @@ class cadastro(CrawJUD):
 
         self.message = "Número do processo informado!"
         self.type_log = "info"
-        self.prt(self)
+        self.prt()
 
     def informa_empresa(self) -> None:
 
@@ -308,14 +308,14 @@ class cadastro(CrawJUD):
 
         self.message = "Informando Empresa"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         self.Select2_ELAW(elementSelect, text)
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = "Empresa informada!"
         self.type_log = "info"
-        self.prt(self)
+        self.prt()
 
     def set_classe_empresa(self) -> None:
         """Declaração dos CSS em variáveis"""
@@ -326,20 +326,20 @@ class cadastro(CrawJUD):
 
         self.message = "Informando classificação da Empresa"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         self.Select2_ELAW(elementSelect, text)
         self.interact.sleep_load('div[id="j_id_3x"]')
 
         self.message = "Classificação da Empresa informada"
         self.type_log = "info"
-        self.prt(self)
+        self.prt()
 
     def parte_contraria(self) -> None:
 
         self.message = "Preechendo informações da parte contrária"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         text = self.bot_data.get("TIPO_PARTE_CONTRARIA")
         elementSelect = self.elements.tipo_parte_contraria_input
@@ -409,7 +409,7 @@ class cadastro(CrawJUD):
 
         self.messsage = "Parte adicionada!"
         self.type_log = "info"
-        self.prt(self)
+        self.prt()
 
     def uf_proc(self) -> None:
 
@@ -445,7 +445,7 @@ class cadastro(CrawJUD):
 
         self.message = "Informando ação do processo"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         div_comboProcessoTipo: WebElement = self.wait.until(
             EC.presence_of_element_located((By.CSS_SELECTOR, comboProcessoTipo)),
@@ -466,14 +466,14 @@ class cadastro(CrawJUD):
 
         self.message = "Ação informada!"
         self.type_log = "info"
-        self.prt(self)
+        self.prt()
 
     def data_distribuicao(self) -> None:
 
         self.interact.sleep_load('div[id="j_id_3x"]')
         self.message = "Informando data de distribuição"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         self.interact.sleep_load('div[id="j_id_3x"]')
         css_data_distribuicao = 'input[id="j_id_3k_1:dataDistribuicao_input"]'
@@ -492,13 +492,13 @@ class cadastro(CrawJUD):
 
         self.message = "Data de distribuição informada!"
         self.type_log = "info"
-        self.prt(self)
+        self.prt()
 
     def advogado_responsavel(self) -> None:
 
         self.message = "informando advogado interno"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
         css_adv_responsavel = 'input[id="j_id_3k_1:autoCompleteLawyer_input"]'
 
         input_adv_responsavel: WebElement = self.wait.until(
@@ -552,13 +552,13 @@ class cadastro(CrawJUD):
 
         self.message = "Advogado interno informado!"
         self.type_log = "info"
-        self.prt(self)
+        self.prt()
 
     def adv_parte_contraria(self) -> None:
 
         self.message = "Informando Adv. Parte contrária"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         css_input_adv = 'input[id="j_id_3k_1:autoCompleteLawyerOutraParte_input"]'
         campo_adv: WebElement = self.wait.until(
@@ -605,13 +605,13 @@ class cadastro(CrawJUD):
 
         self.message = "Adv. parte contrária informado!"
         self.type_log = "info"
-        self.prt(self)
+        self.prt()
 
     def info_valor_causa(self) -> None:
 
         self.message = "Informando valor da causa"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         css_valor_causa = 'input[id="j_id_3k_1:amountCase_input"]'
 
@@ -633,7 +633,7 @@ class cadastro(CrawJUD):
 
         self.message = "Valor da causa informado!"
         self.type_log = "info"
-        self.prt(self)
+        self.prt()
 
     def escritorio_externo(self) -> None:
         """Declaração dos CSS em variáveis"""
@@ -642,7 +642,7 @@ class cadastro(CrawJUD):
 
         self.message = "Informando Escritório Externo"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         div_escritrorioexterno: WebElement = self.wait.until(
             EC.presence_of_element_located((By.CSS_SELECTOR, escritrorioexterno)),
@@ -657,7 +657,7 @@ class cadastro(CrawJUD):
 
         self.message = "Escritório externo informado!"
         self.type_log = "info"
-        self.prt(self)
+        self.prt()
 
     def tipo_contingencia(self) -> None:
         """Declaração dos CSS em variáveis"""
@@ -672,7 +672,7 @@ class cadastro(CrawJUD):
 
         self.message = "Informando contingenciamento"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         div_contingencia: WebElement = self.wait.until(
             EC.presence_of_element_located((By.CSS_SELECTOR, contingencia)),
@@ -686,14 +686,14 @@ class cadastro(CrawJUD):
 
         self.message = "Contingenciamento informado!"
         self.type_log = "info"
-        self.prt(self)
+        self.prt()
 
     def cad_adv(self) -> None:
 
         try:
             self.message = "Cadastrando advogado"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             css_add_adv = 'button[id="j_id_3k_1:lawyerOutraParteNovoButtom"]'
             add_parte: WebElement = self.wait.until(
@@ -757,7 +757,7 @@ class cadastro(CrawJUD):
 
             self.message = "Advogado cadastrado!"
             self.type_log = "info"
-            self.prt(self)
+            self.prt()
             self.interact.sleep_load('div[id="j_id_3x"]')
 
         except Exception as e:
@@ -768,7 +768,7 @@ class cadastro(CrawJUD):
         try:
             self.message = "Cadastrando parte"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             add_parte: WebElement = self.wait.until(
                 EC.presence_of_element_located(
@@ -889,7 +889,7 @@ class cadastro(CrawJUD):
 
             self.message = "Parte cadastrada!"
             self.type_log = "info"
-            self.prt(self)
+            self.prt()
 
         except Exception as e:
             raise ErroDeExecucao(e=e)
@@ -905,7 +905,7 @@ class cadastro(CrawJUD):
 
         self.message = "Salvando processo novo"
         self.type_log = "info"
-        self.prt(self)
+        self.prt()
 
         salvartudo.click()
 
@@ -949,7 +949,7 @@ class cadastro(CrawJUD):
 
             self.message = "Processo salvo com sucesso!"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             return True
 
         elif not wait_confirm_save:
