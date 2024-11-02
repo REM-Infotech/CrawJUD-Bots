@@ -47,7 +47,7 @@ class WorkerThread:
                 pid = os.path.basename(self.path_args.replace(".json", ""))
                 process = multiprocessing.Process(
                     target=bot,
-                    kwargs=self.kwrgs,
+                    kwrgs=self.kwrgs,
                     name=f"{self.display_name} - {pid}",
                     daemon=True
                 )

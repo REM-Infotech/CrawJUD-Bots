@@ -18,8 +18,8 @@ type_doc = {11: "cpf", 14: "cnpj"}
 
 class complement(CrawJUD):
 
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
+    def __init__(self, **kwrgs) -> None:
+        super().__init__(**kwrgs)
 
         from clear import clear
 

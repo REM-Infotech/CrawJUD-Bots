@@ -17,19 +17,15 @@ if platform.system() == "Windows":
     from pywinauto import Application
 
 
-from bot.CrawJUD import CrawJUD
+class AuthBot:
 
+    def __init__(self, **kwrgs) -> None:
+        self.__dict__.update(kwrgs)
 
-class AuthBot(CrawJUD):
-
-    def __init__(self, Head: CrawJUD):
-        self.__dict__ = Head.__dict__.copy()
-
-    def __call__(self, Head: CrawJUD) -> bool:
+    def __call__(self) -> bool:
 
         to_call = getattr(self, f"{self.system.lower()}_auth")
         if to_call:
-            self.__dict__ = Head.__dict__.copy()
             return to_call()
 
         raise RuntimeError("Sistema Não encontrado!")

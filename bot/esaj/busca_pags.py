@@ -11,8 +11,8 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class busca_pags(CrawJUD):
 
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
+    def __init__(self, **kwrgs) -> None:
+        super().__init__(**kwrgs)
         self.datetimeNOW = datetime.now(pytz.timezone("America/Manaus")).strftime(
             "%d-%m-%Y"
         )

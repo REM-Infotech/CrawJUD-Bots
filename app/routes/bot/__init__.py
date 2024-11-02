@@ -51,8 +51,7 @@ def botlaunch(id: int, system: str, typebot: str):
                 path_args=path_args,
                 display_name=display_name,
                 system=system,
-                typebot=typebot,
-                app=app
+                typebot=typebot
             )
             is_started = worker_thread.start()
 

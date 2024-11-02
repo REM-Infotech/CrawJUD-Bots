@@ -9,24 +9,15 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
-from bot.CrawJUD import CrawJUD
 
 
-class SeachBot(CrawJUD):
+class SeachBot:
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwrgs):
+        self.__dict__.update(kwrgs)
 
-    def __call__(self, Head: CrawJUD) -> None:
+    def __call__(self):
 
-        self.__dict__ = Head.__dict__.copy()
-        self.type_log = "log"
-
-        self.message = f'Buscando processos pelo nome "{self.parte_name}"'
-        if self.typebot != "proc_parte":
-            self.message = f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}'
-
-        self.prt(self)
         src: bool = getattr(self, f"{self.system.lower()}_search", None)()
         return src
 

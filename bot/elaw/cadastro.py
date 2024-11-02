@@ -22,8 +22,8 @@ type_doc = {11: "cpf", 14: "cnpj"}
 
 class cadastro(CrawJUD):
 
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
+    def __init__(self, **kwrgs) -> None:
+        super().__init__(**kwrgs)
         self.start_time = time.perf_counter()
 
     def execution(self) -> None:
