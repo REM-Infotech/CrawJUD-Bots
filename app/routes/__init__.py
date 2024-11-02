@@ -1,6 +1,7 @@
 from app import app, io
 from app.routes.bot import bot
 from app.routes import handler
+from bot.Utils.StartStop_Notify import SetStatus
 from flask_socketio import join_room, leave_room, emit
 from app.models import CacheLogs
 
@@ -57,5 +58,16 @@ def handle_leave(data):
 def handle_message(data: dict[str, str | int]):
 
     pid = data["pid"]
+    chk_infos = [data.get("system"), data.get("typebot")]
+
+    if all(chk_infos):
+
+        SetStatus(
+            status="Finalizado",
+            pid=pid,
+            system=data["system"],
+            typebot=data["system"],
+        ).botstop()
+
     emit("log_message", data, room=pid)
     # print("mensagem enviada")

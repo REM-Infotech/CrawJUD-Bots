@@ -34,9 +34,15 @@ TypeHint = Union[
 
 class CrawJUD:
 
-    def __init__(self, **kwrgs):
-        self.__dict__.update(kwrgs)
-        self.kwrgs = kwrgs
+    settings = {
+        "recentDestinations": [{"id": "Save as PDF", "origin": "local", "account": ""}],
+        "selectedDestinationId": "Save as PDF",
+        "version": 2,
+    }
+
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+        self.kwrgs = kwargs
         self.setup()
 
     def __getattr__(self, nome: str) -> TypeHint:
@@ -48,16 +54,45 @@ class CrawJUD:
 
         return item
 
-    settings = {
-        "recentDestinations": [{"id": "Save as PDF", "origin": "local", "account": ""}],
-        "selectedDestinationId": "Save as PDF",
-        "version": 2,
-    }
+    @property
+    def kwrgs(self):
+        return self.kwrgs
 
-    row = 0
-    message_error = None
-    args_bot: dict[str, str | int] = {}
-    bot_data: dict[str, str | int | datetime] = {}
+    @kwrgs.setter
+    def kwrgs(self, new_kwg):
+        self.kwrgs = new_kwg
+
+    @property
+    def row(self) -> int:
+        return self.row
+
+    @row.setter
+    def row(self, new_row: int):
+        self.row = new_row
+
+    @property
+    def message_error(self) -> str:
+        return self.message_error
+
+    @message_error.setter
+    def message_error(self, nw_m: str) -> str:
+        self.message_error = nw_m
+
+    @property
+    def args_bot(self) -> dict:
+        return self.args_bot
+
+    @args_bot.setter
+    def args_bot(self, new_arg: dict):
+        self.args_bot = new_arg
+
+    @property
+    def bot_data(self) -> dict:
+        return self.bot_data
+
+    @bot_data.setter
+    def bot_data(self, new_botdata: dict):
+        self.bot_data = new_botdata
 
     @property
     def AuthBot(self):
@@ -102,158 +137,92 @@ class CrawJUD:
 
         return ElementsBot
 
-    @property
-    def driver(self):
-        return self.DriverLaunch()
-
-    @property
-    def wait(self):
-        return self.wait
-
-    @wait.setter
-    def wait(self, wait: WebDriverWait):
-        self.wait = wait
-
     def setup(self):
 
-        self.message = str("Inicializando robô")
-        self.type_log = str("log")
-        self.prt()
+        try:
+            with open(self.path_args, "rb") as f:
+                json_f: dict[str, str | int] = json.load(f)
 
-        self.graphicMode = "doughnut"
-        with open(self.path_args, "rb") as f:
-            json_f: dict[str, str | int] = json.load(f)
+                self.argbot = json_f
+                self.kwrgs.update(json_f)
 
-            self.argbot = json_f
-            self.kwrgs.update(json_f)
+                for key, value in json_f.items():
+                    setattr(self, key, value)
 
-            for key, value in json_f.items():
-                setattr(self, key, value)
+            self.message = str("Inicializando robô")
+            self.type_log = str("log")
+            self.prt()
 
-        self.output_dir_path = pathlib.Path(self.path_args).parent.resolve().__str__()
-        # time.sleep(10)
-        self.list_args = [
-            "--ignore-ssl-errors=yes",
-            "--ignore-certificate-errors",
-            "--display=:99",
-            "--window-size=1600,900",
-            "--no-sandbox",
-            "--disable-blink-features=AutomationControlled",
-            "--kiosk-printing",
-        ]
+            self.DriverLaunch()
 
-        if self.name_cert:
+            self.output_dir_path = (
+                pathlib.Path(self.path_args).parent.resolve().__str__()
+            )
+            # time.sleep(10)
+            self.list_args = [
+                "--ignore-ssl-errors=yes",
+                "--ignore-certificate-errors",
+                "--display=:99",
+                "--window-size=1600,900",
+                "--no-sandbox",
+                "--disable-blink-features=AutomationControlled",
+                "--kiosk-printing",
+            ]
 
-            self.install_cert()
+            if self.name_cert:
 
-        time_xlsx = datetime.now(pytz.timezone("America/Manaus")).strftime("%d-%m-%y")
+                self.install_cert()
 
-        namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
-        self.path = f"{self.output_dir_path}/{namefile}"
+            time_xlsx = datetime.now(pytz.timezone("America/Manaus")).strftime(
+                "%d-%m-%y"
+            )
 
-        namefile_erro = f"Erros - PID {self.pid} {time_xlsx}.xlsx"
-        self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
+            namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
+            self.path = f"{self.output_dir_path}/{namefile}"
 
-        self.name_colunas = self.MakeXlsx("sucesso", self.typebot).make_output(
-            self.path
-        )
-        self.MakeXlsx("erro", self.typebot).make_output(self.path_erro)
+            namefile_erro = f"Erros - PID {self.pid} {time_xlsx}.xlsx"
+            self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
 
-        if not self.xlsx:
+            self.name_colunas = self.MakeXlsx("sucesso", self.typebot).make_output(
+                self.path
+            )
+            self.MakeXlsx("erro", self.typebot).make_output(self.path_erro)
 
-            self.data_inicio = datetime.strptime(self.data_inicio, "%Y-%m-%d")
-            self.data_fim = datetime.strptime(self.data_fim, "%Y-%m-%d")
+            if not self.xlsx:
 
-        cl = self.state
-        if not cl:
-            cl = self.client.split(" ")[0]
+                self.data_inicio = datetime.strptime(self.data_inicio, "%Y-%m-%d")
+                self.data_fim = datetime.strptime(self.data_fim, "%Y-%m-%d")
 
-        self.elements(system_bot=self.system, state_or_client=cl)
-        if self.login_method:
-            chk_logged = self.AuthBot()
-            if chk_logged is True:
+            cl = self.state
+            if not cl:
+                cl = self.client.split(" ")[0]
 
-                self.message = "Login efetuado com sucesso!"
-                self.type_log = "log"
-                self.prt()
+            self.elements(system_bot=self.system, state_or_client=cl)
+            if self.login_method:
+                chk_logged = self.AuthBot()
+                if chk_logged is True:
 
-            elif chk_logged is False:
+                    self.message = "Login efetuado com sucesso!"
+                    self.type_log = "log"
+                    self.prt()
 
-                self.driver.quit()
-                self.message = "Erro ao realizar login"
-                self.type_log = "error"
-                self.prt()
-                raise Exception(self.message)
+                elif chk_logged is False:
 
-        # try:
+                    self.driver.quit()
+                    self.message = "Erro ao realizar login"
+                    self.type_log = "error"
+                    self.prt()
+                    raise Exception(self.message)
 
-        #     # Carrega elementos do bot
-        #
+        except Exception as e:
 
-        #
-
-        #     args = self.DriverLaunch()
-        #     if not args:
-
-        #         self.message = "Erro ao inicializar WebDriver"
-        #         self.type_log = "error"
-        #         self.prt()
-        #         return
-
-        #     self.interact = self.Interact(self)
-
-        #     if self.login_method:
-        #         Get_Login = self.login()
-        #         if Get_Login is True:
-
-        #             self.message = "Login efetuado com sucesso!"
-        #             self.type_log = "log"
-        #             self.prt()
-
-        #         elif Get_Login is False:
-
-        #             self.driver.quit()
-
-        #             self.message = "Erro ao realizar login"
-        #             self.type_log = "error"
-        #             self.prt()
-
-        #             with app.app_context():
-        #                 self.SetStatus(
-        #                     status="Falha ao iniciar",
-        #                     pid=self.pid,
-        #                     system=self.system,
-        #                     typebot=self.typebot,
-        #                 ).botstop()
-
-        #             return
-
-        #     self.search = self.SeachBot(self)
-
-        #     bot = getattr(self, self.system)(self.typebot, self)
-        #     bot()
-
-        # except Exception as e:
-
-        #     print(e)
-        #     if self.driver:
-        #         self.driver.quit()
-
-        #     with app.app_context():
-        #         self.SetStatus(
-        #             status="Falha ao iniciar",
-        #             system=self.system,
-        #             pid=self.pid,
-        #             typebot=self.typebot,
-        #         ).botstop()
-
-        #     self.row = 0
-        #     self.message = "Falha ao iniciar. Informe a mensagem de erro ao suporte"
-        #     self.type_log = "error"
-        #     self.prt()
-        #     self.message_error = str(e)
-        #     self.prt()
-        #     return
+            self.row = 0
+            self.message = "Falha ao iniciar. Informe a mensagem de erro ao suporte"
+            self.type_log = "error"
+            self.prt()
+            self.message_error = str(e)
+            self.prt()
+            raise e
 
     def search(self):
 
@@ -269,8 +238,9 @@ class CrawJUD:
 
     def prt(self) -> None:
 
-        print_bot = self.printtext(**self.__dict__)
-        print_bot()
+        kwrgs = self.__dict__
+        print_bot = self.printtext(**kwrgs)
+        print_bot.print_msg()
 
     def dataFrame(self) -> list[dict[str, str]]:
 
@@ -354,12 +324,10 @@ class CrawJUD:
         elif len(self.appends) == 0:
             raise ErroDeExecucao("Nenhuma Movimentação encontrada")
 
-    def append_success(
-        self,
-        data: list[dict[str, str]] = None,
-        message="Execução do processo efetuada com sucesso!",
-        fileN: str = None,
-    ):
+    def append_success(self, data, message, fileN: str = None):
+
+        if not message:
+            message = "Execução do processo efetuada com sucesso!"
 
         def save_info(data: list[dict[str, str]]):
             if not self.path:
@@ -441,14 +409,6 @@ class CrawJUD:
         calc = execution_time / 60
         minutes = int(calc)
         seconds = int((calc - minutes) * 60)
-
-        with self.app.app_context():
-            self.SetStatus(
-                status="Finalizado",
-                pid=self.pid,
-                system=self.system,
-                typebot=self.typebot,
-            ).botstop()
 
         self.type_log = "success"
         self.message = f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos"
@@ -537,6 +497,7 @@ class CrawJUD:
             wait = WebDriverWait(driver, 20, 0.01)
             driver.delete_all_cookies()
 
+            self.driver = driver
             self.wait = wait
 
             self.message = "WebDriver inicializado"

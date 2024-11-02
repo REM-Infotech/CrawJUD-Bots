@@ -1,10 +1,13 @@
 from socketio import Client
-from contextlib import suppress
 
 
 class SocketIo_CrawJUD:
 
+    def __init__(self, **kwrgs):
+        self.__dict__.update(kwrgs)
+
     socketio = Client()
+    conectado = False
 
     @socketio.event(namespace="/log")
     def connect():
@@ -15,41 +18,21 @@ class SocketIo_CrawJUD:
         pass
 
     @property
-    def connected(self) -> bool:
-        return self.connect
+    def connected(self):
+        return self.conectado
 
     @connected.setter
     def connected(self, is_connected: bool):
         self.conectado = is_connected
 
-    def connect_socket(pid):
-        # Conecta ao servidor SocketIO no URL especificado
+    def send_message(self, data: dict, url_socket: str):
 
-        if connect:
+        if not self.connect:
+            self.socketio.connect(self.url)
+            self.connect = True
 
-            server_url = f"https://{url_socket(pid)}"
-
-            with suppress(Exception):
-                socketio.connect(server_url)
-
-    def disconnect_socket():
-        # Desconecta do servidor SocketIO
-        socketio.disconnect()
-
-    def socket_message(pid, formatted_message):
-
-        try:
-            pass
-
-        finally:
-            try:
-                connect_socket(pid)
-                # Envia a mensagem de log formatada para o servidor SocketIO
-                socketio.emit(
-                    "log_message",
-                    {"message": formatted_message, "pid": pid},
-                    namespace="/log",
-                )
-
-            except Exception as e:
-                print(e)
+        self.socketio.emit(
+            "log_message",
+            data=data,
+            namespace="/log",
+        )
