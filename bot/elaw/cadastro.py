@@ -3,7 +3,6 @@
 import os
 import time
 from time import sleep
-from typing import Type
 from contextlib import suppress
 from bot.CrawJUD import CrawJUD
 from bot.common.exceptions import ErroDeExecucao
@@ -22,6 +21,10 @@ type_doc = {11: "cpf", 14: "cnpj"}
 
 
 class cadastro(CrawJUD):
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.start_time = time.perf_counter()
 
     def execution(self) -> None:
 
@@ -968,8 +971,3 @@ class cadastro(CrawJUD):
                 ErroElaw = "Cadastro do processo nao finalizado, verificar manualmente"
 
             raise ErroDeExecucao(ErroElaw)
-
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-
-        self.__dict__.update(Initbot.__dict__)
-        self.start_time = time.perf_counter()

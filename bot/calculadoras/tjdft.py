@@ -25,7 +25,7 @@ cookieaceito = []
 class tjdft(CrawJUD):
 
     def __init__(self, **kwargs) -> None:
-        super().setup(**kwargs)
+        super().__init__(**kwargs)
         self.start_time = time.perf_counter()
 
     def execution(self) -> None:

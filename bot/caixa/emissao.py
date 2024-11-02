@@ -19,9 +19,8 @@ from PyPDF2 import PdfReader
 
 class emissao(CrawJUD):
 
-    def __init__(self, Initbot: CrawJUD) -> None:
-
-        self.__dict__ = Initbot.__dict__.copy()
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
 
         self.start_time = time.perf_counter()
 

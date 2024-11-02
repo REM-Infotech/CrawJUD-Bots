@@ -47,8 +47,14 @@ def botlaunch(id: int, system: str, typebot: str):
 
             start_rb = SetStatus(data_bot, request.files, id, system, typebot)
             path_args, display_name = start_rb.start_bot()
-            worker_thread = WorkerThread()
-            is_started = worker_thread.start(path_args, display_name)
+            worker_thread = WorkerThread(
+                path_args=path_args,
+                display_name=display_name,
+                system=system,
+                typebot=typebot,
+                app=app
+            )
+            is_started = worker_thread.start()
 
         except Exception as e:
             message = {"error": str(e)}

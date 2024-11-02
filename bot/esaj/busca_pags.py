@@ -1,7 +1,6 @@
 """ Imports do Projeto """
 
 from bot.CrawJUD import CrawJUD
-from typing import Type
 import time
 import pytz
 from datetime import datetime
@@ -12,12 +11,11 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class busca_pags(CrawJUD):
 
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.datetimeNOW = datetime.now(pytz.timezone("America/Manaus")).strftime(
             "%d-%m-%Y"
         )
-        self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
 
     def execution(self) -> None:

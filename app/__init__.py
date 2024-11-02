@@ -16,15 +16,21 @@ from datetime import timedelta
 from configs import csp
 from app import default_config
 
+
 src_path = os.path.join(os.getcwd(), "static")
+app = Flask(__name__, static_folder=src_path)
+app.config.from_object(default_config)
 
 db = SQLAlchemy()
 tlsm = Talisman()
 mail = Mail()
 io = SocketIO()
+
 # app = CloudFlared(Flask(__name__, static_folder=src_path))()
-app = Flask(__name__, static_folder=src_path)
-app.config.from_object(default_config)
+
+mail.init_app(app)
+db.init_app(app)
+
 
 allowed_origins = [
     r"https:\/\/.*\.nicholas\.dev\.br",
@@ -54,13 +60,11 @@ class init_app:
         with app.app_context():
 
             age = timedelta(days=31).max.seconds
-            db.init_app(app)
 
             from app.models import init_database
 
             init_database()()
 
-            mail.init_app(app)
             io.init_app(app, cors_allowed_origins=check_allowed_origin)
             tlsm.init_app(
                 app,

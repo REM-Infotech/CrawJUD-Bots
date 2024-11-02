@@ -22,7 +22,7 @@ class NetworkError(GlobalExcept):
 
 class InfoGeoloc:
 
-    data: dict[str, str, int | bool]
+    data: dict[str, str, int | bool] = {}
 
     def __init__(self):
         ip_external = ip.external()
@@ -30,7 +30,8 @@ class InfoGeoloc:
             raise NetworkError()
 
         get_geoloc = self.IP2Location(ip_external)
-        self.data = get_geoloc
+        for key, value in get_geoloc.items():
+            self.data.update({f"_{key}": value})
 
     def __getattr__(self, name: str) -> str:
 
@@ -51,10 +52,6 @@ class InfoGeoloc:
     @property
     def ip(self) -> str:
         return self._ip
-
-    @ip.setter
-    def ip(self, new_info: str) -> None:
-        self._ip = new_info
 
     @property
     def country_code(self) -> str:

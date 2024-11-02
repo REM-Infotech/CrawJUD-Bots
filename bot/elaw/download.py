@@ -4,7 +4,6 @@ import os
 import time
 import shutil
 from time import sleep
-from typing import Type
 from bot.CrawJUD import CrawJUD
 from bot.common.exceptions import ErroDeExecucao
 
@@ -16,6 +15,10 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class download(CrawJUD):
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.start_time = time.perf_counter()
 
     def execution(self) -> None:
 
@@ -182,8 +185,3 @@ class download(CrawJUD):
 
         elif self.list_docs:
             self.list_docs = self.list_docs + "," + filename_replaced
-
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-
-        self.__dict__.update(Initbot.__dict__)
-        self.start_time = time.perf_counter()

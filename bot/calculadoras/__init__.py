@@ -9,6 +9,7 @@ class calculadoras:
     bots = {"tjdf": tjdft}
 
     def __init__(self, **kwrgs):
+        self.kwrgs = kwrgs
         self.__dict__.update(kwrgs)
         try:
 
@@ -20,8 +21,8 @@ class calculadoras:
     @property
     def Bot(self) -> Hints:
 
-        rb = self.bots.get(self.bot)
+        rb = self.bots.get(self.typebot)
         if not rb:
             raise AttributeError("Robô não encontrado!!")
 
-        return rb(self.app, self.argv, self.pid)
+        return rb(**self.kwrgs)

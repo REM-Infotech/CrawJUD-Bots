@@ -31,10 +31,11 @@ class WorkerThread:
             "calculadoras": calculadoras,
         }
 
-        return systems.get(self.bot)
+        return systems.get(self.system)
 
     # argv: str = None, botname: str = None
-    def __init__(self, **kwrgs):
+    def __init__(self, **kwrgs: dict[str, str]):
+        self.kwrgs = kwrgs
         self.__dict__.update(kwrgs)
 
     def start(self) -> int:
@@ -43,15 +44,11 @@ class WorkerThread:
             with app.app_context():
 
                 bot = self.BotStarter
-                pid = os.path.basename(self.argv.replace(".json", ""))
+                pid = os.path.basename(self.path_args.replace(".json", ""))
                 process = multiprocessing.Process(
-                    target=bot(),
-                    args=(
-                        app,
-                        self.argv,
-                        pid,
-                    ),
-                    name=f"{self.botname} - {pid}",
+                    target=bot,
+                    kwargs=self.kwrgs,
+                    name=f"{self.display_name} - {pid}",
                     daemon=True
                 )
                 process.start()

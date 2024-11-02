@@ -1,7 +1,6 @@
 import os
 import time
 from time import sleep
-from typing import Type
 from contextlib import suppress
 from bot.CrawJUD import CrawJUD
 from bot.common.exceptions import ErroDeExecucao
@@ -18,6 +17,16 @@ type_doc = {11: "cpf", 14: "cnpj"}
 
 
 class complement(CrawJUD):
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+        from clear import clear
+
+        clear()
+        print(self.__dict__.items())
+
+        self.start_time = time.perf_counter()
 
     def execution(self) -> None:
 
@@ -393,13 +402,3 @@ class complement(CrawJUD):
         #     except Exception as e:
         #         self.message = "Processo Não cadastrado"
         #         raise ErroDeExecucao(self.message)
-
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-
-        from clear import clear
-
-        clear()
-        print(self.__dict__.items())
-
-        self.__dict__.update(Initbot.__dict__)
-        self.start_time = time.perf_counter()

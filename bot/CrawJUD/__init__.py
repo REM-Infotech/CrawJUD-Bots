@@ -86,140 +86,141 @@ class CrawJUD:
 
         return cities_Amazonas
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+
+    def setup(self):
+
         pass
+        # self.prt = self.printtext(self)
+        # self.graphicMode = "doughnut"
+        # self.driver = None
+        # with open(self.path_args, "rb") as f:
+        #     json_f: dict[str, str | int] = json.load(f)
 
-    def setup(self, app: Flask, path_args: str = None):
+        #     self.argbot = json_f
 
-        self.prt = self.printtext(self)
-        self.graphicMode = "doughnut"
-        self.driver = None
-        with open(path_args, "rb") as f:
-            json_f: dict[str, str | int] = json.load(f)
+        #     for key, value in json_f.items():
+        #         setattr(self, key, value)
 
-            self.argbot = json_f
+        # time.sleep(10)
+        # self.list_args = [
+        #     "--ignore-ssl-errors=yes",
+        #     "--ignore-certificate-errors",
+        #     "--display=:99",
+        #     "--window-size=1600,900",
+        #     "--no-sandbox",
+        #     "--disable-blink-features=AutomationControlled",
+        #     "--kiosk-printing",
+        # ]
 
-            for key, value in json_f.items():
-                setattr(self, key, value)
+        # # Definição de variaveis utilizadas pelos robôs
+        # self.row = int(0)
+        # self.app = app
+        # self.message_error = None
+        # self.message = str("Inicializando robô")
+        # self.type_log = str("log")
+        # self.prt(self)
 
-        time.sleep(10)
-        self.list_args = [
-            "--ignore-ssl-errors=yes",
-            "--ignore-certificate-errors",
-            "--display=:99",
-            "--window-size=1600,900",
-            "--no-sandbox",
-            "--disable-blink-features=AutomationControlled",
-            "--kiosk-printing",
-        ]
+        # self.output_dir_path = pathlib.Path(path_args).parent.resolve().__str__()
+        # self.bot_data: dict[str, str | int | datetime] = {}
 
-        # Definição de variaveis utilizadas pelos robôs
-        self.row = int(0)
-        self.app = app
-        self.message_error = None
-        self.message = str("Inicializando robô")
-        self.type_log = str("log")
-        self.prt(self)
+        # if self.name_cert:
 
-        self.output_dir_path = pathlib.Path(path_args).parent.resolve().__str__()
-        self.bot_data: dict[str, str | int | datetime] = {}
+        #     self.install_cert()
 
-        if self.name_cert:
+        # # Abertura da planilha de input
+        # self.path_args = path_args
+        # # Criação das planilhas de output
+        # time_xlsx = datetime.now(pytz.timezone("America/Manaus")).strftime("%d-%m-%y")
 
-            self.install_cert()
+        # namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
+        # self.path = f"{self.output_dir_path}/{namefile}"
 
-        # Abertura da planilha de input
-        self.path_args = path_args
-        # Criação das planilhas de output
-        time_xlsx = datetime.now(pytz.timezone("America/Manaus")).strftime("%d-%m-%y")
+        # namefile_erro = f"Erros - PID {self.pid} {time_xlsx}.xlsx"
+        # self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
 
-        namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
-        self.path = f"{self.output_dir_path}/{namefile}"
+        # self.name_colunas = self.MakeXlsx("sucesso", self.typebot).make_output(
+        #     self.path
+        # )
+        # self.MakeXlsx("erro", self.typebot).make_output(self.path_erro)
 
-        namefile_erro = f"Erros - PID {self.pid} {time_xlsx}.xlsx"
-        self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
+        # if not self.xlsx:
 
-        self.name_colunas = self.MakeXlsx("sucesso", self.typebot).make_output(
-            self.path
-        )
-        self.MakeXlsx("erro", self.typebot).make_output(self.path_erro)
+        #     self.data_inicio = datetime.strptime(self.data_inicio, "%Y-%m-%d")
+        #     self.data_fim = datetime.strptime(self.data_fim, "%Y-%m-%d")
 
-        if not self.xlsx:
+        # try:
 
-            self.data_inicio = datetime.strptime(self.data_inicio, "%Y-%m-%d")
-            self.data_fim = datetime.strptime(self.data_fim, "%Y-%m-%d")
+        #     # Carrega elementos do bot
+        #     cl = self.state
+        #     if not cl:
+        #         cl = self.client.split(" ")[0]
 
-        try:
+        #     self.elements: TypeHint = getattr(self, f"elements_{self.system}")(cl)
 
-            # Carrega elementos do bot
-            cl = self.state
-            if not cl:
-                cl = self.client.split(" ")[0]
+        #     args = self.DriverLaunch()
+        #     if not args:
 
-            self.elements: TypeHint = getattr(self, f"elements_{self.system}")(cl)
+        #         self.message = "Erro ao inicializar WebDriver"
+        #         self.type_log = "error"
+        #         self.prt(self)
+        #         return
 
-            args = self.DriverLaunch()
-            if not args:
+        #     self.interact = self.Interact(self)
 
-                self.message = "Erro ao inicializar WebDriver"
-                self.type_log = "error"
-                self.prt(self)
-                return
+        #     if self.login_method:
+        #         Get_Login = self.login()
+        #         if Get_Login is True:
 
-            self.interact = self.Interact(self)
+        #             self.message = "Login efetuado com sucesso!"
+        #             self.type_log = "log"
+        #             self.prt(self)
 
-            if self.login_method:
-                Get_Login = self.login()
-                if Get_Login is True:
+        #         elif Get_Login is False:
 
-                    self.message = "Login efetuado com sucesso!"
-                    self.type_log = "log"
-                    self.prt(self)
+        #             self.driver.quit()
 
-                elif Get_Login is False:
+        #             self.message = "Erro ao realizar login"
+        #             self.type_log = "error"
+        #             self.prt(self)
 
-                    self.driver.quit()
+        #             with app.app_context():
+        #                 self.SetStatus(
+        #                     status="Falha ao iniciar",
+        #                     pid=self.pid,
+        #                     system=self.system,
+        #                     typebot=self.typebot,
+        #                 ).botstop()
 
-                    self.message = "Erro ao realizar login"
-                    self.type_log = "error"
-                    self.prt(self)
+        #             return
 
-                    with app.app_context():
-                        self.SetStatus(
-                            status="Falha ao iniciar",
-                            pid=self.pid,
-                            system=self.system,
-                            typebot=self.typebot,
-                        ).botstop()
+        #     self.search = self.SeachBot(self)
 
-                    return
+        #     bot = getattr(self, self.system)(self.typebot, self)
+        #     bot()
 
-            self.search = self.SeachBot(self)
+        # except Exception as e:
 
-            bot = getattr(self, self.system)(self.typebot, self)
-            bot()
+        #     print(e)
+        #     if self.driver:
+        #         self.driver.quit()
 
-        except Exception as e:
+        #     with app.app_context():
+        #         self.SetStatus(
+        #             status="Falha ao iniciar",
+        #             system=self.system,
+        #             pid=self.pid,
+        #             typebot=self.typebot,
+        #         ).botstop()
 
-            print(e)
-            if self.driver:
-                self.driver.quit()
-
-            with app.app_context():
-                self.SetStatus(
-                    status="Falha ao iniciar",
-                    system=self.system,
-                    pid=self.pid,
-                    typebot=self.typebot,
-                ).botstop()
-
-            self.row = 0
-            self.message = "Falha ao iniciar. Informe a mensagem de erro ao suporte"
-            self.type_log = "error"
-            self.prt(self)
-            self.message_error = str(e)
-            self.prt(self)
-            return
+        #     self.row = 0
+        #     self.message = "Falha ao iniciar. Informe a mensagem de erro ao suporte"
+        #     self.type_log = "error"
+        #     self.prt(self)
+        #     self.message_error = str(e)
+        #     self.prt(self)
+        #     return
 
     def login(self) -> None:
 

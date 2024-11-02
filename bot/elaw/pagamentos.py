@@ -3,7 +3,6 @@
 import os
 import time
 from time import sleep
-from typing import Type
 from contextlib import suppress
 
 from bot.CrawJUD import CrawJUD
@@ -24,9 +23,8 @@ type_doc = {11: "cpf", 14: "cnpj"}
 
 class sol_pags(CrawJUD):
 
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-
-        self.__dict__ = Initbot.__dict__.copy()
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.start_time = time.perf_counter()
 
     def execution(self) -> None:

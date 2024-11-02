@@ -1,20 +1,29 @@
+from typing import Union
+
+from .emissao import emissao as emissor
+
+Hints = Union[emissor]
+
+
 class caixa:
-    
-    bot = ""
-    Master = ""
-    
-    def __init__(self, bot: str, Master):
-        self.bot = bot
-        self.Master = Master
-    
-    def __call__(self) -> None:
+
+    bots = {"emissor": emissor}
+
+    def __init__(self, **kwrgs):
+        self.kwrgs = kwrgs
+        self.__dict__.update(kwrgs)
         try:
-            
-            self.execution = getattr(self, self.bot)(self.Master)
-            self.execution.execution()
-            
+
+            self.Bot.execution()
+
         except Exception as e:
             raise e
-        
-    from .emissao import emissao as emissor
-    from .common.elements import elements_caixa
+
+    @property
+    def Bot(self) -> Hints:
+
+        rb = self.bots.get(self.typebot)
+        if not rb:
+            raise AttributeError("Robô não encontrado!!")
+
+        return rb(**self.kwrgs)
