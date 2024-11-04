@@ -4,6 +4,8 @@
 - [ ] New feature (non-breaking change which adds functionality)
 - [ ] Chore (documentation, packages, or tests updates, nothing that affect the final user directly)
 - [ ] Release (new version of the application - only for production)
+- [ ] Refactor (Refatoramento de código)
+- [ ] Docs (alterações na documentação)
 
 ## Description
 
