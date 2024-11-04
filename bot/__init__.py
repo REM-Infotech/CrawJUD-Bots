@@ -4,9 +4,11 @@ from app import db, app
 from app.models import ThreadBots
 
 import psutil
+import signal
 from typing import Union
 
 # Bots
+
 from .pje import pje
 from .esaj import esaj
 from .elaw import elaw
@@ -67,11 +69,9 @@ class WorkerThread:
     def stop(self, processID: int) -> None:
 
         try:
-            
-            multiprocessing.Process()
+            sig = signal.SIGTERM
             processo = psutil.Process(processID)
-            processo.terminate()  # Envia sinal de encerramento educado, adaptável ao sistema
-            processo.join()
+            processo.send_signal(sig)
             processo.wait(60)
 
             return f"Process {processID} stopped!"
