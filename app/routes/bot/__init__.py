@@ -51,7 +51,7 @@ def botlaunch(id: int, system: str, typebot: str):
                 path_args=path_args,
                 display_name=display_name,
                 system=system,
-                typebot=typebot
+                typebot=typebot,
             )
             is_started = worker_thread.start()
 
@@ -81,14 +81,12 @@ def stop_execution(user: str, pid: str) -> int:
 
     try:
 
-        thread_id = ThreadBots.query.filter(ThreadBots.pid == pid).first()
+        processID = ThreadBots.query.filter(ThreadBots.pid == pid).first()
 
-        if thread_id:
-            thread_id = int(thread_id.thread_id)
-            worker_thread = WorkerThread()
-            worker_thread.thread_id = thread_id
-            worker_thread.stop()
-
+        if processID:
+            processID = int(processID.processID)
+            worker_thread = WorkerThread().stop(processID)
+            app.logger.info(worker_thread)
             from bot.Utils.StartStop_Notify import SetStatus
 
             user_id = Users.query.filter(Users.login == user).first().id
@@ -118,5 +116,5 @@ def stop_execution(user: str, pid: str) -> int:
 
             return 200
     except Exception as e:
-        print(e)
+        app.logger.error(str(e))
         return 500

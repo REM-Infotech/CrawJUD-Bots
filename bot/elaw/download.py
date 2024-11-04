@@ -57,8 +57,8 @@ class download(CrawJUD):
     def queue(self) -> None:
 
         try:
-            check_cadastro = self.search(self)
-            if check_cadastro is True:
+            search = self.search()
+            if search is True:
 
                 self.message = "Processo encontrado!"
                 self.type_log = "log"
@@ -75,7 +75,7 @@ class download(CrawJUD):
                     "Arquivos salvos com sucesso!",
                 )
 
-            elif not check_cadastro:
+            elif not search:
                 self.message = "Processo não encontrado!"
                 self.type_log = "error"
                 self.prt()

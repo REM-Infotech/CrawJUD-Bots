@@ -63,7 +63,7 @@ class cadastro(CrawJUD):
     def queue(self) -> None:
 
         self.bot_data = self.elawFormats(self.bot_data)
-        search = self.search(self)
+        search = self.search()
 
         if search is True:
 

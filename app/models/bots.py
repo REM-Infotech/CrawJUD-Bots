@@ -89,9 +89,9 @@ class ThreadBots(db.Model):
     __tablename__ = "thread_bots"
     id = db.Column(db.Integer, primary_key=True)
     pid = db.Column(db.String(length=12), nullable=False)
-    thread_id = db.Column(db.Integer, nullable=False)
+    processID = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, pid: str = None, thread_id: int = 0) -> None:
+    def __init__(self, pid: str = None, processID: int = 0) -> None:
 
         self.pid = pid
-        self.thread_id = thread_id
+        self.processID = processID

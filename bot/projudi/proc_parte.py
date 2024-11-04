@@ -51,7 +51,7 @@ class proc_parte(CrawJUD):
         try:
             for vara in self.varas:
                 self.vara: str = vara
-                search = self.search(self)
+                search = self.search()
                 if search is True:
                     self.get_process_list()
 

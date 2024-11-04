@@ -65,8 +65,8 @@ class provisao(CrawJUD):
 
         # module = "search_processo"
 
-        check_cadastro = self.search(self)
-        if check_cadastro is True:
+        search = self.search()
+        if search is True:
 
             self.type_log = "log"
             self.message = "Processo encontrado! Informando valores..."
@@ -111,7 +111,7 @@ class provisao(CrawJUD):
                 self.prt()
                 self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
 
-        if check_cadastro is not True:
+        if search is not True:
             self.message = "Processo não encontrado!"
             self.type_log = "error"
             self.prt()

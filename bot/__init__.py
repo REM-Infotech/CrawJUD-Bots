@@ -1,9 +1,9 @@
 import os
 import multiprocessing
 from app import db, app
-from flask import Flask
 from app.models import ThreadBots
 
+import psutil
 from typing import Union
 
 # Bots
@@ -49,13 +49,13 @@ class WorkerThread:
                     target=bot,
                     kwargs=self.kwrgs,
                     name=f"{self.display_name} - {pid}",
-                    daemon=True
+                    daemon=True,
                 )
                 process.start()
                 process_id = process.ident
 
                 # Salva o ID no "banco de dados"
-                add_thread = ThreadBots(pid=pid, thread_id=process_id)
+                add_thread = ThreadBots(pid=pid, processID=process_id)
                 db.session.add(add_thread)
                 db.session.commit()
                 return 200
@@ -64,22 +64,20 @@ class WorkerThread:
             print(e)
             return 500
 
-    def run(self, app: Flask, path_args: str = None, pid: str = None):
+    def stop(self, processID: int) -> None:
 
-        while not self.thread_id:
-            print(f"wait {pid} thread".upper())
+        try:
+            
+            multiprocessing.Process()
+            processo = psutil.Process(processID)
+            processo.terminate()  # Envia sinal de encerramento educado, adaptável ao sistema
+            processo.join()
+            processo.wait(60)
 
-        with app.app_context():
-            bot = self.crawjud(self)
-            bot.setup(app, path_args)
+            return f"Process {processID} stopped!"
 
-    def stop(self) -> None:
+        except psutil.TimeoutExpired:
+            return "O processo não foi encerrado dentro do tempo limite"
 
-        for thread in multiprocessing.get:
-            if thread.ident == self.thread_id:
-                thread = thread
-                thread._is_stopped = True  # Aciona o evento para parar a execução
-                if thread is not None:
-                    thread.join()
-                    print(f"Thread {self.thread_id} finalizada")
-                break
+        except psutil.NoSuchProcess:
+            return f"Process {processID} stopped!"

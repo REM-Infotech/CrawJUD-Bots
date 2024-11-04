@@ -64,7 +64,7 @@ class complement(CrawJUD):
 
     def queue(self) -> None:
 
-        search = self.search(self)
+        search = self.search()
         self.bot_data = self.elawFormats(self.bot_data)
 
         if search is True:

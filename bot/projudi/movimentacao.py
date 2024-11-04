@@ -69,7 +69,7 @@ class movimentacao(CrawJUD):
 
         self.table_moves = None
 
-        search = self.search(self)
+        search = self.search()
 
         if search is not True:
             raise ErroDeExecucao("Processo não encontrado!")

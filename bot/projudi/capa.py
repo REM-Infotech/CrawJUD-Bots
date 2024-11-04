@@ -56,7 +56,7 @@ class capa(CrawJUD):
 
     def queue(self) -> None:
 
-        search = self.search(self)
+        search = self.search()
 
         if search is not True:
             raise ErroDeExecucao("Processo não encontrado!")
