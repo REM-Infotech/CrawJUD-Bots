@@ -64,20 +64,6 @@ def serverSide(data, pid):
             typebot=data["system"],
         ).botstop()
 
-    data.update(
-        {
-            "pid": pid,
-            "pos": 0,
-            "total": 0,
-            "remaining": 0,
-            "success": 0,
-            "errors": 0,
-            "status": 0,
-            "last_log": 0,
-            "type": "info",
-        }
-    )
-
     log_pid = CacheLogs.query.filter(CacheLogs.pid == data["pid"]).first()
     if not log_pid:
 

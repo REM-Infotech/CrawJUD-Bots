@@ -16,8 +16,6 @@ url_socket = dotenv_values().get("HOST")
 
 class printtext(CrawJUD):
 
-    message_error = None
-    row = 0
     iobot = SocketBot()
 
     def __init__(self, **kwrgs):
@@ -33,10 +31,24 @@ class printtext(CrawJUD):
         if self.row > 0:
             self.row -= 1
 
-        self.prompt = f"({self.pid}, {self.type_log}, pos:{self.row}, {datetime.now(pytz.timezone('America/Manaus')).strftime('%H:%M:%S')}) {log}"
+        self.prompt = "[({pid}, {type_log}, {row}, {dateTime})> {log}]".format(
+            pid=self.pid,
+            type_log=self.type_log,
+            row=self.row,
+            dateTime=datetime.now(pytz.timezone("America/Manaus")).strftime("%H:%M:%S"),
+            log=log,
+        )
         tqdm.write(self.prompt)
 
-        self.socket_message()
+        data: dict[str, str | int] = {
+            "message": self.prompt,
+            "pid": self.pid,
+            "type": self.type_log,
+            "pos": self.row,
+            "graphicMode": self.graphicMode,
+        }
+
+        self.socket_message(data)
         mensagens.append(self.prompt)
 
         self.list_messages = mensagens
@@ -67,20 +79,13 @@ class printtext(CrawJUD):
             # Exibe o erro
             tqdm.write(f"{e}")
 
-    def socket_message(self) -> None:
+    def socket_message(self, data: dict) -> None:
 
         chk_type1 = "fim da execução" in self.prompt
         chk_type2 = "falha ao iniciar" in self.prompt
         message_stop = [chk_type1, chk_type2]
 
         try:
-            data: dict[str, str | int] = {
-                "message": self.prompt,
-                "pid": self.pid,
-                "type": self.type_log,
-                "pos": self.row,
-                "graphicMode": self.graphicMode,
-            }
 
             if any(message_stop):
                 data.update({"system": self.system, "typebot": self.typebot})

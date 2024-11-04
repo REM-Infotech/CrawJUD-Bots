@@ -75,7 +75,6 @@ class protocolo(CrawJUD):
         if search is not True:
             raise ErroDeExecucao("Processo não encontrado!")
 
-        self.detect_intimacao()
         self.add_new_move()
 
         if self.set_parte() is not True:
@@ -119,11 +118,6 @@ class protocolo(CrawJUD):
             )
 
         return successMessage
-
-    def detect_intimacao(self) -> None:
-
-        if "intimacaoAdvogado.do" in self.driver.current_url:
-            raise ErroDeExecucao("Processo com Intimação pendente de leitura!")
 
     def set_parte(self) -> bool:
 

@@ -85,7 +85,7 @@ def stop_execution(user: str, pid: str) -> int:
 
         if processID:
             processID = int(processID.processID)
-            worker_thread = WorkerThread().stop(processID)
+            worker_thread = WorkerThread().stop(processID, pid)
             app.logger.info(worker_thread)
             from bot.Utils.StartStop_Notify import SetStatus
 

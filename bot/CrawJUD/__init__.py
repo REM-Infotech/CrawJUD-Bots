@@ -2,7 +2,6 @@ import os
 import time
 import pytz
 import json
-import signal
 import pathlib
 import platform
 import subprocess
@@ -45,25 +44,18 @@ class CrawJUD:
     kwrgs_ = {}
     message_error_ = ""
     bot_data_ = {}
-    graphicMode_ = 'doughnut'
+    graphicMode_ = "doughnut"
     out_dir = ""
     user_data_dir = ""
     cr_list_args = [""]
     drv = None
     wt = None
     elmnt = None
-    stop_running = False
-
-    def handle_signal(self):
-        self.isStoped = True
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
         self.kwrgs = kwargs
         self.setup()
-
-        signal.signal(signal.SIGTERM, self.handle_signal)
-        signal.signal(signal.SIGINT, self.handle_signal)
 
     def __getattr__(self, nome: str) -> TypeHint:
 
@@ -85,11 +77,8 @@ class CrawJUD:
 
     @property
     def isStoped(self):
-        return self.stop_running
-
-    @isStoped.setter
-    def isStoped(self, new_state: bool):
-        self.stop_running = new_state
+        chk = os.path.exists(os.path.join(self.output_dir_path, f"{self.pid}.flag"))
+        return chk
 
     @property
     def driver(self) -> WebDriver:
@@ -313,10 +302,23 @@ class CrawJUD:
         self.message = f'Buscando processos pelo nome "{self.parte_name}"'
         if self.typebot != "proc_parte":
             self.message = f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}'
-
         self.prt()
-        result = self.SearchBot(**self.kwrgs)
-        return result()
+
+        result = self.SearchBot(
+            driver=self.driver,
+            wait=self.wait,
+            list_args=self.kwrgs,
+            elements=self.elements,
+            bot_data=self.bot_data,
+        )
+
+        chk_result = result()
+        if chk_result is True:
+            self.message = "Processo encontrado!"
+            self.type_log = "log"
+            self.prt()
+
+        return chk_result
 
     """
     Função De Autenticação, eu realmente preciso dizer pra quê ela serve?

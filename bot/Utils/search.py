@@ -4,6 +4,7 @@ from bot.common.exceptions import ErroDeExecucao
 
 
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
@@ -13,8 +14,19 @@ from selenium.common.exceptions import TimeoutException
 
 class SeachBot:
 
-    def __init__(self, **kwrgs):
-        self.__dict__.update(kwrgs)
+    driver: WebDriver = None
+    wait: WebDriverWait = None
+    bot_data = {""}
+
+    def __init__(self, **kwrgs) -> None:
+
+        for key, value in list(kwrgs.items()):
+
+            if type(value) is dict and key != "bot_data":
+                self.__dict__.update(value)
+                continue
+
+            self.__dict__.update({key: value})
 
     def __call__(self):
 
@@ -22,10 +34,6 @@ class SeachBot:
         return src
 
     def elaw_search(self) -> bool:
-
-        self.message = "Buscando Processo"
-        self.type_log = "log"
-        self.prt()
 
         if self.driver.current_url != "https://amazonas.elaw.com.br/processoList.elaw":
 
@@ -101,6 +109,11 @@ class SeachBot:
 
     def projudi_search(self) -> None:
 
+        def detect_intimacao() -> None:
+
+            if "intimacaoAdvogado.do" in self.driver.current_url:
+                raise ErroDeExecucao("Processo com Intimação pendente de leitura!")
+
         self.driver.get(self.elements.url_busca)
 
         inputproc = None
@@ -115,9 +128,9 @@ class SeachBot:
                 )
 
             if inputproc:
-                self.interact.send_key(inputproc, self.bot_data.get("NUMERO_PROCESSO"))
+                inputproc.send_keys(self.bot_data.get("NUMERO_PROCESSO"))
                 consultar = self.driver.find_element(By.CSS_SELECTOR, "#pesquisar")
-                self.interact.click(consultar)
+                consultar.click()
 
                 with suppress(TimeoutException):
                     enterproc: WebElement = self.wait.until(
@@ -126,9 +139,8 @@ class SeachBot:
 
                 if enterproc:
                     enterproc.click()
-                    self.message = "Processo encontrado!"
-                    self.type_log = "log"
-                    self.prt()
+
+                    detect_intimacao()
 
                     with suppress(TimeoutException, NoSuchElementException):
 

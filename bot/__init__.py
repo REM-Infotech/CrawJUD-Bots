@@ -4,7 +4,6 @@ from app import db, app
 from app.models import ThreadBots
 
 import psutil
-import signal
 from typing import Union
 
 # Bots
@@ -66,12 +65,16 @@ class WorkerThread:
             print(e)
             return 500
 
-    def stop(self, processID: int) -> None:
+    def stop(self, processID: int, pid: str) -> None:
 
         try:
-            sig = signal.SIGTERM
+
+            sinalizacao = f"{pid}.flag"
             processo = psutil.Process(processID)
-            processo.send_signal(sig)
+            path_flag = os.path.join(os.getcwd(), "Temp", pid, sinalizacao)
+            with open(path_flag, "w") as f:
+                f.write("Encerrar processo")
+
             processo.wait(60)
 
             return f"Process {processID} stopped!"

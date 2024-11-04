@@ -27,7 +27,7 @@ class AuthBot:
                 self.__dict__.update(value)
                 continue
 
-            self.__dict__.update(kwrgs)
+            self.__dict__.update({key: value})
 
     def auth(self) -> bool:
 
