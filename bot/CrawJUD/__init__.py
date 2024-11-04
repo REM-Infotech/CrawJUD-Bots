@@ -2,6 +2,7 @@ import os
 import time
 import pytz
 import json
+import signal
 import pathlib
 import platform
 import subprocess
@@ -44,18 +45,25 @@ class CrawJUD:
     kwrgs_ = {}
     message_error_ = ""
     bot_data_ = {}
-    graphicMode_ = ""
+    graphicMode_ = 'doughnut'
     out_dir = ""
     user_data_dir = ""
     cr_list_args = [""]
     drv = None
     wt = None
     elmnt = None
+    stop_running = False
+
+    def handle_signal(self):
+        self.isStoped = True
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
         self.kwrgs = kwargs
         self.setup()
+
+        signal.signal(signal.SIGTERM, self.handle_signal)
+        signal.signal(signal.SIGINT, self.handle_signal)
 
     def __getattr__(self, nome: str) -> TypeHint:
 
@@ -74,6 +82,14 @@ class CrawJUD:
     Com o property eu construo e deixo salvo estado dela
 
     """
+
+    @property
+    def isStoped(self):
+        return self.stop_running
+
+    @isStoped.setter
+    def isStoped(self, new_state: bool):
+        self.stop_running = new_state
 
     @property
     def driver(self) -> WebDriver:

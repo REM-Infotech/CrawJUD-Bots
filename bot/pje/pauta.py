@@ -33,7 +33,7 @@ class pauta(CrawJUD):
         self.row = 2
         self.current_date = self.data_inicio
 
-        while not self.thread._is_stopped and self.current_date <= self.data_fim:
+        while not self.isStoped and self.current_date <= self.data_fim:
 
             if self.driver.title.lower() == "a sessao expirou":
                 self.auth(self)

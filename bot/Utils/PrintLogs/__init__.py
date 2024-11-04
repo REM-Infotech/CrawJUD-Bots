@@ -1,38 +1,26 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
-
 import os
 import pytz
 import logging
 from tqdm import tqdm
 from time import sleep
 from datetime import datetime
-from .socketio import SocketIo_CrawJUD
+from .socketio import SocketBot
 from dotenv import dotenv_values
 from ...CrawJUD import CrawJUD
-from app.default_config import SQLALCHEMY_DATABASE_URI
 
 codificacao = "UTF-8"
 mensagens = []
 
 url_socket = dotenv_values().get("HOST")
 
-# Crie o Engine com um pool de conexões ajustado (por exemplo, max 10 conexões)
-engine = create_engine(SQLALCHEMY_DATABASE_URI, pool_size=10, max_overflow=20)
-
-# Configure o sessionmaker e o scoped_session
-SessionFactory = sessionmaker(bind=engine)
-Session = scoped_session(SessionFactory)
-session = Session()
-
 
 class printtext(CrawJUD):
 
     message_error = None
     row = 0
+    iobot = SocketBot()
 
     def __init__(self, **kwrgs):
-        self.ioBot = SocketIo_CrawJUD(**kwrgs)
         self.__dict__.update(kwrgs)
 
     def print_msg(self):
@@ -97,7 +85,7 @@ class printtext(CrawJUD):
             if any(message_stop):
                 data.update({"system": self.system, "typebot": self.typebot})
 
-            self.ioBot.send_message(data=data, url_socket=url_socket)
+            self.iobot.send_message(data, url_socket)
 
         except Exception as e:
             print(e)

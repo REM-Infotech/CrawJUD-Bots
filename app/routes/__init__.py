@@ -4,8 +4,7 @@ from app.routes import handler
 from bot.Utils.StartStop_Notify import SetStatus
 from flask_socketio import join_room, leave_room, emit
 from app.models import CacheLogs, Executions
-
-from time import sleep
+from flask import abort, request
 
 app.register_blueprint(bot)
 __all__ = [handler]
@@ -25,24 +24,9 @@ def handle_disconnect():
 def handle_join(data):
 
     room = data["pid"]
-    sleep(3)
-    log_pid = CacheLogs.query.filter(CacheLogs.pid == room).first()
-    if log_pid:
-        data = {
-            "pid": room,
-            "pos": log_pid.pos,
-            "total": log_pid.total,
-            "remaining": log_pid.remaining,
-            "success": log_pid.success,
-            "errors": log_pid.errors,
-            "status": log_pid.status,
-            "last_log": log_pid.last_log,
-        }
-
     try:
         join_room(room)
-        emit("log_message", data, room=room)
-        # print(f"Client {request.sid} joined room {room}")
+        app.logger.info(f"Client {request.sid} joined room {room}")
     except Exception:
         emit("log_message", data, room=room)
 
@@ -51,13 +35,24 @@ def handle_join(data):
 def handle_leave(data):
     room = data["pid"]
     leave_room(room)
-    # print(f"Client {request.sid} left room {room}")
+    app.logger.info(f"Client {request.sid} left room {data["pid"]}")
 
 
 @io.on("log_message", namespace="/log")
 def handle_message(data: dict[str, str | int]):
 
-    pid = data["pid"]
+    try:
+        pid = data["pid"]
+        data = serverSide(data, pid)
+        emit("log_message", data, room=pid)
+        app.logger.info(f"Client {request.sid} sended message {data["message"]}")
+
+    except Exception as e:
+        abort(500, description=str(e))
+
+
+def serverSide(data, pid):
+
     chk_infos = [data.get("system"), data.get("typebot")]
 
     if all(chk_infos):
@@ -69,12 +64,19 @@ def handle_message(data: dict[str, str | int]):
             typebot=data["system"],
         ).botstop()
 
-    data = serverSide(data)
-    emit("log_message", data, room=pid)
-    # print("mensagem enviada")
-
-
-def serverSide(data):
+    data.update(
+        {
+            "pid": pid,
+            "pos": 0,
+            "total": 0,
+            "remaining": 0,
+            "success": 0,
+            "errors": 0,
+            "status": 0,
+            "last_log": 0,
+            "type": "info",
+        }
+    )
 
     log_pid = CacheLogs.query.filter(CacheLogs.pid == data["pid"]).first()
     if not log_pid:

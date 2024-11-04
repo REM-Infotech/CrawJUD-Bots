@@ -22,7 +22,7 @@ class proc_parte(CrawJUD):
     def execution(self) -> None:
 
         self.graphicMode = "bar"
-        while not self.thread._is_stopped:
+        while not self.isStoped:
 
             if self.driver.title.lower() == "a sessao expirou":
                 self.auth(self)
@@ -73,7 +73,7 @@ class proc_parte(CrawJUD):
                     self.elements.list_processos,
                 )
 
-            if list_processos and not self.thread._is_stopped:
+            if list_processos and not self.isStoped:
                 self.use_list_process(list_processos)
 
                 with suppress(NoSuchElementException):
