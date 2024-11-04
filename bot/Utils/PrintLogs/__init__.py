@@ -1,8 +1,6 @@
-""" bot.head.Tools.PrintLogs.py """
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
 
-from app import db
-
-# Importações necessárias
 import os
 import pytz
 import logging
@@ -10,17 +8,25 @@ from tqdm import tqdm
 from time import sleep
 from datetime import datetime
 from .socketio import SocketIo_CrawJUD
-from app.models import CacheLogs, Executions
 from dotenv import dotenv_values
+from ...CrawJUD import CrawJUD
+from app.default_config import SQLALCHEMY_DATABASE_URI
 
-# Define a codificação de caracteres como UTF-8
 codificacao = "UTF-8"
 mensagens = []
 
 url_socket = dotenv_values().get("HOST")
 
+# Crie o Engine com um pool de conexões ajustado (por exemplo, max 10 conexões)
+engine = create_engine(SQLALCHEMY_DATABASE_URI, pool_size=10, max_overflow=20)
 
-class printtext:
+# Configure o sessionmaker e o scoped_session
+SessionFactory = sessionmaker(bind=engine)
+Session = scoped_session(SessionFactory)
+session = Session()
+
+
+class printtext(CrawJUD):
 
     message_error = None
     row = 0
@@ -91,73 +97,7 @@ class printtext:
             if any(message_stop):
                 data.update({"system": self.system, "typebot": self.typebot})
 
-            self.emitMessage(data)
+            self.ioBot.send_message(data=data, url_socket=url_socket)
 
         except Exception as e:
             print(e)
-
-    def emitMessage(self, data: dict[str, str]):
-
-        log_pid = CacheLogs.query.filter(CacheLogs.pid == self.pid).first()
-        if not log_pid:
-
-            execut = Executions.query.filter(Executions.pid == self.pid).first()
-            log_pid = CacheLogs(
-                pid=self.pid,
-                pos=int(data["pos"]),
-                total=int(execut.total_rows) - 1,
-                remaining=int(execut.total_rows) - 1,
-                success=0,
-                errors=0,
-                status=execut.status,
-                last_log=data["message"],
-            )
-            db.session.add(log_pid)
-
-        elif log_pid:
-
-            log_pid.pos = int(data["pos"])
-
-            type_S1 = data["type"] == "success"
-            type_S2 = data["type"] == "info"
-            type_S3 = data["graphicMode"] != "doughnut"
-
-            typeSuccess = type_S1 or type_S2 and type_S3
-
-            if typeSuccess:
-
-                log_pid.remaining -= 1
-                if "fim da execução" not in data["message"].lower():
-                    log_pid.success += 1
-
-                log_pid.last_log = data["message"]
-
-            elif data["type"] == "error":
-
-                log_pid.remaining -= 1
-                log_pid.errors += 1
-                log_pid.last_log = data["message"]
-
-                if self.row == 0:
-                    log_pid.errors = log_pid.total
-                    log_pid.remaining = 0
-
-            if "fim da execução" in data["message"].lower():
-                log_pid.remaining = 0
-                log_pid.status = "Finalizado"
-
-        db.session.commit()
-        data.update(
-            {
-                "pid": data["pid"],
-                "pos": int(data["pos"]),
-                "total": log_pid.total,
-                "remaining": log_pid.remaining,
-                "success": log_pid.success,
-                "errors": log_pid.errors,
-                "status": log_pid.status,
-                "last_log": log_pid.last_log,
-            }
-        )
-
-        self.ioBot.send_message(data=data, url_socket=url_socket)

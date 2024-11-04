@@ -20,9 +20,16 @@ if platform.system() == "Windows":
 class AuthBot:
 
     def __init__(self, **kwrgs) -> None:
-        self.__dict__.update(kwrgs)
 
-    def __call__(self) -> bool:
+        for key, value in list(kwrgs.items()):
+
+            if type(value) is dict:
+                self.__dict__.update(value)
+                continue
+
+            self.__dict__.update(kwrgs)
+
+    def auth(self) -> bool:
 
         to_call = getattr(self, f"{self.system.lower()}_auth")
         if to_call:
@@ -273,7 +280,7 @@ class AuthBot:
                 pathlib.Path(accepted_dir).parent.resolve(), "chrome"
             )
             os.makedirs(target_directory, exist_ok=True)
-            source_directory = self.user_data_dir
+            source_directory = self.chr_dir
 
             try:
 

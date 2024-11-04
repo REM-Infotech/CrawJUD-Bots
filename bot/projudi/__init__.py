@@ -1,4 +1,6 @@
 from typing import Union
+from clear import clear
+import logging
 
 from .capa import capa
 from .protocolo import protocolo
@@ -25,7 +27,8 @@ class projudi:
             self.Bot.execution()
 
         except Exception as e:
-            raise e
+            clear()
+            logging.error(f"Exception: {e}", exc_info=True)
 
     @property
     def Bot(self) -> Hints:

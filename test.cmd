@@ -1,1 +1,0 @@
- c++ -O3 -Wall -shared -std=c++11 -fPIC -IC:\Python312\Include -IC:\Users\nicholas.silva\Documents\Github\8.0\CrawJUD-Bots\.venv\Lib\site-packages\pybind11\include -LC:\Python312\libs -lpython312 certinstall.cpp -o example.so  -lcrypt32

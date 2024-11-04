@@ -40,6 +40,18 @@ class CrawJUD:
         "version": 2,
     }
 
+    row_ = 0
+    kwrgs_ = {}
+    message_error_ = ""
+    bot_data_ = {}
+    graphicMode_ = ""
+    out_dir = ""
+    user_data_dir = ""
+    cr_list_args = [""]
+    drv = None
+    wt = None
+    elmnt = None
+
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
         self.kwrgs = kwargs
@@ -47,7 +59,7 @@ class CrawJUD:
 
     def __getattr__(self, nome: str) -> TypeHint:
 
-        item = self.argbot.get(nome, None)
+        item = self.kwrgs.get(nome, None)
 
         if not item:
             item = self.__dict__.get(nome, None)
@@ -55,50 +67,98 @@ class CrawJUD:
         return item
 
     @property
-    def kwrgs(self):
-        return self.kwrgs
+    def driver(self) -> WebDriver:
+        return self.drv
+
+    @driver.setter
+    def driver(self, new_drv: WebDriver):
+        self.drv = new_drv
+
+    @property
+    def wait(self) -> WebDriverWait:
+        return self.wt
+
+    @wait.setter
+    def wait(self, new_wt: WebDriverWait):
+        self.wt = new_wt
+
+    @property
+    def chr_dir(self):
+        return self.user_data_dir
+
+    @chr_dir.setter
+    def chr_dir(self, new_dir: str):
+        self.user_data_dir = new_dir
+
+    @property
+    def output_dir_path(self):
+        return self.out_dir
+
+    @output_dir_path.setter
+    def output_dir_path(self, new_outdir: str):
+        self.out_dir = new_outdir
+
+    @property
+    def kwrgs(self) -> dict:
+        return self.kwrgs_
 
     @kwrgs.setter
     def kwrgs(self, new_kwg):
-        self.kwrgs = new_kwg
+        self.kwrgs_ = new_kwg
 
     @property
     def row(self) -> int:
-        return self.row
+        return self.row_
 
     @row.setter
     def row(self, new_row: int):
-        self.row = new_row
+        self.row_ = new_row
 
     @property
     def message_error(self) -> str:
-        return self.message_error
+        return self.message_error_
 
     @message_error.setter
     def message_error(self, nw_m: str) -> str:
-        self.message_error = nw_m
+        self.message_error_ = nw_m
 
     @property
-    def args_bot(self) -> dict:
-        return self.args_bot
+    def graphicMode(self):
+        return self.graphicMode_
 
-    @args_bot.setter
-    def args_bot(self, new_arg: dict):
-        self.args_bot = new_arg
+    @graphicMode.setter
+    def graphicMode(self, new_graph):
+        self.graphicMode_ = new_graph
+
+    @property
+    def list_args(self):
+        return [
+            "--ignore-ssl-errors=yes",
+            "--ignore-certificate-errors",
+            "--display=:99",
+            "--window-size=1600,900",
+            "--no-sandbox",
+            "--disable-blink-features=AutomationControlled",
+            "--kiosk-printing",
+        ]
+
+    @list_args.setter
+    def list_args(self, new_Args: list[str]):
+        self.cr_list_args = new_Args
 
     @property
     def bot_data(self) -> dict:
-        return self.bot_data
+        return self.bot_data_
 
     @bot_data.setter
     def bot_data(self, new_botdata: dict):
-        self.bot_data = new_botdata
+        self.bot_data_ = new_botdata
 
     @property
     def AuthBot(self):
         from ..Utils.auth import AuthBot
 
-        return AuthBot(**self.kwrgs)
+        return AuthBot
 
     @property
     def SearchBot(self):
@@ -131,11 +191,20 @@ class CrawJUD:
         return cities_Amazonas
 
     @property
-    def elements(self):
-
+    def ElementsBots(self):
         from ..Utils.elements import ElementsBot
 
         return ElementsBot
+
+    @property
+    def elements(self) -> ElementsBots:
+
+        return self.elmnt
+
+    @elements.setter
+    def elements(self, info):
+
+        self.elmnt = info
 
     def setup(self):
 
@@ -143,8 +212,7 @@ class CrawJUD:
             with open(self.path_args, "rb") as f:
                 json_f: dict[str, str | int] = json.load(f)
 
-                self.argbot = json_f
-                self.kwrgs.update(json_f)
+                self.kwrgs = json_f
 
                 for key, value in json_f.items():
                     setattr(self, key, value)
@@ -152,8 +220,6 @@ class CrawJUD:
             self.message = str("Inicializando robô")
             self.type_log = str("log")
             self.prt()
-
-            self.DriverLaunch()
 
             self.output_dir_path = (
                 pathlib.Path(self.path_args).parent.resolve().__str__()
@@ -197,22 +263,11 @@ class CrawJUD:
             if not cl:
                 cl = self.client.split(" ")[0]
 
-            self.elements(system_bot=self.system, state_or_client=cl)
-            if self.login_method:
-                chk_logged = self.AuthBot()
-                if chk_logged is True:
+            self.DriverLaunch()
 
-                    self.message = "Login efetuado com sucesso!"
-                    self.type_log = "log"
-                    self.prt()
-
-                elif chk_logged is False:
-
-                    self.driver.quit()
-                    self.message = "Erro ao realizar login"
-                    self.type_log = "error"
-                    self.prt()
-                    raise Exception(self.message)
+            self.elements = self.ElementsBots(
+                system_bot=self.system, state_or_client=cl
+            ).elements
 
         except Exception as e:
 
@@ -236,10 +291,34 @@ class CrawJUD:
         result = self.SearchBot(**self.kwrgs)
         return result()
 
+    def auth_bot(self):
+
+        auth_cls = self.AuthBot(
+            driver=self.driver,
+            wait=self.wait,
+            list_args=self.kwrgs,
+            elements=self.elements,
+        )
+        if self.login_method:
+            chk_logged = auth_cls.auth()
+            if chk_logged is True:
+
+                self.message = "Login efetuado com sucesso!"
+                self.type_log = "log"
+                self.prt()
+
+            elif chk_logged is False:
+
+                self.driver.quit()
+                self.message = "Erro ao realizar login"
+                self.type_log = "error"
+                self.prt()
+                raise Exception(self.message)
+
     def prt(self) -> None:
 
-        kwrgs = self.__dict__
-        print_bot = self.printtext(**kwrgs)
+        kwg = self.__dict__
+        print_bot = self.printtext(**kwg)
         print_bot.print_msg()
 
     def dataFrame(self) -> list[dict[str, str]]:
@@ -421,13 +500,13 @@ class CrawJUD:
             self.type_log = "log"
             self.prt()
 
-            chrome_options = Options()
-            self.user_data_dir = str(
-                os.path.join(os.getcwd(), "Temp", self.pid, "chrome")
-            )
+            list_args = self.list_args
 
-            if not os.getlogin() == "root" or platform.system() != "Linux":
-                self.list_args.remove("--no-sandbox")
+            chrome_options = Options()
+            self.chr_dir = str(os.path.join(os.getcwd(), "Temp", self.pid, "chrome"))
+
+            if os.getlogin() != "root" or platform.system() != "Linux":
+                list_args.remove("--no-sandbox")
 
             if platform.system() == "Windows" and self.login_method == "cert":
                 state = str(self.state)
@@ -441,7 +520,7 @@ class CrawJUD:
                             [
                                 "xcopy",
                                 self.path_accepted,
-                                self.user_data_dir,
+                                self.chr_dir,
                                 "/E",
                                 "/H",
                                 "/C",
@@ -462,8 +541,8 @@ class CrawJUD:
                 elif not path_exist:
                     os.makedirs(self.path_accepted, exist_ok=True)
 
-            chrome_options.add_argument(f"user-data-dir={self.user_data_dir}")
-            for argument in self.list_args:
+            chrome_options.add_argument(f"user-data-dir={self.chr_dir}")
+            for argument in list_args:
                 chrome_options.add_argument(argument)
 
             this_path = pathlib.Path(__file__).parent.resolve().__str__()
