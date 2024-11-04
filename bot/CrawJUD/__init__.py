@@ -66,6 +66,15 @@ class CrawJUD:
 
         return item
 
+    """
+
+    Esse umzilhão de property aqui é pra evitar a construção
+    de um monte de classe toda vez que eu precisar dela.
+
+    Com o property eu construo e deixo salvo estado dela
+
+    """
+
     @property
     def driver(self) -> WebDriver:
         return self.drv
@@ -279,6 +288,8 @@ class CrawJUD:
             self.prt()
             raise e
 
+    """ Nome autoexplicativo """
+
     def search(self):
 
         self.type_log = "log"
@@ -290,6 +301,10 @@ class CrawJUD:
         self.prt()
         result = self.SearchBot(**self.kwrgs)
         return result()
+
+    """
+    Função De Autenticação, eu realmente preciso dizer pra quê ela serve?
+    """
 
     def auth_bot(self):
 
