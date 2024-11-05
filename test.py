@@ -15,12 +15,12 @@ class SocketBot:
     def on_connect(self):
         print("Conectado!")
         # Fazer o join na sala ao conectar
-        io.emit("join", {"pid": "N3T7R9"}, namespace="/log")
+        io.emit("join", {"pid": "N3T7R9"})
 
     def on_disconnect(self):
         print("Desconectado!")
         # Sair da sala ao desconectar
-        io.emit("leave", {"pid": "N3T7R9"}, namespace="/log")
+        io.emit("leave", {"pid": "N3T7R9"})
 
     def send_message(self, data):
         global connected
@@ -33,7 +33,8 @@ class SocketBot:
             io.emit("log_message", data, namespace="/log")
         except (BadNamespaceError, ConnectionError) as e:
             print(f"Erro de conexão: {e}")
-            connected = False  # Marca como desconectado para tentar reconectar
+            if not all([hasattr(e, "args"), "Already connected" in e.args]):
+                connected = False  # Marca como desconectado para tentar reconectar
 
     def prompt(self):
         while True:
