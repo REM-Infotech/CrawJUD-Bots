@@ -64,26 +64,31 @@ ou
 ```python
 
 ## URL do FRONT
-url = ""
+DEBUG = ""
+PORT = ""
+TOKEN_IP2 = ""
 
-## Variável para Debug
-DEBUG = TRUE
 
-## Config's do Envio de E-mail
-MAIL_PORT = ""
+url_web = ""
+NAMESERVER = ""
+HOST = ""
+
+credentials_dict = ""
+
+TUNNEL_ID =""
+CREDENTIALS_TUNNEL = ""
+
 MAIL_SERVER = ""
+MAIL_PORT = ""
 MAIL_USERNAME = ""
 MAIL_PASSWORD = ""
 MAIL_DEFAULT_SENDER = ""
 
-## Config Database
-database = ""
+## SQL Config
 login = ""
 password = ""
-host = ""
-
-## Key OPENAI ChatGPT
-OPENAI_API_KEY = ""
+dbhost = ""
+database = ""
 
 credentials_dict = '{
   "type": "info da service account GCS",
