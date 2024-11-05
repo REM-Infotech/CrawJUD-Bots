@@ -30,7 +30,10 @@ from concurrent.futures import ThreadPoolExecutor
 
 class GetDriver:
 
-    code_ver = ".".join(v_chrome.get_chrome_version().split(".")[:-1])
+    @property
+    def code_ver(self):
+        return ".".join(v_chrome.get_chrome_version().split(".")[:-1])
+
     progress = Progress(
         TimeElapsedColumn(),
         TextColumn("[bold blue]{task.fields[filename]}", justify="right"),

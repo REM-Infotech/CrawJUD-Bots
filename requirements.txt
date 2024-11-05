@@ -28,6 +28,7 @@ deep-translator
 chrome-version
 python-dotenv
 httpx
+inquirer
 FindMyIP
 aiofiles
 watchdog
