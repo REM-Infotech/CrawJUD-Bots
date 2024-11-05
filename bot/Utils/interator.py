@@ -1,6 +1,6 @@
 from bot.common.exceptions import ItemNaoEcontrado
 
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 
 from time import sleep
 from contextlib import suppress

@@ -1,10 +1,9 @@
 import os
 import time
-from typing import Type
 
 
 """ Imports do Projeto """
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 
 
 from bot.common.exceptions import ErroDeExecucao
@@ -18,9 +17,8 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class audiencia(CrawJUD):
 
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-
-        self.__dict__ = Initbot.__dict__.copy()
+    def __init__(self, **kwrgs) -> None:
+        super().__init__(**kwrgs)
         self.start_time = time.perf_counter()
 
     def execution(self) -> None:
@@ -32,7 +30,7 @@ class audiencia(CrawJUD):
 
             self.row = pos + 2
             self.bot_data = value
-            if self.thread._is_stopped:
+            if self.isStoped:
                 break
 
             if self.driver.title.lower() == "a sessao expirou":
@@ -48,7 +46,7 @@ class audiencia(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -59,8 +57,8 @@ class audiencia(CrawJUD):
 
     def queue(self) -> None:
 
-        result = self.search(self)
-        if not result:
+        search = self.search()
+        if not search:
             self.message = "Buscando Processo"
             raise ErroDeExecucao("Não Encontrado!")
 
@@ -70,7 +68,7 @@ class audiencia(CrawJUD):
         )
         self.message = "Processo Encontrado!"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         self.TablePautas()
         chk_lancamento = self.CheckLancamento()
@@ -111,7 +109,7 @@ class audiencia(CrawJUD):
                 f"Verificando se existem pautas para o dia {self.data_Concat}"
             )
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
         except Exception as e:
             raise ErroDeExecucao(e=e)
@@ -121,7 +119,7 @@ class audiencia(CrawJUD):
         try:
             self.message = "Lançando nova audiência"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             btn_NovaAudiencia = self.wait.until(
                 EC.presence_of_element_located(
@@ -134,7 +132,7 @@ class audiencia(CrawJUD):
             # Info tipo Audiencia
             self.message = "Informando tipo de audiência"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             selectorTipoAudiencia: WebElement = self.wait.until(
                 EC.presence_of_element_located(
@@ -168,7 +166,7 @@ class audiencia(CrawJUD):
             # Info Data Audiencia
             self.message = "Informando data da Audiência"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             DataAudiencia: WebElement = self.wait.until(
                 EC.presence_of_element_located(
@@ -187,7 +185,7 @@ class audiencia(CrawJUD):
 
             self.message = "Salvando..."
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             btn_Salvar = self.driver.find_element(
                 By.CSS_SELECTOR, self.elements.btn_Salvar

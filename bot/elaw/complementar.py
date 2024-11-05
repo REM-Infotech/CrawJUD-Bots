@@ -1,9 +1,8 @@
 import os
 import time
 from time import sleep
-from typing import Type
 from contextlib import suppress
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 from bot.common.exceptions import ErroDeExecucao
 
 
@@ -19,6 +18,16 @@ type_doc = {11: "cpf", 14: "cnpj"}
 
 class complement(CrawJUD):
 
+    def __init__(self, **kwrgs) -> None:
+        super().__init__(**kwrgs)
+
+        from clear import clear
+
+        clear()
+        print(self.__dict__.items())
+
+        self.start_time = time.perf_counter()
+
     def execution(self) -> None:
 
         frame = self.dataFrame()
@@ -28,7 +37,7 @@ class complement(CrawJUD):
 
             self.row = pos + 2
             self.bot_data = value
-            if self.thread._is_stopped:
+            if self.isStoped:
                 break
 
             if self.driver.title.lower() == "a sessao expirou":
@@ -44,7 +53,7 @@ class complement(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -55,14 +64,14 @@ class complement(CrawJUD):
 
     def queue(self) -> None:
 
-        search = self.search(self)
+        search = self.search()
         self.bot_data = self.elawFormats(self.bot_data)
 
         if search is True:
 
             self.message = "Inicializando complemento de cadastro"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             edit_proc_button = self.wait.until(
                 EC.presence_of_element_located(
                     (By.CSS_SELECTOR, 'button[id="dtProcessoResults:0:btnEditar"]')
@@ -76,7 +85,7 @@ class complement(CrawJUD):
 
                 self.message = "Informando unidade consumidora"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 css_input_uc = 'textarea[id="j_id_3k_1:j_id_3k_4_2_2_6_9_44_2:j_id_3k_4_2_2_6_9_44_3_1_2_2_1_1:j_id_3k_4_2_2_6_9_44_3_1_2_2_1_13"]'
 
@@ -93,14 +102,14 @@ class complement(CrawJUD):
 
                 self.message = "Unidade consumidora informada!"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
             def divisao() -> None:
 
                 elementSelect = 'select[id="j_id_3k_1:j_id_3k_4_2_2_a_9_44_2:j_id_3k_4_2_2_a_9_44_3_1_2_2_1_1:fieldid_9241typeSelectField1CombosCombo_input"]'
                 self.message = "Informando divisão"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 sleep(0.5)
                 text = str(self.bot_data.get("DIVISAO"))
@@ -111,13 +120,13 @@ class complement(CrawJUD):
 
                 self.message = "Divisão informada!"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
             def data_citacao() -> None:
 
                 self.message = "Informando data de citação"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 css_data_citacao = 'input[id="j_id_3k_1:dataRecebimento_input"]'
 
@@ -135,7 +144,7 @@ class complement(CrawJUD):
 
                 self.message = "Data de citação informada!"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
             def estado() -> None:
                 """Declaração dos CSS em variáveis"""
@@ -146,14 +155,14 @@ class complement(CrawJUD):
 
                 self.message = "Informando estado do processo"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 self.Select2_ELAW(elementSelect, text)
                 self.interact.sleep_load('div[id="j_id_3x"]')
 
                 self.message = "Estado do processo informado!"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
             def comarca() -> None:
                 """Declaração dos CSS em variáveis"""
@@ -163,14 +172,14 @@ class complement(CrawJUD):
 
                 self.message = "Informando comarca do processo"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 self.Select2_ELAW(elementSelect, text)
                 self.interact.sleep_load('div[id="j_id_3x"]')
 
                 self.message = "Comarca do processo informado!"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
             def foro() -> None:
                 """Declaração dos CSS em variáveis"""
@@ -180,14 +189,14 @@ class complement(CrawJUD):
 
                 self.message = "Informando foro do processo"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 self.Select2_ELAW(elementSelect, text)
                 self.interact.sleep_load('div[id="j_id_3x"]')
 
                 self.message = "Foro do processo informado!"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
             def vara() -> None:
                 """Declaração dos CSS em variáveis"""
@@ -197,14 +206,14 @@ class complement(CrawJUD):
 
                 self.message = "Informando vara do processo"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 self.Select2_ELAW(elementSelect, text)
                 self.interact.sleep_load('div[id="j_id_3x"]')
 
                 self.message = "Vara do processo informado!"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
             def fase() -> None:
                 """Declaração dos CSS em variáveis"""
@@ -213,14 +222,14 @@ class complement(CrawJUD):
 
                 self.message = "Informando fase do processo"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 self.Select2_ELAW(elementSelect, text)
                 self.interact.sleep_load('div[id="j_id_3x"]')
 
                 self.message = "Fase informada!"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
             def provimento() -> None:
                 """Declaração dos CSS em variáveis"""
@@ -229,20 +238,20 @@ class complement(CrawJUD):
 
                 self.message = "Informando provimento antecipatório"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 self.Select2_ELAW(elementSelect, text)
                 self.interact.sleep_load('div[id="j_id_3x"]')
 
                 self.message = "Provimento antecipatório informado!"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
             def fato_gerador() -> None:
                 """Declaração dos CSS em variáveis"""
                 self.message = "Informando fato gerador"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 elementSelect = self.elements.fato_gerador_input
                 text = self.bot_data.get("FATO_GERADOR")
@@ -252,7 +261,7 @@ class complement(CrawJUD):
 
                 self.message = "Fato gerador informado!"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
             def desc_objeto() -> None:
 
@@ -278,7 +287,7 @@ class complement(CrawJUD):
                 """Declaração dos CSS em variáveis"""
                 self.message = "Informando objeto do processo"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 elementSelect = self.elements.objeto_input
                 text = self.bot_data.get("OBJETO")
@@ -288,7 +297,7 @@ class complement(CrawJUD):
 
                 self.message = "Objeto do processo informado!"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
             start_time = time.perf_counter()
             class_itens = list(locals().items())
@@ -315,7 +324,7 @@ class complement(CrawJUD):
                 f"Formulário preenchido em {minutes} minutos e {seconds} segundos"
             )
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             self.salvar_tudo()
 
@@ -340,7 +349,7 @@ class complement(CrawJUD):
         )
         self.type_log = "log"
         self.message = "Salvando processo novo"
-        self.prt(self)
+        self.prt()
         salvartudo.click()
 
     def print_comprovante(self) -> str:
@@ -393,13 +402,3 @@ class complement(CrawJUD):
         #     except Exception as e:
         #         self.message = "Processo Não cadastrado"
         #         raise ErroDeExecucao(self.message)
-
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-
-        from clear import clear
-
-        clear()
-        print(self.__dict__.items())
-
-        self.__dict__.update(Initbot.__dict__)
-        self.start_time = time.perf_counter()

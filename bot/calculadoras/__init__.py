@@ -1,19 +1,28 @@
+from typing import Union
+from .tjdft import tjdft
+
+Hints = Union[tjdft]
+
+
 class calculadoras:
-    
-    bot = ""
-    Master = ""
-    
-    def __init__(self, bot: str, Master):
-        self.bot = bot
-        self.Master = Master
-    
-    def __call__(self) -> None:
+
+    bots = {"tjdf": tjdft}
+
+    def __init__(self, **kwrgs):
+        self.kwrgs = kwrgs
+        self.__dict__.update(kwrgs)
         try:
-            
-            self.execution = getattr(self, self.bot)(self.Master)
-            self.execution.execution()
-            
+
+            self.Bot.execution()
+
         except Exception as e:
             raise e
-        
-    from .tjdft import tjdft
+
+    @property
+    def Bot(self) -> Hints:
+
+        rb = self.bots.get(self.typebot)
+        if not rb:
+            raise AttributeError("Robô não encontrado!!")
+
+        return rb(**self.kwrgs)

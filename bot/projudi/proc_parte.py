@@ -1,6 +1,5 @@
 import os
 import time
-from typing import Type
 from contextlib import suppress
 
 
@@ -10,21 +9,20 @@ from selenium.webdriver.remote.webelement import WebElement
 from bot.common.exceptions import ErroDeExecucao
 from selenium.common.exceptions import NoSuchElementException
 
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 
 
 class proc_parte(CrawJUD):
 
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-
-        self.__dict__ = Initbot.__dict__.copy()
+    def __init__(self, **kwrgs) -> None:
+        super().__init__(**kwrgs)
         self.start_time = time.perf_counter()
         self.data_append = []
 
     def execution(self) -> None:
 
         self.graphicMode = "bar"
-        while not self.thread._is_stopped:
+        while not self.isStoped:
 
             if self.driver.title.lower() == "a sessao expirou":
                 self.auth(self)
@@ -39,7 +37,7 @@ class proc_parte(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -53,7 +51,7 @@ class proc_parte(CrawJUD):
         try:
             for vara in self.varas:
                 self.vara: str = vara
-                search = self.search(self)
+                search = self.search()
                 if search is True:
                     self.get_process_list()
 
@@ -75,7 +73,7 @@ class proc_parte(CrawJUD):
                     self.elements.list_processos,
                 )
 
-            if list_processos and not self.thread._is_stopped:
+            if list_processos and not self.isStoped:
                 self.use_list_process(list_processos)
 
                 with suppress(NoSuchElementException):
@@ -139,4 +137,4 @@ class proc_parte(CrawJUD):
             self.row += 1
             self.message = f"Processo {numero_processo} salvo!"
             self.type_log = "success"
-            self.prt(self)
+            self.prt()

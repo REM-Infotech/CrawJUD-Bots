@@ -4,38 +4,36 @@ from bot.common.exceptions import ErroDeExecucao
 
 
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
-from bot import CrawJUD
 
 
-class SeachBot(CrawJUD):
+class SeachBot:
 
-    def __init__(self, Head: CrawJUD):
+    driver: WebDriver = None
+    wait: WebDriverWait = None
+    bot_data = {""}
 
-        self.__dict__ = Head.__dict__.copy()
+    def __init__(self, **kwrgs) -> None:
 
-    def __call__(self, Head: CrawJUD) -> None:
+        for key, value in list(kwrgs.items()):
 
-        self.__dict__ = Head.__dict__.copy()
-        self.type_log = "log"
+            if type(value) is dict and key != "bot_data":
+                self.__dict__.update(value)
+                continue
 
-        self.message = f'Buscando processos pelo nome "{self.parte_name}"'
-        if self.typebot != "proc_parte":
-            self.message = f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}'
+            self.__dict__.update({key: value})
 
-        self.prt(self)
+    def __call__(self):
+
         src: bool = getattr(self, f"{self.system.lower()}_search", None)()
         return src
 
     def elaw_search(self) -> bool:
-
-        self.message = "Buscando Processo"
-        self.type_log = "log"
-        self.prt(self)
 
         if self.driver.current_url != "https://amazonas.elaw.com.br/processoList.elaw":
 
@@ -111,6 +109,11 @@ class SeachBot(CrawJUD):
 
     def projudi_search(self) -> None:
 
+        def detect_intimacao() -> None:
+
+            if "intimacaoAdvogado.do" in self.driver.current_url:
+                raise ErroDeExecucao("Processo com Intimação pendente de leitura!")
+
         self.driver.get(self.elements.url_busca)
 
         inputproc = None
@@ -125,9 +128,9 @@ class SeachBot(CrawJUD):
                 )
 
             if inputproc:
-                self.interact.send_key(inputproc, self.bot_data.get("NUMERO_PROCESSO"))
+                inputproc.send_keys(self.bot_data.get("NUMERO_PROCESSO"))
                 consultar = self.driver.find_element(By.CSS_SELECTOR, "#pesquisar")
-                self.interact.click(consultar)
+                consultar.click()
 
                 with suppress(TimeoutException):
                     enterproc: WebElement = self.wait.until(
@@ -136,9 +139,8 @@ class SeachBot(CrawJUD):
 
                 if enterproc:
                     enterproc.click()
-                    self.message = "Processo encontrado!"
-                    self.type_log = "log"
-                    self.prt(self)
+
+                    detect_intimacao()
 
                     with suppress(TimeoutException, NoSuchElementException):
 

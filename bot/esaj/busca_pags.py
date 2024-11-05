@@ -1,7 +1,6 @@
 """ Imports do Projeto """
 
-from bot import CrawJUD
-from typing import Type
+from bot.CrawJUD import CrawJUD
 import time
 import pytz
 from datetime import datetime
@@ -12,12 +11,11 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class busca_pags(CrawJUD):
 
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-
+    def __init__(self, **kwrgs) -> None:
+        super().__init__(**kwrgs)
         self.datetimeNOW = datetime.now(pytz.timezone("America/Manaus")).strftime(
             "%d-%m-%Y"
         )
-        self.__dict__ = Initbot.__dict__.copy()
         self.start_time = time.perf_counter()
 
     def execution(self) -> None:
@@ -29,7 +27,7 @@ class busca_pags(CrawJUD):
 
             self.row = pos + 2
             self.bot_data = value
-            if self.thread._is_stopped:
+            if self.isStoped:
                 break
 
             if self.driver.title.lower() == "a sessao expirou":
@@ -45,7 +43,7 @@ class busca_pags(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -90,7 +88,7 @@ class busca_pags(CrawJUD):
 
                 self.message = "Extraindo dados..."
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 find_table_pgmt = divcorreta.find_element(
                     By.CSS_SELECTOR, 'table[class="spwTabelaGrid"]'

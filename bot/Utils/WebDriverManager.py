@@ -51,7 +51,7 @@ class GetDriver:
 
     progress_group = Group(Panel(Group(current_app_progress, progress)))
 
-    def __init__(self, destination: str = os.path.join(os.getcwd()), **kwargs):
+    def __init__(self, destination: str = os.path.join(os.getcwd()), **kwrgs):
 
         self.file_path: str = os.path.join(os.getcwd(), "webdriver", "chromedriver")
         self.file_path += self.code_ver
@@ -60,7 +60,7 @@ class GetDriver:
         if self.code_ver not in self.fileN:
             self.fileN += self.code_ver
 
-        for key, value in list(kwargs.items()):
+        for key, value in list(kwrgs.items()):
             setattr(self, key, value)
 
         self.destination = destination
