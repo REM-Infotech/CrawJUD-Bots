@@ -2,9 +2,8 @@
 
 import time
 from time import sleep
-from typing import Type
 
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 from bot.common.exceptions import ErroDeExecucao
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
@@ -15,9 +14,8 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class andamentos(CrawJUD):
 
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-
-        self.__dict__ = Initbot.__dict__.copy()
+    def __init__(self, **kwrgs) -> None:
+        super().__init__(**kwrgs)
         self.start_time = time.perf_counter()
 
     def execution(self) -> None:
@@ -29,7 +27,7 @@ class andamentos(CrawJUD):
 
             self.row = pos + 2
             self.bot_data = value
-            if self.thread._is_stopped:
+            if self.isStoped:
                 break
 
             if self.driver.title.lower() == "a sessao expirou":
@@ -45,7 +43,7 @@ class andamentos(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -56,7 +54,7 @@ class andamentos(CrawJUD):
 
     def queue(self) -> None:
 
-        search = self.search(self)
+        search = self.search()
         if search is True:
             btn_newmove = (
                 'button[id="tabViewProcesso:j_id_i3_4_1_3_ae:novoAndamentoPrimeiraBtn"]'
@@ -78,7 +76,7 @@ class andamentos(CrawJUD):
         elif search is not True:
             self.message = "Processo não encontrado!"
             self.type_log = "error"
-            self.prt(self)
+            self.prt()
             self.append_error([self.bot_data.get("NUMERO_PROCESSO"), self.message])
 
     def info_data(self) -> None:
@@ -87,7 +85,7 @@ class andamentos(CrawJUD):
 
             self.message = "Informando data"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             css_Data = 'input[id="j_id_2n:j_id_2r_2_9_input"]'
             campo_data: WebElement = self.wait.until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, css_Data))
@@ -109,7 +107,7 @@ class andamentos(CrawJUD):
         try:
             self.message = "Informando ocorrência"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             inpt_ocorrencia = 'textarea[id="j_id_2n:txtOcorrenciaAndamento"]'
 
             ocorrencia = self.driver.find_element(By.CSS_SELECTOR, inpt_ocorrencia)
@@ -127,7 +125,7 @@ class andamentos(CrawJUD):
         try:
             self.message = "Informando observação"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             inpt_obs = 'textarea[id="j_id_2n:txtObsAndamento"]'
 
@@ -150,7 +148,7 @@ class andamentos(CrawJUD):
         try:
             self.message = "Salvando andamento..."
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             sleep(1)
             self.link = self.driver.current_url
             save_button = self.driver.find_element(By.ID, "btnSalvarAndamentoProcesso")

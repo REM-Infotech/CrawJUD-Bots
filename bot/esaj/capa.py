@@ -1,10 +1,9 @@
 import time
 from time import sleep
-from typing import Type
 from contextlib import suppress
 
 from bot.common.exceptions import ErroDeExecucao
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 
 # Selenium Imports
 from selenium.webdriver.common.by import By
@@ -16,9 +15,8 @@ from selenium.common.exceptions import TimeoutException
 
 class capa(CrawJUD):
 
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-
-        self.__dict__ = Initbot.__dict__.copy()
+    def __init__(self, **kwrgs) -> None:
+        super().__init__(**kwrgs)
         self.start_time = time.perf_counter()
 
     def execution(self) -> None:
@@ -30,7 +28,7 @@ class capa(CrawJUD):
 
             self.row = pos + 2
             self.bot_data = value
-            if self.thread._is_stopped:
+            if self.isStoped:
                 break
 
             if self.driver.title.lower() == "a sessao expirou":
@@ -46,7 +44,7 @@ class capa(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -67,7 +65,7 @@ class capa(CrawJUD):
     def get_process_informations(self) -> list:
 
         self.message = f"Extraindo informações do processo nº{self.bot_data.get('NUMERO_PROCESSO')}"
-        self.prt(self)
+        self.prt()
 
         grau = int(str(self.bot_data.get("GRAU")).replace("º", ""))
         if grau == 1:

@@ -29,6 +29,8 @@ chrome-version
 python-dotenv
 httpx
 FindMyIP
+aiofiles
+watchdog
 # Instalar isso aqui se o servidor for linux: 
 # apt install python3-dev libmysqlclient-dev pkg-config tightvncserver && tightvncserver :99 -geometry 1920x1080
 

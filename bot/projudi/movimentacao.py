@@ -18,14 +18,13 @@ from bot.common.exceptions import ErroDeExecucao
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 
 
 class movimentacao(CrawJUD):
 
-    def __init__(self, Initbot: CrawJUD) -> None:
-
-        self.__dict__ = Initbot.__dict__.copy()
+    def __init__(self, **kwrgs) -> None:
+        super().__init__(**kwrgs)
         self.start_time = time.perf_counter()
 
     def execution(self) -> None:
@@ -37,7 +36,7 @@ class movimentacao(CrawJUD):
 
             self.row = pos + 2
             self.bot_data = value
-            if self.thread._is_stopped:
+            if self.isStoped:
                 break
 
             if self.driver.title.lower() == "a sessao expirou":
@@ -54,7 +53,7 @@ class movimentacao(CrawJUD):
                 self.type_log = "error"
                 self.message_error = f"{
                     message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -70,14 +69,14 @@ class movimentacao(CrawJUD):
 
         self.table_moves = None
 
-        search = self.search(self)
+        search = self.search()
 
         if search is not True:
             raise ErroDeExecucao("Processo não encontrado!")
 
         self.message = "Buscando movimentações"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         nm_mv = self.bot_data.get("NOME_MOV", None)
         dt_lt = self.bot_data.get("DATA_LIMITE", None)

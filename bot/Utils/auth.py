@@ -17,19 +17,22 @@ if platform.system() == "Windows":
     from pywinauto import Application
 
 
-from bot import CrawJUD
+class AuthBot:
 
+    def __init__(self, **kwrgs) -> None:
 
-class AuthBot(CrawJUD):
+        for key, value in list(kwrgs.items()):
 
-    def __init__(self, Head: CrawJUD):
-        self.__dict__ = Head.__dict__.copy()
+            if type(value) is dict:
+                self.__dict__.update(value)
+                continue
 
-    def __call__(self, Head: CrawJUD) -> bool:
+            self.__dict__.update({key: value})
+
+    def auth(self) -> bool:
 
         to_call = getattr(self, f"{self.system.lower()}_auth")
         if to_call:
-            self.__dict__ = Head.__dict__.copy()
             return to_call()
 
         raise RuntimeError("Sistema Não encontrado!")
@@ -277,7 +280,7 @@ class AuthBot(CrawJUD):
                 pathlib.Path(accepted_dir).parent.resolve(), "chrome"
             )
             os.makedirs(target_directory, exist_ok=True)
-            source_directory = self.user_data_dir
+            source_directory = self.chr_dir
 
             try:
 

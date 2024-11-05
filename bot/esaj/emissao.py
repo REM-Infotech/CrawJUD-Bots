@@ -1,8 +1,7 @@
 """ Imports do Projeto """
 
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 from bot.Utils.count_doc import count_doc
-from typing import Type
 import time
 import requests
 import platform
@@ -47,9 +46,8 @@ type_docscss = {
 
 class emissao(CrawJUD):
 
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-
-        self.__dict__ = Initbot.__dict__.copy()
+    def __init__(self, **kwrgs) -> None:
+        super().__init__(**kwrgs)
         self.start_time = time.perf_counter()
 
     def execution(self) -> None:
@@ -61,7 +59,7 @@ class emissao(CrawJUD):
 
             self.row = pos + 2
             self.bot_data = value
-            if self.thread._is_stopped:
+            if self.isStoped:
                 break
 
             if self.driver.title.lower() == "a sessao expirou":
@@ -77,7 +75,7 @@ class emissao(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -113,7 +111,7 @@ class emissao(CrawJUD):
 
         self.message = "Informando foro"
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
         set_foro: WebElement = self.wait.until(
             EC.presence_of_element_located((By.CSS_SELECTOR, self.elements.ome_foro))
@@ -302,14 +300,14 @@ class emissao(CrawJUD):
             f"Boleto Nº{self.bot_data.get('NUMERO_PROCESSO')} emitido com sucesso!"
         )
         self.type_log = "log"
-        self.prt(self)
+        self.prt()
 
     def get_barcode(self) -> None:
 
         try:
             self.message = "Extraindo código de barras"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
 
             sleep(2)
             # Inicialize uma lista para armazenar os números encontrados

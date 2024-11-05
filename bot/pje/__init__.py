@@ -1,22 +1,27 @@
+from typing import Union
+
+from bot.pje.pauta import pauta
+
+Hints = Union[pauta]
+
+
 class pje:
 
-    bot = ""
-    Master = ""
-
-    def __init__(self, bot: str, Master):
-        self.bot = bot
-        self.Master = Master
-
-    def __call__(self) -> None:
+    def __init__(self, **kwrgs):
+        self.kwrgs = kwrgs
+        self.__dict__.update(kwrgs)
         try:
 
-            self.execution = getattr(self, self.bot)(self.Master)
-            self.execution.execution()
+            self.Bot.execution()
 
         except Exception as e:
             raise e
 
-    from bot.pje.pauta import pauta
+    @property
+    def Bot(self) -> Hints:
 
-    # from bot.pje.protocolo import protocolo
-    # from bot.pje.movimentacao import movimentacao
+        rb = self.bots.get(self.typebot)
+        if not rb:
+            raise AttributeError("Robô não encontrado!!")
+
+        return rb(**self.kwrgs)

@@ -1,20 +1,4 @@
-class SP:
-    url_login = ""
-    campo_username = ""
-    campo_passwd = ""
-    btn_entrar = ""
-
-    url_busca = ""
-    btn_busca = ""
-
-
-class AC:
-    url_login = ""
-    url_busca = ""
-    btn_busca = ""
-
-
-class AM:
+class PROJUDI_AM:
 
     url_login = "https://projudi.tjam.jus.br/projudi/usuario/logon.do?actionType=inicio"
     campo_username = "#login"
