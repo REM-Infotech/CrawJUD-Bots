@@ -2,6 +2,7 @@ from time import sleep
 from contextlib import suppress
 from bot.common.exceptions import ErroDeExecucao
 
+from ..CrawJUD import CrawJUD
 from ..Utils.interator import Interact
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
@@ -12,7 +13,10 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 
 
-class SeachBot:
+class SeachBot(CrawJUD):
+
+    def __getattr__(self, nome):
+        return super().__getattr__(nome)
 
     driver: WebDriver = None
     wait: WebDriverWait = None

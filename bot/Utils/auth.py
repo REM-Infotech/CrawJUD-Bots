@@ -6,6 +6,7 @@ import subprocess
 from time import sleep
 from contextlib import suppress
 
+from ..CrawJUD import CrawJUD
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
@@ -17,17 +18,14 @@ if platform.system() == "Windows":
     from pywinauto import Application
 
 
-class AuthBot:
+class AuthBot(CrawJUD):
+
+    def __getattr__(self, nome):
+        return super().__getattr__(nome)
 
     def __init__(self, **kwrgs) -> None:
 
-        for key, value in list(kwrgs.items()):
-
-            if type(value) is dict:
-                self.__dict__.update(value)
-                continue
-
-            self.__dict__.update({key: value})
+        pass
 
     def auth(self) -> bool:
 
