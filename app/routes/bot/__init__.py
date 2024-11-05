@@ -24,7 +24,7 @@ bot = Blueprint("bot", __name__, template_folder=path_template)
 def botlaunch(id: int, system: str, typebot: str):
 
     message = {"success": "success"}
-    from bot.Utils.StartStop_Notify import SetStatus
+    from status import SetStatus
 
     with app.app_context():
         try:
@@ -87,7 +87,7 @@ def stop_execution(user: str, pid: str) -> int:
             processID = int(processID.processID)
             worker_thread = WorkerThread().stop(processID, pid)
             app.logger.info(worker_thread)
-            from bot.Utils.StartStop_Notify import SetStatus
+            from status import SetStatus
 
             user_id = Users.query.filter(Users.login == user).first().id
             get_info = (

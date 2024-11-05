@@ -1,11 +1,11 @@
 from typing import Union
 
-from bot.pje.pauta import pauta
-
-Hints = Union[pauta]
-
 
 class pje:
+
+    from bot.pje.pauta import pauta
+
+    Hints = Union[pauta]
 
     def __init__(self, **kwrgs):
         self.kwrgs = kwrgs
