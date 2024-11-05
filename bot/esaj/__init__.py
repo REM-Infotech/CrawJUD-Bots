@@ -1,14 +1,39 @@
+from typing import Union
+
+from .capa import capa
+from .emissao import emissao
+from .protocolo import protocolo
+from .busca_pags import busca_pags
+from .movimentacao import movimentacao
+
+Hints = Union[capa, protocolo, busca_pags, emissao, movimentacao]
+
+
 class esaj:
 
-    bot = ""
-    Master = ""
+    bots = {
+        "capa": capa,
+        "protocolo": protocolo,
+        "busca_pags": busca_pags,
+        "emissao": emissao,
+        "movimentacao": movimentacao,
+    }
 
-    def __init__(self, bot: str, Master):
-        self.bot = bot
-        self.Master = Master
+    def __init__(self, **kwrgs):
+        self.kwrgs = kwrgs
+        self.__dict__.update(kwrgs)
+        try:
 
-    from .capa import capa
-    from .emissao import emissao
-    from .protocolo import protocolo
-    from .busca_pags import busca_pags
-    from .movimentacao import movimentacao
+            self.Bot.execution()
+
+        except Exception as e:
+            raise e
+
+    @property
+    def Bot(self) -> Hints:
+
+        rb = self.bots.get(self.typebot)
+        if not rb:
+            raise AttributeError("Robô não encontrado!!")
+
+        return rb(**self.kwrgs)

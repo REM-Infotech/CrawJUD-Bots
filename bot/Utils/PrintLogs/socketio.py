@@ -3,37 +3,45 @@ import socketio
 from socketio.exceptions import BadNamespaceError, ConnectionError
 
 connected = False
-io = socketio.Client()
 
 
 class SocketBot:
+
+    pid = ""
+
     def __init__(self):
         # Registra os eventos na inicialização
-        io.on("connect", self.on_connect)
-        io.on("disconnect", self.on_disconnect)
+        self.io = socketio.Client()
+        self.io.on("connect", self.on_connect)
+        self.io.on("disconnect", self.on_disconnect)
 
     def on_connect(self):
         print("Conectado!")
         # Fazer o join na sala ao conectar
-        io.emit("join", {"pid": "N3T7R9"}, namespace="/log")
+        self.io.emit("join", {"pid": "N3T7R9"}, namespace="/log")
 
     def on_disconnect(self):
         print("Desconectado!")
         # Sair da sala ao desconectar
-        io.emit("leave", {"pid": "N3T7R9"}, namespace="/log")
+        self.io.emit("leave", {"pid": "N3T7R9"}, namespace="/log")
 
-    def send_message(self, data):
+    def send_message(self, data: dict[str, str | int], url):
         global connected
+
         try:
+            self.pid = data["pid"]
             if not connected:
-                io.connect("https://back.robotz.dev", namespaces=["/log"])
+                self.io.connect(
+                    f"https://{url}", namespaces=["/log"], transports=["websocket"]
+                )
                 connected = True
             # Adiciona o 'pid' aos dados e envia a mensagem
-            data.update({"pid": "N3T7R9"})
-            io.emit("log_message", data, namespace="/log")
+            self.io.emit("log_message", data, namespace="/log")
         except (BadNamespaceError, ConnectionError) as e:
             print(f"Erro de conexão: {e}")
-            connected = False  # Marca como desconectado para tentar reconectar
+            connected = False
+            self.io.disconnect()
+            self.send_message(data, url)
 
     def prompt(self):
         while True:

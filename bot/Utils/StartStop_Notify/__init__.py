@@ -12,7 +12,6 @@ import openpyxl
 import unicodedata
 
 from datetime import datetime
-from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 from openpyxl.worksheet.worksheet import Worksheet
 
@@ -53,9 +52,7 @@ class SetStatus:
         return "".join(
             [
                 c
-                for c in unicodedata.normalize(
-                    "NFKD", string.lower().replace(" ", "").replace("_", "")
-                )
+                for c in unicodedata.normalize("NFKD", string.upper())
                 if not unicodedata.combining(c)
             ]
         )
@@ -71,7 +68,7 @@ class SetStatus:
                 if "xlsx" not in f:
                     f = self.format_String(f)
 
-                filesav = os.path.join(path_pid, secure_filename(f))
+                filesav = os.path.join(path_pid, f)
                 value.save(filesav)
 
         data = {}

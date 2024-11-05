@@ -1,8 +1,7 @@
 import time
 from time import sleep
-from typing import Type
 from datetime import datetime
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 from bot.common.exceptions import ErroDeExecucao
 
 # Selenium Imports
@@ -13,9 +12,8 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class movimentacao(CrawJUD):
 
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-
-        self.__dict__ = Initbot.__dict__.copy()
+    def __init__(self, **kwrgs) -> None:
+        super().__init__(**kwrgs)
         self.start_time = time.perf_counter()
 
     def execution(self) -> None:
@@ -27,7 +25,7 @@ class movimentacao(CrawJUD):
 
             self.row = pos + 2
             self.bot_data = value
-            if self.thread._is_stopped:
+            if self.isStoped:
                 break
 
             if self.driver.title.lower() == "a sessao expirou":
@@ -43,7 +41,7 @@ class movimentacao(CrawJUD):
 
                 self.type_log = "error"
                 self.message_error = f"{message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)

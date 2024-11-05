@@ -15,15 +15,14 @@ from selenium.common.exceptions import (
     StaleElementReferenceException,
 )
 
-from bot import CrawJUD
+from bot.CrawJUD import CrawJUD
 from bot.common.exceptions import ErroDeExecucao
 
 
 class pauta(CrawJUD):
 
-    def __init__(self, Initbot: Type[CrawJUD]) -> None:
-
-        self.__dict__ = Initbot.__dict__.copy()
+    def __init__(self, **kwrgs) -> None:
+        super().__init__(**kwrgs)
         self.start_time = time.perf_counter()
 
     def execution(self) -> None:
@@ -34,7 +33,7 @@ class pauta(CrawJUD):
         self.row = 2
         self.current_date = self.data_inicio
 
-        while not self.thread._is_stopped and self.current_date <= self.data_fim:
+        while not self.isStoped and self.current_date <= self.data_fim:
 
             if self.driver.title.lower() == "a sessao expirou":
                 self.auth(self)
@@ -50,7 +49,7 @@ class pauta(CrawJUD):
                 self.type_log = "error"
                 self.message_error = f"{
                     message_error}. | Operação: {old_message}"
-                self.prt(self)
+                self.prt()
 
                 self.bot_data.update({"MOTIVO_ERRO": self.message_error})
                 self.append_error(self.bot_data)
@@ -66,7 +65,7 @@ class pauta(CrawJUD):
             self.message = f"Buscando pautas na data {
                 self.current_date.strftime('%d/%m/%Y')}"
             self.type_log = "log"
-            self.prt(self)
+            self.prt()
             varas: list[str] = self.varas
             for vara in varas:
 
@@ -97,7 +96,7 @@ class pauta(CrawJUD):
             elif len(data_append) == 0:
                 self.message = "Nenhuma pauta encontrada"
                 self.type_log = "error"
-                self.prt(self)
+                self.prt()
 
         except Exception as e:
             raise e
@@ -133,7 +132,7 @@ class pauta(CrawJUD):
 
                 self.message = "Pautas encontradas!"
                 self.type_log = "log"
-                self.prt(self)
+                self.prt()
 
                 times = 6
 
@@ -169,7 +168,7 @@ class pauta(CrawJUD):
                             f'Processo {appends["NUMERO_PROCESSO"]} adicionado!'
                         )
                         self.type_log = "log"
-                        self.prt(self)
+                        self.prt()
 
                 try:
                     btn_next = self.driver.find_element(

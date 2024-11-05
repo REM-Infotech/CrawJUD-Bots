@@ -1,0 +1,713 @@
+import os
+import time
+import pytz
+import json
+import pathlib
+import platform
+import subprocess
+import unicodedata
+import pandas as pd
+from typing import Union
+from datetime import datetime
+from pandas import Timestamp
+from typing import Dict, List
+from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support import expected_conditions as EC
+
+# Selenium Imports
+from selenium import webdriver
+from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.wait import WebDriverWait
+from ..Utils.WebDriverManager import GetDriver
+
+from ..common.exceptions import ErroDeExecucao
+
+TypeHint = Union[
+    List[str],
+    List[Dict[str, str | int | float | datetime]],
+    Dict[str, str],
+]
+
+
+class CrawJUD:
+
+    settings = {
+        "recentDestinations": [{"id": "Save as PDF", "origin": "local", "account": ""}],
+        "selectedDestinationId": "Save as PDF",
+        "version": 2,
+    }
+
+    row_ = 0
+    kwrgs_ = {}
+    message_error_ = ""
+    bot_data_ = {}
+    graphicMode_ = "doughnut"
+    out_dir = ""
+    user_data_dir = ""
+    cr_list_args = [""]
+    drv = None
+    wt = None
+    elmnt = None
+
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+        self.kwrgs = kwargs
+        self.setup()
+
+    def __getattr__(self, nome: str) -> TypeHint:
+
+        item = self.kwrgs.get(nome, None)
+
+        if not item:
+            item = self.__dict__.get(nome, None)
+
+        return item
+
+    """
+
+    Esse umzilhão de property aqui é pra evitar a construção
+    de um monte de classe toda vez que eu precisar dela.
+
+    Com o property eu construo e deixo salvo estado dela
+
+    """
+
+    @property
+    def isStoped(self):
+        chk = os.path.exists(os.path.join(self.output_dir_path, f"{self.pid}.flag"))
+        return chk
+
+    @property
+    def driver(self) -> WebDriver:
+        return self.drv
+
+    @driver.setter
+    def driver(self, new_drv: WebDriver):
+        self.drv = new_drv
+
+    @property
+    def wait(self) -> WebDriverWait:
+        return self.wt
+
+    @wait.setter
+    def wait(self, new_wt: WebDriverWait):
+        self.wt = new_wt
+
+    @property
+    def chr_dir(self):
+        return self.user_data_dir
+
+    @chr_dir.setter
+    def chr_dir(self, new_dir: str):
+        self.user_data_dir = new_dir
+
+    @property
+    def output_dir_path(self):
+        return self.out_dir
+
+    @output_dir_path.setter
+    def output_dir_path(self, new_outdir: str):
+        self.out_dir = new_outdir
+
+    @property
+    def kwrgs(self) -> dict:
+        return self.kwrgs_
+
+    @kwrgs.setter
+    def kwrgs(self, new_kwg):
+        self.kwrgs_ = new_kwg
+
+    @property
+    def row(self) -> int:
+        return self.row_
+
+    @row.setter
+    def row(self, new_row: int):
+        self.row_ = new_row
+
+    @property
+    def message_error(self) -> str:
+        return self.message_error_
+
+    @message_error.setter
+    def message_error(self, nw_m: str) -> str:
+        self.message_error_ = nw_m
+
+    @property
+    def graphicMode(self):
+        return self.graphicMode_
+
+    @graphicMode.setter
+    def graphicMode(self, new_graph):
+        self.graphicMode_ = new_graph
+
+    @property
+    def list_args(self):
+        return [
+            "--ignore-ssl-errors=yes",
+            "--ignore-certificate-errors",
+            "--display=:99",
+            "--window-size=1600,900",
+            "--no-sandbox",
+            "--disable-blink-features=AutomationControlled",
+            "--kiosk-printing",
+        ]
+
+    @list_args.setter
+    def list_args(self, new_Args: list[str]):
+        self.cr_list_args = new_Args
+
+    @property
+    def bot_data(self) -> dict:
+        return self.bot_data_
+
+    @bot_data.setter
+    def bot_data(self, new_botdata: dict):
+        self.bot_data_ = new_botdata
+
+    @property
+    def AuthBot(self):
+        from ..Utils.auth import AuthBot
+
+        return AuthBot
+
+    @property
+    def SearchBot(self):
+        from ..Utils.search import SeachBot
+
+        return SeachBot
+
+    @property
+    def Interact(self):
+        from ..Utils.interator import Interact
+
+        return Interact
+
+    @property
+    def printtext(self):
+        from ..Utils.PrintLogs import printtext
+
+        return printtext
+
+    @property
+    def MakeXlsx(self):
+        from ..Utils.MakeTemplate import MakeXlsx
+
+        return MakeXlsx
+
+    @property
+    def cities_Amazonas(self):
+        from ..Utils.dicionarios import cities_Amazonas
+
+        return cities_Amazonas
+
+    @property
+    def ElementsBots(self):
+        from ..Utils.elements import ElementsBot
+
+        return ElementsBot
+
+    @property
+    def elements(self) -> ElementsBots:
+
+        return self.elmnt
+
+    @elements.setter
+    def elements(self, info):
+
+        self.elmnt = info
+
+    def setup(self):
+
+        try:
+            with open(self.path_args, "rb") as f:
+                json_f: dict[str, str | int] = json.load(f)
+
+                self.kwrgs = json_f
+
+                for key, value in json_f.items():
+                    setattr(self, key, value)
+
+            self.message = str("Inicializando robô")
+            self.type_log = str("log")
+            self.prt()
+
+            self.output_dir_path = (
+                pathlib.Path(self.path_args).parent.resolve().__str__()
+            )
+            # time.sleep(10)
+            self.list_args = [
+                "--ignore-ssl-errors=yes",
+                "--ignore-certificate-errors",
+                "--display=:99",
+                "--window-size=1600,900",
+                "--no-sandbox",
+                "--disable-blink-features=AutomationControlled",
+                "--kiosk-printing",
+            ]
+
+            if self.name_cert:
+
+                self.install_cert()
+
+            time_xlsx = datetime.now(pytz.timezone("America/Manaus")).strftime(
+                "%d-%m-%y"
+            )
+
+            namefile = f"Sucessos - PID {self.pid} {time_xlsx}.xlsx"
+            self.path = f"{self.output_dir_path}/{namefile}"
+
+            namefile_erro = f"Erros - PID {self.pid} {time_xlsx}.xlsx"
+            self.path_erro = f"{self.output_dir_path}/{namefile_erro}"
+
+            self.name_colunas = self.MakeXlsx("sucesso", self.typebot).make_output(
+                self.path
+            )
+            self.MakeXlsx("erro", self.typebot).make_output(self.path_erro)
+
+            if not self.xlsx:
+
+                self.data_inicio = datetime.strptime(self.data_inicio, "%Y-%m-%d")
+                self.data_fim = datetime.strptime(self.data_fim, "%Y-%m-%d")
+
+            cl = self.state
+            if not cl:
+                cl = self.client.split(" ")[0]
+
+            self.DriverLaunch()
+
+            self.elements = self.ElementsBots(
+                system_bot=self.system, state_or_client=cl
+            ).elements
+
+        except Exception as e:
+
+            self.row = 0
+            self.message = "Falha ao iniciar. Informe a mensagem de erro ao suporte"
+            self.type_log = "error"
+            self.prt()
+            self.message_error = str(e)
+            self.prt()
+            raise e
+
+    """ Nome autoexplicativo """
+
+    def search(self):
+
+        self.type_log = "log"
+
+        self.message = f'Buscando processos pelo nome "{self.parte_name}"'
+        if self.typebot != "proc_parte":
+            self.message = f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}'
+        self.prt()
+
+        result = self.SearchBot(
+            driver=self.driver,
+            wait=self.wait,
+            list_args=self.kwrgs,
+            elements=self.elements,
+            bot_data=self.bot_data,
+        )
+
+        chk_result = result()
+        if chk_result is True:
+            self.message = "Processo encontrado!"
+            self.type_log = "log"
+            self.prt()
+
+        return chk_result
+
+    """
+    Função De Autenticação, eu realmente preciso dizer pra quê ela serve?
+    """
+
+    def auth_bot(self):
+
+        auth_cls = self.AuthBot(
+            driver=self.driver,
+            wait=self.wait,
+            list_args=self.kwrgs,
+            elements=self.elements,
+        )
+        if self.login_method:
+            chk_logged = auth_cls.auth()
+            if chk_logged is True:
+
+                self.message = "Login efetuado com sucesso!"
+                self.type_log = "log"
+                self.prt()
+
+            elif chk_logged is False:
+
+                self.driver.quit()
+                self.message = "Erro ao realizar login"
+                self.type_log = "error"
+                self.prt()
+                raise Exception(self.message)
+
+    def prt(self) -> None:
+
+        kwg = self.__dict__
+        print_bot = self.printtext(**kwg)
+        print_bot.print_msg()
+
+    def dataFrame(self) -> list[dict[str, str]]:
+
+        input_file = os.path.join(
+            pathlib.Path(self.path_args).parent.resolve().__str__(), str(self.xlsx)
+        )
+
+        df = pd.read_excel(input_file)
+        df.columns = df.columns.str.upper()
+
+        for col in df.columns.to_list():
+            df[col] = df[col].apply(
+                lambda x: (
+                    x.strftime("%d/%m/%Y")
+                    if type(x) is datetime or type(x) is Timestamp
+                    else x
+                )
+            )
+
+        for col in df.select_dtypes(include=["float"]).columns.to_list():
+            df[col] = df[col].apply(lambda x: "{:.2f}".format(x).replace(".", ","))
+
+        vars_df = []
+
+        df_dicted = df.to_dict(orient="records")
+        for item in df_dicted:
+            for key, value in item.items():
+                if str(value) == "nan":
+                    item.update({key: None})
+
+            vars_df.append(item)
+
+        return vars_df
+
+    def elawFormats(self, data: dict[str, str]) -> dict[str, str]:
+
+        data_listed = list(data.items())
+        for key, value in data_listed:
+
+            if key.upper() == "TIPO_EMPRESA":
+                data.update({"TIPO_PARTE_CONTRARIA": "Autor"})
+                if value.upper() == "RÉU":
+                    data.update({"TIPO_PARTE_CONTRARIA": "Autor"})
+
+            elif key.upper() == "COMARCA":
+                set_locale = self.cities_Amazonas().get(value, None)
+                if not set_locale:
+                    set_locale = "Outro Estado"
+
+                data.update({"CAPITAL_INTERIOR": set_locale})
+
+            elif key == "DATA_LIMITE" and not data.get("DATA_INICIO"):
+                data.update({"DATA_INICIO": value})
+
+            elif type(value) is int or type(value) is float:
+                data.update({key: "{:.2f}".format(value).replace(".", ",")})
+
+            elif key == "CNPJ_FAVORECIDO" and not value:
+                data.update({key: "04.812.509/0001-90"})
+
+        return data
+
+    def calc_time(self) -> list:
+
+        end_time = time.perf_counter()
+        execution_time = end_time - self.start_time
+        calc = execution_time / 60
+        splitcalc = str(calc).split(".")
+        minutes = int(splitcalc[0])
+        seconds = int(float(f"0.{splitcalc[1]}") * 60)
+
+        return [minutes, seconds]
+
+    def append_moves(self) -> None:
+
+        if len(self.appends) > 0:
+            self.append_success(
+                self.appends, "Movimentação salva na planilha com sucesso!!"
+            )
+
+        elif len(self.appends) == 0:
+            raise ErroDeExecucao("Nenhuma Movimentação encontrada")
+
+    def append_success(self, data, message, fileN: str = None):
+
+        if not message:
+            message = "Execução do processo efetuada com sucesso!"
+
+        def save_info(data: list[dict[str, str]]):
+            if not self.path:
+                self.path = os.path.join(
+                    pathlib.Path(self.path).parent.resolve(), fileN
+                )
+
+            if not os.path.exists(self.path):
+                df = pd.DataFrame(data)
+                df = df.to_dict(orient="records")
+
+            elif os.path.exists(self.path):
+
+                df = pd.read_excel(self.path)
+                df = df.to_dict(orient="records")
+                df.extend(data)
+
+            new_data = pd.DataFrame(df)
+            new_data.to_excel(self.path, index=False)
+
+        typeD = type(data) is list and all(isinstance(item, dict) for item in data)
+
+        if not typeD:
+
+            data2 = {}
+
+            for item in self.name_colunas:
+                data2.update({item: ""})
+
+            for item in data:
+                for key, value in list(data2.items()):
+                    if not value:
+                        data2.update({key: item})
+                        break
+
+            data.clear()
+            data.append(data2)
+
+        save_info(data)
+
+        if message:
+            if self.type_log == "log":
+                self.type_log = "success"
+
+            self.message = message
+            self.prt()
+
+    def append_error(self, data: dict[str, str] = None):
+
+        if not os.path.exists(self.path_erro):
+            df = pd.DataFrame(data)
+            df = df.to_dict(orient="records")
+
+        elif os.path.exists(self.path_erro):
+            df = pd.read_excel(self.path_erro)
+            df = df.to_dict(orient="records")
+            df.extend([data])
+
+        new_data = pd.DataFrame(df)
+        new_data.to_excel(self.path_erro, index=False)
+
+    def format_String(self, string: str) -> str:
+
+        return "".join(
+            [
+                c
+                for c in unicodedata.normalize("NFKD", string.upper())
+                if not unicodedata.combining(c)
+            ]
+        )
+
+    def finalize_execution(self) -> None:
+
+        self.driver.delete_all_cookies()
+        self.driver.close()
+
+        end_time = time.perf_counter()
+        execution_time = end_time - self.start_time
+        calc = execution_time / 60
+        minutes = int(calc)
+        seconds = int((calc - minutes) * 60)
+
+        self.type_log = "success"
+        self.message = f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos"
+        self.prt()
+
+    def DriverLaunch(self) -> WebDriver:
+
+        try:
+            self.message = "Inicializando WebDriver"
+            self.type_log = "log"
+            self.prt()
+
+            list_args = self.list_args
+
+            chrome_options = Options()
+            self.chr_dir = str(os.path.join(os.getcwd(), "Temp", self.pid, "chrome"))
+
+            if os.getlogin() != "root" or platform.system() != "Linux":
+                list_args.remove("--no-sandbox")
+
+            if platform.system() == "Windows" and self.login_method == "cert":
+                state = str(self.state)
+                self.path_accepted = str(
+                    os.path.join(os.getcwd(), "Browser", state, self.login, "chrome")
+                )
+                path_exist = os.path.exists(self.path_accepted)
+                if path_exist:
+                    try:
+                        resultados = subprocess.run(
+                            [
+                                "xcopy",
+                                self.path_accepted,
+                                self.chr_dir,
+                                "/E",
+                                "/H",
+                                "/C",
+                                "/I",
+                            ],
+                            check=True,
+                            text=True,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                        ).stdout.splitlines()
+
+                        for item in resultados:
+                            print(item)
+
+                    except subprocess.CalledProcessError as e:
+                        raise e
+
+                elif not path_exist:
+                    os.makedirs(self.path_accepted, exist_ok=True)
+
+            chrome_options.add_argument(f"user-data-dir={self.chr_dir}")
+            for argument in list_args:
+                chrome_options.add_argument(argument)
+
+            this_path = pathlib.Path(__file__).parent.resolve().__str__()
+            path_extensions = os.path.join(this_path, "extensions")
+            for root, dirs, files in os.walk(path_extensions):
+                for file_ in files:
+                    if ".crx" in file_:
+                        path_plugin = os.path.join(root, file_)
+                        chrome_options.add_extension(path_plugin)
+
+            chrome_prefs = {
+                "download.prompt_for_download": False,
+                "plugins.always_open_pdf_externally": True,
+                "profile.default_content_settings.popups": 0,
+                "printing.print_preview_sticky_settings.appState": json.dumps(
+                    self.settings
+                ),
+                "download.default_directory": "{}".format(
+                    os.path.join(self.output_dir_path)
+                ),
+            }
+
+            chrome_options.add_experimental_option("prefs", chrome_prefs)
+            pid_path = pathlib.Path(self.path_args).parent.resolve()
+            getdriver = GetDriver(destination=pid_path)
+            path_chrome = os.path.join(pid_path, getdriver())
+
+            driver = webdriver.Chrome(
+                service=Service(path_chrome), options=chrome_options
+            )
+            wait = WebDriverWait(driver, 20, 0.01)
+            driver.delete_all_cookies()
+
+            self.driver = driver
+            self.wait = wait
+
+            self.message = "WebDriver inicializado"
+            self.type_log = "log"
+            self.prt()
+
+            return driver
+
+        except Exception as e:
+            raise e
+
+    def install_cert(self) -> None:
+
+        path_cert = str(os.path.join(self.output_dir_path, self.name_cert))
+        comando = [
+            "certutil",
+            "-importpfx",
+            "-user",
+            "-f",
+            "-p",
+            self.password,
+            "-silent",
+            path_cert,
+        ]
+        try:
+            # Quando você passa uma lista, você geralmente não deve usar shell=True
+            resultado = subprocess.run(
+                comando,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+
+            self.message = str(resultado.stdout)
+            self.type_log = str("log")
+            self.prt()
+
+        except subprocess.CalledProcessError as e:
+            raise e
+
+    def group_date_all(self, data: dict[str, dict[str, str]]) -> list[dict[str, str]]:
+
+        records = []
+        for vara, dates in data.items():
+            record = {}
+            for date, entries in dates.items():
+                for entry in entries:
+
+                    record.update({"Data": date, "Vara": vara})
+                    record.update(entry)
+                    records.append(record)
+
+        return records
+
+    def group_keys(self, data: list[dict[str, str]]) -> dict[str, str]:
+
+        record = {}
+        for pos, entry in enumerate(data):
+            for key, value in entry.items():
+
+                if not record.get(key):
+                    record.update({key: {}})
+
+                record.get(key).update({str(pos): value})
+        return record
+
+    def Select2_ELAW(self, elementSelect: str, to_Search: str):
+
+        selector: WebElement = self.wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, elementSelect))
+        )
+
+        items = selector.find_elements(By.TAG_NAME, "option")
+        opt_itens: dict[str, str] = {}
+
+        elementsSelecting = elementSelect.replace("'", "'")
+        if '"' in elementsSelecting:
+            elementsSelecting = elementSelect.replace('"', "'")
+
+        for item in items:
+
+            value_item = item.get_attribute("value")
+            cms = f"{elementsSelecting} > option[value='{value_item}']"
+            text_item = self.driver.execute_script(f'return $("{cms}").text();')
+
+            opt_itens.update({text_item.upper(): value_item})
+
+        value_opt = opt_itens.get(to_Search.upper())
+
+        if value_opt:
+
+            command = f"$('{elementSelect}').val(['{value_opt}']);"
+            command2 = f"$('{elementSelect}').trigger('change');"
+
+            if "'" in elementSelect:
+                command = f"$(\"{elementSelect}\").val(['{value_opt}']);"
+                command2 = f"$(\"{elementSelect}\").trigger('change');"
+
+            self.driver.execute_script(command)
+            self.driver.execute_script(command2)
