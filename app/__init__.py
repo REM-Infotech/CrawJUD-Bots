@@ -53,44 +53,48 @@ def check_allowed_origin(origin: str = "https://google.com"):
     return False
 
 
-class CustomTalisman(Talisman):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def set_headers(self, response):
-        super().set_headers(response)
+io.init_app(app)
 
 
-class init_app:
+# class CustomTalisman(Talisman):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
 
-    def __call__(self):
-        with app.app_context():
-
-            global clean_prompt
-            if clean_prompt is False:
-                clear()
-                clean_prompt = True
-
-            age = timedelta(days=31).max.seconds
-
-            from app.models import init_database
-
-            init_database()()
-
-            io.init_app(app, cors_allowed_origins=check_allowed_origin)
-            CustomTalisman(
-                app,
-                content_security_policy=csp(),
-                session_cookie_http_only=True,
-                session_cookie_samesite="Lax",
-                strict_transport_security=True,
-                strict_transport_security_max_age=age,
-                x_content_type_options=True,
-                x_xss_protection=True,
-            )
-
-    from app import routes
-    from app import handling
+#     def set_headers(self, response):
+#         super().set_headers(response)
 
 
-init_app()()
+def init_app():
+    with app.app_context():
+
+        global clean_prompt
+        if clean_prompt is False:
+            clear()
+            clean_prompt = True
+
+        age = timedelta(days=31).max.seconds
+
+        from app.models import init_database
+
+        init_database()()
+
+        # io.init_app(app, cors_allowed_origins=check_allowed_origin)
+        # CustomTalisman(
+        #     app,
+        #     content_security_policy=csp(),
+        #     session_cookie_http_only=True,
+        #     session_cookie_samesite="Lax",
+        #     strict_transport_security=True,
+        #     strict_transport_security_max_age=age,
+        #     x_content_type_options=True,
+        #     x_xss_protection=True,
+        # )
+
+
+from app import routes
+from app import handling
+
+__all__ = [routes, handling]
+
+
+init_app()

@@ -1,4 +1,4 @@
-import inquirer
+
 import socketio
 from socketio.exceptions import BadNamespaceError, ConnectionError
 
@@ -52,5 +52,6 @@ class SocketBot:
 
 
 if __name__ == "__main__":
+    import inquirer
     bot = SocketBot()
     bot.prompt()

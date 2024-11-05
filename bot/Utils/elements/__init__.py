@@ -3,10 +3,12 @@ class BaseElementsBot:
     from .properties import Configuracao
     from .esaj import ESAJ_AM
     from .projudi import PROJUDI_AM
+    from .elaw import AME
 
     funcs = {
         "esaj": {"AM": ESAJ_AM},
         "projudi": {"AM": PROJUDI_AM},
+        "elaw": {"AME": AME},
     }
 
     def __init__(self, *args, **kwrgs):

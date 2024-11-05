@@ -3,7 +3,7 @@ from dotenv import dotenv_values
 import os
 from time import sleep
 from clear import clear
-from multiprocessing import Process
+from threading import Thread
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
@@ -33,20 +33,20 @@ def start_flask():
     io.run(app, "0.0.0.0", port=int(port), debug=debug, use_reloader=False)
 
 
-def flask_Process():
-    flask_Process = Process(target=start_flask, daemon=True)
-    flask_Process.start()
-    return flask_Process
+def flask_Thread():
+    flask_Thread = Thread(target=start_flask)
+    flask_Thread.start()
+    return flask_Thread
 
 
 def restart_flask():
-    global flask_server_Process
-    if flask_server_Process.is_alive():
+    global flask_server_Thread
+    if flask_server_Thread.is_alive():
         clear()
-        flask_server_Process.terminate()
-        flask_server_Process.join(15)
+        flask_server_Thread.terminate()
+        flask_server_Thread.join(15)
 
-    flask_server_Process = flask_Process()
+    flask_server_Thread = flask_Thread()
     print("Servidor Flask reiniciado.")
 
 
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     print("Iniciando monitoramento de mudanças e servidor Flask...")
 
     # Inicia o servidor Flask
-    flask_server_Process = flask_Process()
+    flask_server_Thread = flask_Thread()
 
     # Inicia o monitoramento das mudanças
     monitor_changes()

@@ -1,5 +1,7 @@
 from dotenv import dotenv_values
+from logging.config import dictConfig
 from uuid import uuid4
+import logging
 import os
 
 from datetime import timedelta
@@ -59,3 +61,8 @@ for paths in [DOCS_PATH, TEMP_PATH, IMAGE_TEMP_PATH, CSV_TEMP_PATH, PDF_TEMP_PAT
 
     if not os.path.exists(paths):
         os.makedirs(paths, exist_ok=True)
+
+os.makedirs("logs/", exist_ok=True)
+
+logging.basicConfig(filename="logs/info.log", level=logging.INFO)
+logging.basicConfig(filename="logs/debug.log", level=logging.DEBUG)
