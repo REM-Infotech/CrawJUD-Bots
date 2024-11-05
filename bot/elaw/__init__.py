@@ -17,7 +17,7 @@ class elaw:
     bots = {
         "download": download,
         "cadastro": cadastro,
-        "sols_pags": sol_pags,
+        "sol_pags": sol_pags,
         "andamentos": andamentos,
         "complement": complement,
         "provisao": provisao,
