@@ -2,6 +2,7 @@ from bot.common.exceptions import ItemNaoEcontrado
 
 
 from time import sleep
+from ..CrawJUD import CrawJUD
 from contextlib import suppress
 
 from selenium.webdriver import Keys
@@ -14,7 +15,10 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 
-class Interact:
+class Interact(CrawJUD):
+
+    def __getattr__(self, nome):
+        return super().__getattr__(nome)
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
