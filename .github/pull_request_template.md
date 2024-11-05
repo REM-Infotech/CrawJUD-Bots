@@ -1,30 +1,30 @@
-## Type of change
+## Tipo de mudança
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Chore (documentation, packages, or tests updates, nothing that affect the final user directly)
-- [ ] Release (new version of the application - only for production)
-- [ ] Refactor (Refatoramento de código)
-- [ ] Docs (alterações na documentação)
+- [] Bugfix (alteração ininterrupta que corrige um problema)
+- [] Feat (alteração ininterrupta que adiciona funcionalidade)
+- [] Chore (atualizações de documentação, pacotes ou testes, nada que afete diretamente o usuário final)
+- [] Release (nova versão do aplicativo - somente para produção)
+- [] Refatorar (Refatoramento de código)
+- [] Documentation (alterações na documentação)
 
-## Description
+## Descrição
 
 ...
 
-## Tasks
+## Tarefas
 
-- [task-id](task-link) or N/A
+- [id da tarefa](link da tarefa) ou N/A
 
-## Checklist (Mínimo as duas primeiras linhas)
+## Checklist (mínimo das duas primeiras linhas)
 
-- [ ] My changes have less than or equal 400 lines
-- [ ] I have performed a self-review of my own code
-- [ ] The existing tests and linter pass locally with my changes
-- [ ] I have commented my code in hard-to-understand areas (if applicable)
-- [ ] I have created tests for my fix or feature (if applicable)
+- [] Minhas alterações têm menos ou igual a 400 linhas
+- [] Realizei uma auto-revisão do meu próprio código
+- [] Os testes existentes e o linter passam localmente com minhas alterações
+- [] Comentei meu código em áreas difíceis de entender (se aplicável)
+- [] Criei testes para minha correção ou recurso (se aplicável)
 
-## Dependencies
+## Dependências
 
-This pull request has a dependency on the following others:
+Esta solicitação pull depende dos seguintes outros:
 
-- link-to-depency PR or N/A
+- link para dependência PR ou N/A
