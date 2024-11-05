@@ -21,7 +21,7 @@ Hints = Union[pje, esaj, elaw, caixa, projudi, calculadoras]
 class WorkerThread:
 
     @property
-    def BotStarter(self) -> Hints:
+    def BotStarter(self):  # -> Hints:
 
         systems = {
             "pje": pje,
