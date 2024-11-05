@@ -11,6 +11,7 @@ from typing import Union
 from datetime import datetime
 from pandas import Timestamp
 from typing import Dict, List
+from werkzeug.utils import secure_filename
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
@@ -51,6 +52,7 @@ class CrawJUD:
     drv = None
     wt = None
     elmnt = None
+    interact_ = None
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
@@ -181,10 +183,18 @@ class CrawJUD:
         return SeachBot
 
     @property
-    def Interact(self):
+    def Interator(self):
         from ..Utils.interator import Interact
 
         return Interact
+
+    @property
+    def interact(self):
+        return self.interact_
+
+    @interact.setter
+    def interact(self, new: Interator):
+        self.interact_ = new
 
     @property
     def printtext(self):
@@ -282,6 +292,8 @@ class CrawJUD:
             self.elements = self.ElementsBots(
                 system_bot=self.system, state_or_client=cl
             ).elements
+
+            self.interact = self.Interator(**self.__dict__)
 
         except Exception as e:
 
@@ -503,13 +515,13 @@ class CrawJUD:
 
     def format_String(self, string: str) -> str:
 
-        return "".join(
+        return secure_filename("".join(
             [
                 c
-                for c in unicodedata.normalize("NFKD", string.upper())
+                for c in unicodedata.normalize("NFKD", string)
                 if not unicodedata.combining(c)
             ]
-        )
+        ))
 
     def finalize_execution(self) -> None:
 

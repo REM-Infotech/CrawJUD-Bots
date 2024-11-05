@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 import requests
 import platform
@@ -7,7 +8,6 @@ import zipfile
 from clear import clear
 from pathlib import Path
 from functools import partial
-import chrome_version as v_chrome
 from urllib.request import urlopen
 
 from rich.live import Live
@@ -32,7 +32,7 @@ class GetDriver:
 
     @property
     def code_ver(self):
-        return ".".join(v_chrome.get_chrome_version().split(".")[:-1])
+        return ".".join(get_chrome_version().split(".")[:-1])
 
     progress = Progress(
         TimeElapsedColumn(),
@@ -178,3 +178,80 @@ class GetDriver:
         self.current_app_progress.update(
             self.current_task_id, description="[bold green] ChromeDriver Baixado!"
         )
+
+
+def get_chrome_version():
+    """Gets the Chrome version."""
+    version = None
+    install_path = None
+
+    try:
+        system = platform.system().lower()
+        if system == "linux" or system == "linux2":
+            # linux
+            install_path = "/usr/bin/google-chrome"
+        elif platform == "darwin":
+            # OS X
+            install_path = (
+                r"/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
+            )
+        elif system == "windows":
+            # Windows...
+            try:
+                # Try registry key.
+                stream = os.popen(
+                    r'reg query "HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Google Chrome"'
+                )
+                output = stream.read()
+                version = extract_version_registry(output)
+            except Exception:
+                # Try folder path.
+                version = extract_version_folder()
+    except Exception as ex:
+        print(ex)
+
+    version = (
+        os.popen(f"{install_path} --version").read().strip("Google Chrome ").strip()
+        if install_path
+        else version
+    )
+
+    return version
+
+
+def extract_version_registry(output):
+    """Extracts the Chrome version from the registry output."""
+    try:
+        google_version = ""
+        for letter in output[output.rindex("DisplayVersion    REG_SZ") + 24:]:
+            if letter != "\n":
+                google_version += letter
+            else:
+                break
+        return google_version.strip()
+    except TypeError:
+        return
+
+
+def extract_version_folder():
+    """Extracts the Chrome version from the folder name.
+
+    Check if the Chrome folder exists in the x32 or x64 Program Files folders.
+    """
+    for i in range(2):
+        path = (
+            r"C:\Program Files"
+            + (" (x86)" if i else "")
+            + r"\Google\Chrome\Application"
+        )
+        if os.path.isdir(path):
+            paths = [f.path for f in os.scandir(path) if f.is_dir()]
+            for path in paths:
+                filename = os.path.basename(path)
+                pattern = r"\d+\.\d+\.\d+\.\d+"
+                match = re.search(pattern, filename)
+                if match and match.group():
+                    # Found a Chrome version.
+                    return match.group(0)
+
+    return None

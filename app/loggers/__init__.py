@@ -77,6 +77,8 @@ def loggerConfig() -> None:
     global info_logger
     info_logger = logging.getLogger("info_logger")
     warning_logger = logging.getLogger("warning_logger")
+    
+    global error_logger
     error_logger = logging.getLogger("error_logger")
 
     # # Teste de log para verificar se a configuração está funcionando
