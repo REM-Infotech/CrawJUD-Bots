@@ -12,6 +12,9 @@ values = dotenv_values()
 
 def email_start(execution: Executions) -> None:
 
+    with app.app_context():
+        mail.connect()
+
     admins: list[str] = []
     pid = execution.pid
     usr: Users = execution.user
