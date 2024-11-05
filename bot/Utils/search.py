@@ -2,7 +2,7 @@ from time import sleep
 from contextlib import suppress
 from bot.common.exceptions import ErroDeExecucao
 
-
+from ..Utils.interator import Interact
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
@@ -17,9 +17,11 @@ class SeachBot:
     driver: WebDriver = None
     wait: WebDriverWait = None
     bot_data = {""}
+    interact = None
 
     def __init__(self, **kwrgs) -> None:
 
+        self.interact = Interact(**kwrgs)
         for key, value in list(kwrgs.items()):
 
             if type(value) is dict and key != "bot_data":

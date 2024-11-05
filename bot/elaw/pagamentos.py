@@ -23,8 +23,14 @@ type_doc = {11: "cpf", 14: "cnpj"}
 
 class sol_pags(CrawJUD):
 
+    interact = None
+
+    def __getattr__(self, nome):
+        return super().__getattr__(nome)
+
     def __init__(self, **kwrgs) -> None:
         super().__init__(**kwrgs)
+        super().auth_bot()
         self.start_time = time.perf_counter()
 
     def execution(self) -> None:
@@ -71,7 +77,7 @@ class sol_pags(CrawJUD):
                 namedef = self.format_String(self.bot_data.get("TIPO_PAGAMENTO"))
                 self.new_payment()
                 self.set_pgto(namedef)
-                pgto = getattr(self, namedef)
+                pgto = getattr(self, namedef.lower())
                 pgto()
 
                 self.save_changes()

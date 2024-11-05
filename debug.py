@@ -7,4 +7,4 @@ if __name__ == "__main__":
     port = int(values.get("PORT", 5000))
     debug = values.get("DEBUG", "False").lower() in ("true", "1", "t", "y", "yes")
 
-    io.run(app, "0.0.0.0", port=int(port), debug=debug)
+    io.run(app, "0.0.0.0", port=int(port), debug=True)

@@ -32,7 +32,7 @@ class SocketBot:
             self.pid = data["pid"]
             if not connected:
                 self.io.connect(
-                    f"https://{url}", namespace="/log", transports=["websocket"]
+                    f"https://{url}", namespaces=["/log"], transports=["websocket"]
                 )
                 connected = True
             # Adiciona o 'pid' aos dados e envia a mensagem

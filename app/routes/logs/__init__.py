@@ -1,5 +1,5 @@
 from app import app, db
-from flask import request, abort, request
+from flask import request, abort
 from flask_socketio import emit, join_room, Namespace
 from ...loggers import info_logger
 

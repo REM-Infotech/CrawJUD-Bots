@@ -12,6 +12,7 @@ import openpyxl
 import unicodedata
 
 from datetime import datetime
+from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 from openpyxl.worksheet.worksheet import Worksheet
 
@@ -49,12 +50,14 @@ class SetStatus:
 
     def format_String(self, string: str) -> str:
 
-        return "".join(
-            [
-                c
-                for c in unicodedata.normalize("NFKD", string.upper())
-                if not unicodedata.combining(c)
-            ]
+        return secure_filename(
+            "".join(
+                [
+                    c
+                    for c in unicodedata.normalize("NFKD", string)
+                    if not unicodedata.combining(c)
+                ]
+            )
         )
 
     def start_bot(self) -> tuple[str, str]:
