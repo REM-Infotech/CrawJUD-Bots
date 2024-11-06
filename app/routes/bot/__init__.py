@@ -1,20 +1,14 @@
 from flask import Blueprint, request, jsonify, make_response
 
 import os
-import pytz
+
 import json
 import pathlib
 import platform
-from datetime import datetime
 
-from app import db
 from app import app
-from app.models import ThreadBots
-from app.models import Users, Executions
-from app.misc.get_outputfile import get_file
-
-from app.misc.get_location import GeoLoc
 from bot import WorkerThread
+from app.misc import GeoLoc, stop_execution
 
 path_template = os.path.join(pathlib.Path(__file__).parent.resolve(), "templates")
 bot = Blueprint("bot", __name__, template_folder=path_template)
@@ -67,7 +61,7 @@ def botlaunch(id: int, system: str, typebot: str):
 def stop_bot(user: str, pid: str):
 
     with app.app_context():
-        set_stop = stop_execution(user, pid)
+        set_stop = stop_execution(pid)
 
         if set_stop == 200:
 
@@ -75,46 +69,3 @@ def stop_bot(user: str, pid: str):
 
         elif set_stop != 200:
             return jsonify({"mensagem": "erro"}), set_stop
-
-
-def stop_execution(user: str, pid: str) -> int:
-
-    try:
-
-        processID = ThreadBots.query.filter(ThreadBots.pid == pid).first()
-
-        if processID:
-            processID = int(processID.processID)
-            worker_thread = WorkerThread().stop(processID, pid)
-            app.logger.info(worker_thread)
-            from status import SetStatus
-
-            user_id = Users.query.filter(Users.login == user).first().id
-            get_info = (
-                db.session.query(Executions)
-                .join(Users, Users.id == user_id)
-                .filter(Executions.pid == pid)
-                .first()
-            )
-
-            filename = get_file(pid)
-            if filename != "":
-                get_info.status = "Finalizado"
-                get_info.file_output = filename
-                get_info.data_finalizacao = datetime.now(
-                    pytz.timezone("America/Manaus")
-                )
-                db.session.commit()
-                db.session.close()
-                return 200
-
-            elif filename == "":
-                system = get_info.bot.system
-                typebot = get_info.bot.type
-                SetStatus(usr=user, pid=pid, system=system, typebot=typebot).botstop()
-                return 200
-
-            return 200
-    except Exception as e:
-        app.logger.error(str(e))
-        return 500
