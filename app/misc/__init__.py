@@ -11,8 +11,7 @@ import pytz
 from app import db, app
 from datetime import datetime
 from app.models import ThreadBots
-from app.models import Users, Executions
-from app.misc.get_outputfile import get_file
+from app.models import Executions
 from bot import WorkerThread
 from .get_location import GeoLoc
 
@@ -80,22 +79,22 @@ def stop_execution(pid: str) -> int:
             get_info = (
                 db.session.query(Executions).filter(Executions.pid == pid).first()
             )
-            user = get_info.user.login
 
+            system = get_info.bot.system
+            typebot = get_info.bot.type
+            user = get_info.user.login
+            get_info.status = "Finalizado"
+            get_info.data_finalizacao = datetime.now(pytz.timezone("America/Manaus"))
             filename = get_file(pid)
+            
             if filename != "":
-                get_info.status = "Finalizado"
+
                 get_info.file_output = filename
-                get_info.data_finalizacao = datetime.now(
-                    pytz.timezone("America/Manaus")
-                )
                 db.session.commit()
                 db.session.close()
                 return 200
 
             elif filename == "":
-                system = get_info.bot.system
-                typebot = get_info.bot.type
                 get_info.file_output = SetStatus(
                     usr=user, pid=pid, system=system, typebot=typebot
                 ).botstop()
@@ -108,3 +107,25 @@ def stop_execution(pid: str) -> int:
     except Exception as e:
         app.logger.error(str(e))
         return 500
+
+
+def get_file(pid: str) -> str:
+
+    bucket_name = "outputexec-bots"
+    storage_client = storageClient()
+
+    # Obtém o bucket
+    bucket = bucketGcs(storage_client, bucket_name)
+
+    arquivo = ""
+
+    for blob in bucket.list_blobs():
+
+        blobnames = str(blob.name)
+        if "/" in blobnames:
+            blobnames = blobnames.split("/")[1]
+
+        if pid in blobnames:
+            arquivo = blobnames
+
+    return arquivo
