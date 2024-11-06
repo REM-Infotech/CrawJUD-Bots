@@ -32,7 +32,7 @@ class SocketBot:
             if not connected:
                 self.io.connect(
                     f"https://{url}",
-                    namespaces=["/log", "/stop_bot"],
+                    namespaces=["/log"],
                     transports=["websocket"],
                 )
                 connected = True
