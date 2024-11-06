@@ -4,6 +4,7 @@ class BaseElementsBot:
     from .esaj import ESAJ_AM
     from .projudi import PROJUDI_AM
     from .elaw import AME
+    from .pje import PJE_AM
 
     funcs = {
         "esaj": {"AM": ESAJ_AM},
