@@ -66,9 +66,10 @@ class capa(CrawJUD):
     def get_process_informations(self) -> list:
 
         self.message = f"Extraindo informações do processo nº{self.bot_data.get('NUMERO_PROCESSO')}"
+        self.type_log = "log"
         self.prt()
 
-        grau = int(str(self.bot_data.get("GRAU")).replace("º", ""))
+        grau = int(str(self.bot_data.get("GRAU", "1")).replace("º", ""))
         if grau == 1:
 
             acao: WebElement = self.wait.until(

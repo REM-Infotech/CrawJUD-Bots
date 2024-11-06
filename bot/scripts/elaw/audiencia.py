@@ -58,7 +58,7 @@ class audiencia(CrawJUD):
 
     def queue(self) -> None:
 
-        search = self.search()
+        search = self.SearchBot()
         if not search:
             self.message = "Buscando Processo"
             raise ErroDeExecucao("Não Encontrado!")

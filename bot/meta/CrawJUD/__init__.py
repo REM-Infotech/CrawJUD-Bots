@@ -311,31 +311,6 @@ class CrawJUD:
             self.end_prt("Falha ao iniciar")
             raise e
 
-    def search(self):
-
-        self.type_log = "log"
-
-        self.message = f'Buscando processos pelo nome "{self.parte_name}"'
-        if self.typebot != "proc_parte":
-            self.message = f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}'
-        self.prt()
-
-        result = self.SearchBot(
-            driver=self.driver,
-            wait=self.wait,
-            list_args=self.kwrgs,
-            elements=self.elements,
-            bot_data=self.bot_data,
-        )
-
-        chk_result = result()
-        if chk_result is True:
-            self.message = "Processo encontrado!"
-            self.type_log = "log"
-            self.prt()
-
-        return chk_result
-
     def auth_bot(self):
 
         if self.login_method:

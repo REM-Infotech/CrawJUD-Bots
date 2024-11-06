@@ -55,7 +55,7 @@ class andamentos(CrawJUD):
 
     def queue(self) -> None:
 
-        search = self.search()
+        search = self.SearchBot()
         if search is True:
             btn_newmove = (
                 'button[id="tabViewProcesso:j_id_i3_4_1_3_ae:novoAndamentoPrimeiraBtn"]'

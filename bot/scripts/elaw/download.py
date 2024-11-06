@@ -58,7 +58,7 @@ class download(CrawJUD):
     def queue(self) -> None:
 
         try:
-            search = self.search()
+            search = self.SearchBot()
             if search is True:
 
                 self.message = "Processo encontrado!"

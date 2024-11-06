@@ -13,12 +13,29 @@ from selenium.common.exceptions import TimeoutException
 
 class SeachBot(CrawJUD):
 
+    def __init__(self):
+        pass
+
     def __getattr__(self, nome):
         return super().__getattr__(nome)
 
     def __call__(self):
 
+        self.message = (
+            f'Buscando processos pelo nome "{self.parte_name}"'
+            if self.typebot == "proc_parte"
+            else f'Buscando Processo Nº{self.bot_data.get("NUMERO_PROCESSO")}'
+        )
+        self.type_log = "log"
+        self.prt()
+
         src: bool = getattr(self, f"{self.system.lower()}_search", None)()
+
+        if src is True:
+            self.message = "Processo encontrado!"
+            self.type_log = "info"
+            self.prt()
+
         return src
 
     def elaw_search(self) -> bool:
@@ -60,7 +77,7 @@ class SeachBot(CrawJUD):
 
     def esaj_search(self) -> None:
 
-        grau = int(self.bot_data.get("GRAU").replace("º", ""))
+        grau = int(self.bot_data.get("GRAU", "1").replace("º", ""))
         if grau == 1:
 
             self.driver.get(self.elements.consultaproc_grau1)
@@ -90,11 +107,15 @@ class SeachBot(CrawJUD):
         self.interact.send_key(lineprocess, self.bot_data.get("NUMERO_PROCESSO"))
 
         # Abre o Processo
-        openprocess: WebElement = self.wait.until(
-            EC.presence_of_element_located((By.ID, id_consultar))
-        )
-        self.interact.click(openprocess)
-
+        openprocess = None
+        with suppress(TimeoutException):
+            openprocess: WebElement = self.wait.until(
+                EC.presence_of_element_located((By.ID, id_consultar))
+            )
+            self.interact.click(openprocess)
+        
+        return openprocess is not None
+        
     def projudi_search(self) -> None:
 
         def detect_intimacao() -> None:

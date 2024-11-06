@@ -77,7 +77,7 @@ def stop_execution(pid: str, robot_stop: bool = False) -> int:
                 processID = int(processID.processID)
                 worker_thread = WorkerThread().stop(processID, pid)
                 
-            app.logger.info(worker_thread)
+                app.logger.info(worker_thread)
 
             get_info = (
                 db.session.query(Executions).filter(Executions.pid == pid).first()

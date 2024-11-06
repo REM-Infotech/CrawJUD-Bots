@@ -66,7 +66,7 @@ class provisao(CrawJUD):
 
         # module = "search_processo"
 
-        search = self.search()
+        search = self.SearchBot()
         if search is True:
 
             self.type_log = "log"

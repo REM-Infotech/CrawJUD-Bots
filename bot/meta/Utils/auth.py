@@ -23,7 +23,7 @@ class AuthBot(CrawJUD):
     def __getattr__(self, nome):
         return super().__getattr__(nome)
 
-    def __init__(self, **kwrgs) -> None:
+    def __init__(self) -> None:
         pass
 
     def auth(self) -> bool:
@@ -168,7 +168,7 @@ class AuthBot(CrawJUD):
                     )
                 )
 
-            return check_login is None
+            return check_login is not None
 
         except Exception as e:
             raise e
@@ -197,7 +197,7 @@ class AuthBot(CrawJUD):
             sleep(7)
 
             url = self.driver.current_url
-            return url == "https://amazonas.elaw.com.br/login"
+            return url != "https://amazonas.elaw.com.br/login"
 
         except Exception as e:
             raise e

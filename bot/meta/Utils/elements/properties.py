@@ -28,6 +28,7 @@ class Configuracao:
     def chk_login(self) -> str:
         return self.dados.get("chk_login", "")
 
-    def __getattr__(self, name: str):
+    def __getattr__(self, name: str) -> str:
 
-        return self.dados.get(name)
+        prpt = self.dados.get(name)
+        return prpt
