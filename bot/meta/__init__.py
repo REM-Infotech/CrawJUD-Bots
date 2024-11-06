@@ -1,5 +1,7 @@
 class classproperty:
 
+    _system = ""
+    _state_or_client_ = ""
     _type_log = "info"
     _message = ""
     _pid = 0

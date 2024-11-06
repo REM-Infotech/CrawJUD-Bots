@@ -3,10 +3,10 @@ class ESAJ_AM:
 
     url_login = "https://consultasaj.tjam.jus.br/sajcas/login"
     url_login_cert = "https://consultasaj.tjam.jus.br/sajcas/login#aba-certificado"
-    campo_username = ""
-    campo_passwd = ""
-    btn_entrar = ""
-    chk_login = ""
+    campo_username = 'input[id="usernameForm"]'
+    campo_passwd = 'input[id="passwordForm"]'
+    btn_entrar = "input[name=\"pbEntrar\"]"
+    chk_login = "#esajConteudoHome > table:nth-child(4) > tbody > tr > td.esajCelulaDescricaoServicos"
 
     url_busca = ""
     btn_busca = ""

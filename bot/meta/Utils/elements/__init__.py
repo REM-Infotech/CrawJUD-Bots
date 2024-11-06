@@ -1,4 +1,7 @@
-class BaseElementsBot:
+from ...CrawJUD import CrawJUD
+
+
+class BaseElementsBot(CrawJUD):
 
     from .properties import Configuracao
     from .esaj import ESAJ_AM
@@ -13,12 +16,12 @@ class BaseElementsBot:
     }
 
     def __init__(self, *args, **kwrgs):
-        self.__dict__.update(kwrgs)
+        """### ElementsBot"""
 
     @property
     def elements(self):
         """Retorna a configuração de acordo com o estado ou cliente."""
-        dados = self.funcs.get(self.system_bot).get(self.state_or_client)
+        dados = self.funcs.get(self.system).get(self.state_or_client)
 
         if not dados:
             raise AttributeError("Estado ou cliente não encontrado.")
@@ -29,4 +32,4 @@ class BaseElementsBot:
 class ElementsBot(BaseElementsBot):
 
     def __init__(self, *args, **kwrgs):
-        super().__init__(*args, **kwrgs)
+        BaseElementsBot.__init__(self, *args, **kwrgs)

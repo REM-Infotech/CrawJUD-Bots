@@ -68,7 +68,23 @@ class CrawJUD:
 
     """
 
-    @classproperty
+    @property
+    def system(self):
+        return classproperty._system
+
+    @system.setter
+    def system(self, system_: str):
+        classproperty._system = system_
+
+    @property
+    def state_or_client(self):
+        return classproperty._state_or_client_
+
+    @state_or_client.setter
+    def state_or_client(self, new_s: str):
+        classproperty._state_or_client_ = new_s
+
+    @property
     def type_log(self):
         return classproperty._type_log
 
@@ -76,7 +92,7 @@ class CrawJUD:
     def type_log(self, new_log: str):
         classproperty._type_log = new_log
 
-    @classproperty
+    @property
     def pid(self) -> int:
         return classproperty._pid
 
@@ -84,7 +100,7 @@ class CrawJUD:
     def pid(self, pid_) -> int:
         classproperty._pid = pid_
 
-    @classproperty
+    @property
     def message(self) -> str:
         return classproperty._message
 
@@ -92,12 +108,12 @@ class CrawJUD:
     def message(self, new_msg: str) -> str:
         classproperty._message = new_msg
 
-    @classproperty
+    @property
     def isStoped(self):
         chk = os.path.exists(os.path.join(self.output_dir_path, f"{self.pid}.flag"))
         return chk
 
-    @classproperty
+    @property
     def driver(self) -> WebDriver:
         return classproperty.drv
 
@@ -105,7 +121,7 @@ class CrawJUD:
     def driver(self, new_drv: WebDriver):
         classproperty.drv = new_drv
 
-    @classproperty
+    @property
     def wait(self) -> WebDriverWait:
         return classproperty.wt
 
@@ -113,7 +129,7 @@ class CrawJUD:
     def wait(self, new_wt: WebDriverWait):
         classproperty.wt = new_wt
 
-    @classproperty
+    @property
     def chr_dir(self):
         return classproperty.user_data_dir
 
@@ -121,7 +137,7 @@ class CrawJUD:
     def chr_dir(self, new_dir: str):
         classproperty.user_data_dir = new_dir
 
-    @classproperty
+    @property
     def output_dir_path(self):
         return classproperty.out_dir
 
@@ -129,7 +145,7 @@ class CrawJUD:
     def output_dir_path(self, new_outdir: str):
         classproperty.out_dir = new_outdir
 
-    @classproperty
+    @property
     def kwrgs(self) -> dict:
         return classproperty.kwrgs_
 
@@ -137,7 +153,7 @@ class CrawJUD:
     def kwrgs(self, new_kwg):
         classproperty.kwrgs_ = new_kwg
 
-    @classproperty
+    @property
     def row(self) -> int:
         return classproperty.row_
 
@@ -145,7 +161,7 @@ class CrawJUD:
     def row(self, new_row: int):
         classproperty.row_ = new_row
 
-    @classproperty
+    @property
     def message_error(self) -> str:
         return classproperty.message_error_
 
@@ -153,7 +169,7 @@ class CrawJUD:
     def message_error(self, nw_m: str) -> str:
         classproperty.message_error_ = nw_m
 
-    @classproperty
+    @property
     def graphicMode(self):
         return classproperty.graphicMode_
 
@@ -161,7 +177,7 @@ class CrawJUD:
     def graphicMode(self, new_graph):
         classproperty.graphicMode_ = new_graph
 
-    @classproperty
+    @property
     def list_args(self):
         return [
             "--ignore-ssl-errors=yes",
@@ -177,7 +193,7 @@ class CrawJUD:
     def list_args(self, new_Args: list[str]):
         classproperty.cr_list_args = new_Args
 
-    @classproperty
+    @property
     def bot_data(self) -> dict:
         return classproperty.bot_data_
 
@@ -185,57 +201,47 @@ class CrawJUD:
     def bot_data(self, new_botdata: dict):
         classproperty.bot_data_ = new_botdata
 
-    @classproperty
+    @property
     def AuthBot(self):
         from ..Utils.auth import AuthBot
 
         return AuthBot()
 
-    @classproperty
+    @property
     def SearchBot(self):
         from ..Utils.search import SeachBot
 
         return SeachBot
 
-    @classproperty
+    @property
     def interact(self):
         from ..Utils.interator import Interact
 
         return Interact()
 
-    @classproperty
+    @property
     def printtext(self):
         from ..Utils.PrintLogs import printbot
 
         return printbot
 
-    @classproperty
+    @property
     def MakeXlsx(self):
         from ..Utils.MakeTemplate import MakeXlsx
 
         return MakeXlsx
 
-    @classproperty
+    @property
     def cities_Amazonas(self):
         from ..Utils.dicionarios import cities_Amazonas
 
         return cities_Amazonas
 
-    @classproperty
-    def ElementsBots(self):
+    @property
+    def elements(self):
         from ..Utils.elements import ElementsBot
 
-        return ElementsBot
-
-    @classproperty
-    def elements(self) -> ElementsBots:
-
-        return classproperty.elmnt
-
-    @elements.setter
-    def elements(self, info):
-
-        classproperty.elmnt = info
+        return ElementsBot().elements
 
     def setup(self):
 
@@ -265,7 +271,7 @@ class CrawJUD:
                 "--disable-blink-features=AutomationControlled",
                 "--kiosk-printing",
             ]
-
+            self.system
             if self.name_cert:
 
                 self.install_cert()
@@ -290,15 +296,8 @@ class CrawJUD:
                 self.data_inicio = datetime.strptime(self.data_inicio, "%Y-%m-%d")
                 self.data_fim = datetime.strptime(self.data_fim, "%Y-%m-%d")
 
-            cl = self.state
-            if not cl:
-                cl = self.client.split(" ")[0]
-
+            self.state_or_client = self.state if self.state is not None else self.client
             self.DriverLaunch()
-
-            self.elements = self.ElementsBots(
-                system_bot=self.system, state_or_client=cl
-            ).elements
 
         except Exception as e:
 

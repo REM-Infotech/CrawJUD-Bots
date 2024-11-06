@@ -35,7 +35,7 @@ class AuthBot(CrawJUD):
 
         raise RuntimeError("Sistema Não encontrado!")
 
-    def esaj_auth(self) -> None:
+    def esaj_auth(self):
 
         try:
             loginuser = "".join(
@@ -119,7 +119,7 @@ class AuthBot(CrawJUD):
             )
             userpass.click()
             userpass.send_keys(passuser)
-            entrar = self.driver.find_element(By.XPATH, self.elements.btn_entrar)
+            entrar = self.driver.find_element(By.CSS_SELECTOR, self.elements.btn_entrar)
             entrar.click()
             sleep(2)
 
@@ -130,18 +130,14 @@ class AuthBot(CrawJUD):
                     EC.presence_of_element_located(
                         (
                             By.CSS_SELECTOR,
-                            "#esajConteudoHome > table:nth-child(4) > tbody > tr > td.esajCelulaDescricaoServicos",
+                            self.elements.chk_login,
                         )
                     )
                 )
 
-            if not checkloged:
-                return False
-
-            return True
+            return checkloged is None
 
         except Exception as e:
-            print(e)
             raise e
 
     def projudi_auth(self) -> None:
@@ -173,15 +169,12 @@ class AuthBot(CrawJUD):
                     )
                 )
 
-            if check_login:
-                return True
-
-            return False
+            return check_login is None
 
         except Exception as e:
             raise e
 
-    def elaw_auth(self) -> None:
+    def elaw_auth(self) -> bool:
 
         try:
             self.driver.get("https://amazonas.elaw.com.br/login")
@@ -205,16 +198,12 @@ class AuthBot(CrawJUD):
             sleep(7)
 
             url = self.driver.current_url
-
-            if url == "https://amazonas.elaw.com.br/login":
-                return False
-
-            return True
+            return url == "https://amazonas.elaw.com.br/login"
 
         except Exception as e:
             raise e
 
-    def pje_auth(self) -> None:
+    def pje_auth(self):
 
         try:
             self.driver.get(self.elements.url_login)
@@ -245,10 +234,7 @@ class AuthBot(CrawJUD):
             with suppress(TimeoutException):
                 logado = self.wait.until(EC.url_to_be(self.elements.chk_login))
 
-            if not logado:
-                raise
-
-            return True
+            return logado is not None
 
         except Exception as e:
             raise e
