@@ -63,7 +63,7 @@ def bucketGcs(storageClient: Client, bucket_name: str = None) -> Bucket:
     return bucket_obj
 
 
-def stop_execution(pid: str) -> int:
+def stop_execution(pid: str, robot_stop: bool = False) -> int:
 
     from status import SetStatus
 
@@ -72,8 +72,11 @@ def stop_execution(pid: str) -> int:
         processID = ThreadBots.query.filter(ThreadBots.pid == pid).first()
 
         if processID:
-            processID = int(processID.processID)
-            worker_thread = WorkerThread().stop(processID, pid)
+            
+            if robot_stop:
+                processID = int(processID.processID)
+                worker_thread = WorkerThread().stop(processID, pid)
+                
             app.logger.info(worker_thread)
 
             get_info = (
