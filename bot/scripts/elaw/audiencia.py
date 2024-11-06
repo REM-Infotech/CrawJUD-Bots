@@ -3,7 +3,7 @@ import time
 
 
 """ Imports do Projeto """
-from bot.CrawJUD import CrawJUD
+from bot.meta.CrawJUD import CrawJUD
 
 
 from bot.common.exceptions import ErroDeExecucao

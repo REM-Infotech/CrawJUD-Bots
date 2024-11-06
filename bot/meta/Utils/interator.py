@@ -17,11 +17,8 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 class Interact(CrawJUD):
 
-    def __getattr__(self, nome):
-        return super().__getattr__(nome)
-
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
+    def __init__(self):
+        """Interact Page"""
 
     def send_key(self, element: WebElement, word: any) -> None:
 

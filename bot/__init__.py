@@ -8,12 +8,12 @@ from typing import Union
 
 # Bots
 
-from .pje import pje
-from .esaj import esaj
-from .elaw import elaw
-from .caixa import caixa
-from .projudi import projudi
-from .calculadoras import calculadoras
+from .scripts.pje import pje
+from .scripts.esaj import esaj
+from .scripts.elaw import elaw
+from .scripts.caixa import caixa
+from .scripts.projudi import projudi
+from .scripts.calculadoras import calculadoras
 
 Hints = Union[pje, esaj, elaw, caixa, projudi, calculadoras]
 

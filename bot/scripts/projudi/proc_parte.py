@@ -9,7 +9,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from bot.common.exceptions import ErroDeExecucao
 from selenium.common.exceptions import NoSuchElementException
 
-from bot.CrawJUD import CrawJUD
+from bot.meta.CrawJUD import CrawJUD
 
 
 class proc_parte(CrawJUD):

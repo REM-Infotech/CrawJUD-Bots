@@ -24,8 +24,8 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.wait import WebDriverWait
 from ..Utils.Driver import GetDriver
 
-from ..meta import classproperty
-from ..common.exceptions import ErroDeExecucao
+from ...meta import classproperty
+from ...common.exceptions import ErroDeExecucao
 
 TypeHint = Union[
     List[str],
@@ -198,18 +198,10 @@ class CrawJUD:
         return SeachBot
 
     @classproperty
-    def Interator(self):
+    def interact(self):
         from ..Utils.interator import Interact
 
-        return Interact
-
-    @classproperty
-    def interact(self):
-        return classproperty.interact_
-
-    @interact.setter
-    def interact(self, new: Interator):
-        classproperty.interact_ = new
+        return Interact()
 
     @classproperty
     def printtext(self):
@@ -308,9 +300,6 @@ class CrawJUD:
                 system_bot=self.system, state_or_client=cl
             ).elements
 
-            ar = self.__dict__
-            self.interact = self.Interator(**ar)
-
         except Exception as e:
 
             self.row = 0
@@ -346,10 +335,6 @@ class CrawJUD:
             self.prt()
 
         return chk_result
-
-    """
-    Função De Autenticação, eu realmente preciso dizer pra quê ela serve?
-    """
 
     def auth_bot(self):
 

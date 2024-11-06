@@ -3,7 +3,7 @@ from typing import Union
 
 class pje:
 
-    from bot.pje.pauta import pauta
+    from ..pje.pauta import pauta
 
     Hints = Union[pauta]
 
