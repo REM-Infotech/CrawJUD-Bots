@@ -3,9 +3,7 @@ from contextlib import suppress
 from bot.common.exceptions import ErroDeExecucao
 
 from ..CrawJUD import CrawJUD
-from ..Utils.interator import Interact
 from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
@@ -17,22 +15,6 @@ class SeachBot(CrawJUD):
 
     def __getattr__(self, nome):
         return super().__getattr__(nome)
-
-    driver: WebDriver = None
-    wait: WebDriverWait = None
-    bot_data = {""}
-    interact = None
-
-    def __init__(self, **kwrgs) -> None:
-
-        self.interact = Interact(**kwrgs)
-        for key, value in list(kwrgs.items()):
-
-            if type(value) is dict and key != "bot_data":
-                self.__dict__.update(value)
-                continue
-
-            self.__dict__.update({key: value})
 
     def __call__(self):
 

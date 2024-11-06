@@ -24,7 +24,6 @@ class AuthBot(CrawJUD):
         return super().__getattr__(nome)
 
     def __init__(self, **kwrgs) -> None:
-
         pass
 
     def auth(self) -> bool:
@@ -135,7 +134,7 @@ class AuthBot(CrawJUD):
                     )
                 )
 
-            return checkloged is None
+            return checkloged is not None
 
         except Exception as e:
             raise e

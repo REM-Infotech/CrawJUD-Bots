@@ -7,6 +7,8 @@ class pje:
 
     Hints = Union[pauta]
 
+    bots = {"pauta": pauta}
+
     def __init__(self, **kwrgs):
         self.kwrgs = kwrgs
         self.__dict__.update(kwrgs)

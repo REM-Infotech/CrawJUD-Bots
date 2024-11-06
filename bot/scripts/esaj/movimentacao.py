@@ -57,7 +57,7 @@ class movimentacao(CrawJUD):
             self.appends = []
             self.resultados = []
 
-            self.search(self)
+            self.SearchBot()
             self.get_moves()
             self.append_moves()
 

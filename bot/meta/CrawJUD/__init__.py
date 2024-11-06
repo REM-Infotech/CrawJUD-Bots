@@ -209,9 +209,10 @@ class CrawJUD:
 
     @property
     def SearchBot(self):
+
         from ..Utils.search import SeachBot
 
-        return SeachBot
+        return SeachBot()
 
     @property
     def interact(self):
