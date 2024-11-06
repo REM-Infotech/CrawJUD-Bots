@@ -18,6 +18,9 @@ class printbot(CrawJUD):
 
     iobot = SocketBot()
 
+    def __init__(self):
+        """### PrintLogs"""
+
     def print_msg(self):
 
         log = self.message
@@ -74,12 +77,11 @@ class printbot(CrawJUD):
             tqdm.write(f"{e}")
 
     def end_bot(self, status: str) -> None:
-        
-        data = {"pid": self.pid,
-                "status": status}
-        
+
+        data = {"pid": self.pid, "status": status}
+
         self.iobot.end_message(data, url_socket)
-    
+
     def socket_message(self, data: dict) -> None:
 
         chk_type1 = "fim da execução" in self.prompt

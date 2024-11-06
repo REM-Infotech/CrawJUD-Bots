@@ -18,11 +18,12 @@ def loggerConfig() -> None:
         "disable_existing_loggers": True,
         "formatters": {
             "default": {
-                "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+                # "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+                "format": "[%(asctime)s] %(levelname)s in %(funcName)s: %(message)s",
             },
             "detailed": {
                 # "format": "[%(asctime)s] %(levelname)s %(name)s in %(module)s: %(message)s",
-                "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+                "format": "[%(asctime)s] %(levelname)s in %(funcName)s: %(message)s",
             },
         },
         "handlers": {
@@ -77,8 +78,10 @@ def loggerConfig() -> None:
 
     global info_logger
     info_logger = logging.getLogger("info_logger")
+
+    global warning_logger
     warning_logger = logging.getLogger("warning_logger")
-    
+
     global error_logger
     error_logger = logging.getLogger("error_logger")
 

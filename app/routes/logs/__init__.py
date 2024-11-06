@@ -1,6 +1,6 @@
 from app import app, db
 from flask import request, abort
-from flask_socketio import emit, join_room, Namespace
+from flask_socketio import emit, join_room, Namespace, leave_room
 from ...loggers import info_logger
 
 from status import SetStatus
@@ -17,13 +17,17 @@ with app.app_context():
         def on_disconnect(self):
             emit("disconnected!")
 
+        def on_leave(self, data):
+            room = data["pid"]
+            leave_room(room)
+
         def on_join(self, data: dict[str, str]):
             request
             info_logger.info("Joined")
             room = data["pid"]
             try:
                 join_room(room)
-                app.logger.info(f"Client {request.sid} joined room {room}")
+                info_logger.info(f"Client {request.sid} joined room {room}")
             except Exception:
                 emit("log_message", data, room=room)
 
@@ -36,11 +40,11 @@ with app.app_context():
         def on_stop_bot(self, data: dict[str, str]):
 
             pid = data["pid"]
-            SetStatus(pid=pid, status=data["status"]).botstop()
+            stop_execution(pid)
             emit("statusbot", data=data)
 
         def on_statusbot(self, data: dict):
-            app.logger.info(f"Client {request.sid} stop bot {data["pid"]}")
+            info_logger.info(f"Client {request.sid} stop bot {data["pid"]}")
 
         def on_log_message(self, data: dict[str, str]):
 
@@ -48,7 +52,7 @@ with app.app_context():
                 pid = data["pid"]
                 data = serverSide(data, pid)
                 emit("log_message", data, room=pid)
-                app.logger.info(
+                info_logger.info(
                     f"Client {request.sid} sended message {data["message"]}"
                 )
 
