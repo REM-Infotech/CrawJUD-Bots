@@ -1,4 +1,3 @@
-
 import socketio
 from socketio.exceptions import BadNamespaceError, ConnectionError
 
@@ -32,11 +31,33 @@ class SocketBot:
             self.pid = data["pid"]
             if not connected:
                 self.io.connect(
-                    f"https://{url}", namespaces=["/log"], transports=["websocket"]
+                    f"https://{url}",
+                    namespaces=["/log", "/stop_bot"],
+                    transports=["websocket"],
                 )
                 connected = True
             # Adiciona o 'pid' aos dados e envia a mensagem
             self.io.emit("log_message", data, namespace="/log")
+        except (BadNamespaceError, ConnectionError) as e:
+            print(f"Erro de conexão: {e}")
+            connected = False
+            self.io.disconnect()
+            self.send_message(data, url)
+
+    def end_message(self, data: dict, url):
+        global connected
+
+        try:
+            self.pid = data["pid"]
+            if not connected:
+                self.io.connect(
+                    f"https://{url}",
+                    namespaces=["/log"],
+                    transports=["websocket"],
+                )
+                connected = True
+            # Adiciona o 'pid' aos dados e envia a mensagem
+            self.io.emit("stop_bot", data, namespace="/log")
         except (BadNamespaceError, ConnectionError) as e:
             print(f"Erro de conexão: {e}")
             connected = False
@@ -53,5 +74,6 @@ class SocketBot:
 
 if __name__ == "__main__":
     import inquirer
+
     bot = SocketBot()
     bot.prompt()

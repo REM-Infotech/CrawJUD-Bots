@@ -35,7 +35,7 @@ class movimentacao(CrawJUD):
 
         for pos, value in enumerate(frame):
 
-            self.row = pos + 2
+            self.row = pos + 1
             self.bot_data = value
             if self.isStoped:
                 break

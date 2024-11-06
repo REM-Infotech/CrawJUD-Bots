@@ -40,7 +40,7 @@ class sol_pags(CrawJUD):
 
         for pos, value in enumerate(frame):
 
-            self.row = pos + 2
+            self.row = pos + 1
             self.bot_data = self.elawFormats(value)
             if self.isStoped:
                 break
@@ -669,7 +669,7 @@ class sol_pags(CrawJUD):
             ]
             current_handle = self.driver.current_window_handle
 
-            for item in check_solicitacoes:
+            for pos, item in enumerate(check_solicitacoes):
 
                 if item.text == "Nenhum registro encontrado!":
                     raise ErroDeExecucao("Pagamento não solicitado")
@@ -683,7 +683,7 @@ class sol_pags(CrawJUD):
                     EC.presence_of_element_located(
                         (
                             By.CSS_SELECTOR,
-                            'div[id="tabViewProcesso:pvp-dtProcessoValorResults:0:pvp-pgBotoesValoresPagamentoBtnVer_dlg"]',
+                            f'div[id="tabViewProcesso:pvp-dtProcessoValorResults:{pos}:pvp-pgBotoesValoresPagamentoBtnVer_dlg"]'
                         )
                     )
                 ).find_element(By.TAG_NAME, "a")
@@ -695,16 +695,19 @@ class sol_pags(CrawJUD):
                 )
                 self.driver.switch_to.frame(WaitFrame)
 
-                tipoCusta = None
-                cod_bars = None
-                tipoCondenacao = None
+                tipoCusta = ""
+                cod_bars = ""
+                tipoCondenacao = ""
                 now = datetime.now(timezone("America/Manaus")).strftime(
                     "%d-%m-%Y %H.%M.%S"
                 )
                 Name_Comprovante1 = f"COMPROVANTE 1 {self.bot_data.get("NUMERO_PROCESSO")} - {self.pid} - {now}.png"
+                cod_bars_xls = str(
+                    self.bot_data.get("COD_BARRAS").replace(".", "").replace(" ", "")
+                )
 
                 with suppress(TimeoutException):
-                    tipoCusta = (
+                    tipoCusta = str(
                         self.wait.until(
                             EC.presence_of_element_located(
                                 (
@@ -718,7 +721,7 @@ class sol_pags(CrawJUD):
                     )
 
                 with suppress(TimeoutException):
-                    cod_bars = (
+                    cod_bars = str(
                         self.wait.until(
                             EC.presence_of_element_located(
                                 (
@@ -745,75 +748,45 @@ class sol_pags(CrawJUD):
                         .replace("\n", "")
                     )
 
-                tipo_condenacao = self.bot_data.get("TIPO_CONDENACAO").lower()
-                match_condenacao = tipo_condenacao == tipoCondenacao.lower()
-                chk_cod_bars = (
-                    self.bot_data.get("COD_BARRAS").replace(".", "").replace(" ", "")
-                )
-                if self.bot_data.get("TIPO_CONDENACAO", ""):
+                namedef = self.format_String(
+                    self.bot_data.get("TIPO_PAGAMENTO")
+                ).lower()
 
-                    if tipoCondenacao:
-                        if match_condenacao:
+                chk_bars = cod_bars == cod_bars_xls
 
-                            if chk_cod_bars == cod_bars:
-
-                                self.driver.switch_to.default_content()
-                                url_page = WaitFrame.get_attribute("src")
-                                self.getScreenShot(url_page, Name_Comprovante1)
-                                self.driver.switch_to.window(current_handle)
-
-                                closeContext.click()
-                                Name_Comprovante2 = f"COMPROVANTE 2 {self.bot_data.get("NUMERO_PROCESSO")} - {self.pid} - {now}.png"
-                                item.screenshot(
-                                    os.path.join(
-                                        self.output_dir_path, Name_Comprovante2
-                                    )
-                                )
-
-                                info_sucesso.extend(
-                                    [
-                                        tipoCondenacao,
-                                        Name_Comprovante1,
-                                        id_task,
-                                        Name_Comprovante2,
-                                    ]
-                                )
-                                return info_sucesso
-
-                elif self.bot_data.get("TIPO_GUIA", ""):
-                    tipo_guia = self.bot_data.get("TIPO_GUIA", "vazio").lower()
-                    chk_cod_bars = (
-                        self.bot_data.get("COD_BARRAS")
-                        .replace(".", "")
-                        .replace(" ", "")
+                if namedef == "condenacao":
+                    tipo_condenacao_xls = str(self.bot_data.get("TIPO_CONDENACAO", ""))
+                    match_condenacao = (
+                        tipo_condenacao_xls.lower() == tipoCondenacao.lower()
                     )
-                    if tipoCusta:
-                        if tipo_guia == tipoCusta.lower():
+                    matchs = all([match_condenacao, chk_bars])
 
-                            if chk_cod_bars == cod_bars:
+                elif namedef == "custas":
+                    tipo_custa_xls = str(self.bot_data.get("TIPO_GUIA", ""))
+                    match_custa = tipo_custa_xls.lower() == tipoCusta.lower()
+                    matchs = all([match_custa, chk_bars])
 
-                                self.driver.switch_to.default_content()
-                                url_page = WaitFrame.get_attribute("src")
-                                self.getScreenShot(url_page, Name_Comprovante1)
-                                self.driver.switch_to.window(current_handle)
+                if matchs:
+                    self.driver.switch_to.default_content()
+                    url_page = WaitFrame.get_attribute("src")
+                    self.getScreenShot(url_page, Name_Comprovante1)
+                    self.driver.switch_to.window(current_handle)
 
-                                closeContext.click()
-                                Name_Comprovante2 = f"COMPROVANTE 2 {self.bot_data.get("NUMERO_PROCESSO")} - {self.pid} - {now}.png"
-                                item.screenshot(
-                                    os.path.join(
-                                        self.output_dir_path, Name_Comprovante2
-                                    )
-                                )
+                    closeContext.click()
+                    Name_Comprovante2 = f"COMPROVANTE 2 {self.bot_data.get("NUMERO_PROCESSO")} - {self.pid} - {now}.png"
+                    item.screenshot(
+                        os.path.join(self.output_dir_path, Name_Comprovante2)
+                    )
 
-                                info_sucesso.extend(
-                                    [
-                                        tipoCondenacao,
-                                        Name_Comprovante1,
-                                        id_task,
-                                        Name_Comprovante2,
-                                    ]
-                                )
-                                return info_sucesso
+                    info_sucesso.extend(
+                        [
+                            tipoCondenacao,
+                            Name_Comprovante1,
+                            id_task,
+                            Name_Comprovante2,
+                        ]
+                    )
+                    return info_sucesso
 
                 self.driver.switch_to.default_content()
                 closeContext.click()

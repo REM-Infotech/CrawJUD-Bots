@@ -14,12 +14,9 @@ mensagens = []
 url_socket = dotenv_values().get("HOST")
 
 
-class printtext(CrawJUD):
+class printbot(CrawJUD):
 
     iobot = SocketBot()
-
-    def __init__(self, **kwrgs):
-        self.__dict__.update(kwrgs)
 
     def print_msg(self):
 
@@ -27,9 +24,6 @@ class printtext(CrawJUD):
         if self.message_error:
             log = self.message_error
             self.message_error = None
-
-        if self.row > 0:
-            self.row -= 1
 
         self.prompt = "[({pid}, {type_log}, {row}, {dateTime})> {log}]".format(
             pid=self.pid,
@@ -79,6 +73,13 @@ class printtext(CrawJUD):
             # Exibe o erro
             tqdm.write(f"{e}")
 
+    def end_bot(self, status: str) -> None:
+        
+        data = {"pid": self.pid,
+                "status": status}
+        
+        self.iobot.end_message(data, url_socket)
+    
     def socket_message(self, data: dict) -> None:
 
         chk_type1 = "fim da execução" in self.prompt
