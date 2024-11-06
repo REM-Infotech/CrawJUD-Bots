@@ -21,7 +21,8 @@ def loggerConfig() -> None:
                 "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
             },
             "detailed": {
-                "format": "[%(asctime)s] %(levelname)s %(name)s in %(module)s: %(message)s",
+                # "format": "[%(asctime)s] %(levelname)s %(name)s in %(module)s: %(message)s",
+                "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
             },
         },
         "handlers": {

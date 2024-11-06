@@ -42,19 +42,6 @@ class CrawJUD:
         "version": 2,
     }
 
-    row_ = 0
-    kwrgs_ = {}
-    message_error_ = ""
-    bot_data_ = {}
-    graphicMode_ = "doughnut"
-    out_dir = ""
-    user_data_dir = ""
-    cr_list_args = [""]
-    drv = None
-    wt = None
-    elmnt = None
-    interact_ = None
-
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
         self.kwrgs = kwargs
@@ -66,6 +53,9 @@ class CrawJUD:
 
         if not item:
             item = CrawJUD.__dict__.get(nome, None)
+
+            if not item:
+                item = classproperty.kwrgs_.get(nome, None)
 
         return item
 
@@ -79,73 +69,97 @@ class CrawJUD:
     """
 
     @classproperty
+    def type_log(self):
+        return classproperty._type_log
+
+    @type_log.setter
+    def type_log(self, new_log: str):
+        classproperty._type_log = new_log
+
+    @classproperty
+    def pid(self) -> int:
+        return classproperty._pid
+
+    @pid.setter
+    def pid(self, pid_) -> int:
+        classproperty._pid = pid_
+
+    @classproperty
+    def message(self) -> str:
+        return classproperty._message
+
+    @message.setter
+    def message(self, new_msg: str) -> str:
+        classproperty._message = new_msg
+
+    @classproperty
     def isStoped(self):
         chk = os.path.exists(os.path.join(self.output_dir_path, f"{self.pid}.flag"))
         return chk
 
     @classproperty
     def driver(self) -> WebDriver:
-        return self.drv
+        return classproperty.drv
 
     @driver.setter
     def driver(self, new_drv: WebDriver):
-        self.drv = new_drv
+        classproperty.drv = new_drv
 
     @classproperty
     def wait(self) -> WebDriverWait:
-        return self.wt
+        return classproperty.wt
 
     @wait.setter
     def wait(self, new_wt: WebDriverWait):
-        self.wt = new_wt
+        classproperty.wt = new_wt
 
     @classproperty
     def chr_dir(self):
-        return self.user_data_dir
+        return classproperty.user_data_dir
 
     @chr_dir.setter
     def chr_dir(self, new_dir: str):
-        self.user_data_dir = new_dir
+        classproperty.user_data_dir = new_dir
 
     @classproperty
     def output_dir_path(self):
-        return self.out_dir
+        return classproperty.out_dir
 
     @output_dir_path.setter
     def output_dir_path(self, new_outdir: str):
-        self.out_dir = new_outdir
+        classproperty.out_dir = new_outdir
 
     @classproperty
     def kwrgs(self) -> dict:
-        return self.kwrgs_
+        return classproperty.kwrgs_
 
     @kwrgs.setter
     def kwrgs(self, new_kwg):
-        self.kwrgs_ = new_kwg
+        classproperty.kwrgs_ = new_kwg
 
     @classproperty
     def row(self) -> int:
-        return self.row_
+        return classproperty.row_
 
     @row.setter
     def row(self, new_row: int):
-        self.row_ = new_row
+        classproperty.row_ = new_row
 
     @classproperty
     def message_error(self) -> str:
-        return self.message_error_
+        return classproperty.message_error_
 
     @message_error.setter
     def message_error(self, nw_m: str) -> str:
-        self.message_error_ = nw_m
+        classproperty.message_error_ = nw_m
 
     @classproperty
     def graphicMode(self):
-        return self.graphicMode_
+        return classproperty.graphicMode_
 
     @graphicMode.setter
     def graphicMode(self, new_graph):
-        self.graphicMode_ = new_graph
+        classproperty.graphicMode_ = new_graph
 
     @classproperty
     def list_args(self):
@@ -161,21 +175,21 @@ class CrawJUD:
 
     @list_args.setter
     def list_args(self, new_Args: list[str]):
-        self.cr_list_args = new_Args
+        classproperty.cr_list_args = new_Args
 
     @classproperty
     def bot_data(self) -> dict:
-        return self.bot_data_
+        return classproperty.bot_data_
 
     @bot_data.setter
     def bot_data(self, new_botdata: dict):
-        self.bot_data_ = new_botdata
+        classproperty.bot_data_ = new_botdata
 
     @classproperty
     def AuthBot(self):
         from ..Utils.auth import AuthBot
 
-        return AuthBot
+        return AuthBot()
 
     @classproperty
     def SearchBot(self):
@@ -191,17 +205,17 @@ class CrawJUD:
 
     @classproperty
     def interact(self):
-        return self.interact_
+        return classproperty.interact_
 
     @interact.setter
     def interact(self, new: Interator):
-        self.interact_ = new
+        classproperty.interact_ = new
 
     @classproperty
     def printtext(self):
-        from ..Utils.PrintLogs import printtext
+        from ..Utils.PrintLogs import printbot
 
-        return printtext
+        return printbot
 
     @classproperty
     def MakeXlsx(self):
@@ -224,12 +238,12 @@ class CrawJUD:
     @classproperty
     def elements(self) -> ElementsBots:
 
-        return self.elmnt
+        return classproperty.elmnt
 
     @elements.setter
     def elements(self, info):
 
-        self.elmnt = info
+        classproperty.elmnt = info
 
     def setup(self):
 
@@ -305,9 +319,8 @@ class CrawJUD:
             self.prt()
             self.message_error = str(e)
             self.prt()
+            self.end_prt("Falha ao iniciar")
             raise e
-
-    """ Nome autoexplicativo """
 
     def search(self):
 
@@ -340,14 +353,8 @@ class CrawJUD:
 
     def auth_bot(self):
 
-        auth_cls = self.AuthBot(
-            driver=self.driver,
-            wait=self.wait,
-            list_args=self.kwrgs,
-            elements=self.elements,
-        )
         if self.login_method:
-            chk_logged = auth_cls.auth()
+            chk_logged = self.AuthBot.auth()
             if chk_logged is True:
 
                 self.message = "Login efetuado com sucesso!"
@@ -362,10 +369,14 @@ class CrawJUD:
                 self.prt()
                 raise Exception(self.message)
 
+    def end_prt(self, status: str) -> None:
+
+        print_bot = self.printtext()
+        print_bot.end_bot(status)
+
     def prt(self) -> None:
 
-        kwg = self.__dict__
-        print_bot = self.printtext(**kwg)
+        print_bot = self.printtext()
         print_bot.print_msg()
 
     def dataFrame(self) -> list[dict[str, str]]:
@@ -450,7 +461,7 @@ class CrawJUD:
         elif len(self.appends) == 0:
             raise ErroDeExecucao("Nenhuma Movimentação encontrada")
 
-    def append_success(self, data, message, fileN: str = None):
+    def append_success(self, data, message=None, fileN: str = None):
 
         if not message:
             message = "Execução do processo efetuada com sucesso!"
@@ -529,6 +540,7 @@ class CrawJUD:
 
     def finalize_execution(self) -> None:
 
+        self.row = self.row + 1
         self.driver.delete_all_cookies()
         self.driver.close()
 
@@ -537,6 +549,8 @@ class CrawJUD:
         calc = execution_time / 60
         minutes = int(calc)
         seconds = int((calc - minutes) * 60)
+
+        self.end_prt("Finalizado")
 
         self.type_log = "success"
         self.message = f"Fim da execução, tempo: {minutes} minutos e {seconds} segundos"

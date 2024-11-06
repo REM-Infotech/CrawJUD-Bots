@@ -16,20 +16,29 @@ with app.app_context():
         def on_disconnect(self):
             emit("disconnected!")
 
-        def on_join(self, data):
+        def on_join(self, data: dict[str, str]):
             request
             info_logger.info("Joined")
             room = data["pid"]
+            status = get_Status(room)
             try:
                 join_room(room)
                 app.logger.info(f"Client {request.sid} joined room {room}")
             except Exception:
                 emit("log_message", data, room=room)
 
-        def on_log_message(self, data):
+        def on_stop_bot(self, data: dict[str, str]):
+
+            pid = data["pid"]
+            SetStatus(pid=pid, status=data["status"]).botstop()
+            emit("statusbot", data=data)
+
+        def on_statusbot(self, data: dict):
+            app.logger.info(f"Client {request.sid} stop bot {data["pid"]}")
+
+        def on_log_message(self, data: dict[str, str]):
 
             try:
-                print(data)
                 pid = data["pid"]
                 data = serverSide(data, pid)
                 emit("log_message", data, room=pid)
@@ -120,3 +129,11 @@ with app.app_context():
         )
 
         return data
+
+    def get_Status(pid: str):
+
+        execut = db.session.query(Executions).filter(Executions.pid == pid).first()
+        if execut:
+            pass
+        
+        return execut
