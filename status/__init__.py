@@ -148,7 +148,7 @@ class SetStatus:
 
         return (path_args, bt.display_name)
 
-    def botstop(self) -> None:
+    def botstop(self) -> str:
 
         try:
             srv = platform.system() in ("Windows")
@@ -184,6 +184,7 @@ class SetStatus:
             execution.data_finalizacao = datetime.now(pytz.timezone("America/Manaus"))
             db.session.commit()
             db.session.close()
+            return objeto_destino
 
         except Exception as e:
             logging.error(f"Exception: {e}", exc_info=True)

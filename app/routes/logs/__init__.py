@@ -4,6 +4,7 @@ from flask_socketio import emit, join_room, Namespace
 from ...loggers import info_logger
 
 from status import SetStatus
+from app.misc import stop_execution
 from app.models import CacheLogs, Executions
 
 with app.app_context():
@@ -20,12 +21,17 @@ with app.app_context():
             request
             info_logger.info("Joined")
             room = data["pid"]
-            status = get_Status(room)
             try:
                 join_room(room)
                 app.logger.info(f"Client {request.sid} joined room {room}")
             except Exception:
                 emit("log_message", data, room=room)
+
+            if StatusStop(room) is True:
+                emit("statusbot", data=data)
+
+            elif stopped_bot(room) is True:
+                stop_execution()
 
         def on_stop_bot(self, data: dict[str, str]):
 
@@ -49,7 +55,7 @@ with app.app_context():
             except Exception as e:
                 abort(500, description=str(e))
 
-    def serverSide(data, pid):
+    def serverSide(data: dict[str, str], pid):
 
         chk_infos = [data.get("system"), data.get("typebot")]
 
@@ -110,10 +116,6 @@ with app.app_context():
                     log_pid.errors = log_pid.total
                     log_pid.remaining = 0
 
-            if "fim da execução" in data["message"].lower():
-                log_pid.remaining = 0
-                log_pid.status = "Finalizado"
-
         db.session.commit()
         data.update(
             {
@@ -130,10 +132,26 @@ with app.app_context():
 
         return data
 
-    def get_Status(pid: str):
+    def StatusStop(pid: str):
 
         execut = db.session.query(Executions).filter(Executions.pid == pid).first()
-        if execut:
-            pass
-        
+        if not execut:
+            execut = False
+
+        elif execut:
+            execut = str(execut.status) != "Em Execução"
+
         return execut
+
+    def stopped_bot(pid: str):
+
+        checks = []
+        log_pid = CacheLogs.query.filter(CacheLogs.pid == pid).first()
+        check1 = log_pid is not None
+        checks.append(check1)
+        if check1:
+            check2 = str(log_pid.status) == "Finalizado"
+            checks.append(check2)
+
+        allchecks = all(checks)
+        return allchecks
