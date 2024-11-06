@@ -1,4 +1,21 @@
 class classproperty:
+
+    _type_log = "info"
+    _message = ""
+    _pid = 0
+    kwrgs_ = {}
+    row_ = 0
+    message_error_ = ""
+    bot_data_ = {}
+    graphicMode_ = "doughnut"
+    out_dir = ""
+    user_data_dir = ""
+    cr_list_args = [""]
+    drv = None
+    wt = None
+    elmnt = None
+    interact_ = None
+
     def __init__(cls, fget=None, fset=None, fdel=None):
         cls.fget = fget
         cls.fset = fset
