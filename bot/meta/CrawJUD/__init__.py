@@ -70,7 +70,12 @@ class CrawJUD:
 
     def debug(self):
 
+        import clear
+
+        clear.clear()
+
         port = random.randint(1111, 9999)
+        print(port)
         debugpy.listen(("localhost", port))
         debugpy.wait_for_client()
 

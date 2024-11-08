@@ -1,5 +1,5 @@
 import os
-
+from flask import has_app_context
 from app import db, app
 from app.models import ThreadBots
 
@@ -43,24 +43,25 @@ class WorkerThread:
     def start(self) -> int:
 
         try:
-            with app.app_context():
 
-                bot = self.BotStarter
-                mp.set_start_method("spawn")
-                pid = os.path.basename(self.path_args.replace(".json", ""))
-                process = mp.Process(
-                    target=bot,
-                    kwargs=self.kwrgs,
-                    name=f"{self.display_name} - {pid}",
-                )
-                process.start()
-                process_id = process.ident
+            bot = self.BotStarter
+            pid = os.path.basename(self.path_args.replace(".json", ""))
+            process = mp.Process(
+                target=bot,
+                kwargs=self.kwrgs,
+                name=f"{self.display_name} - {pid}",
+            )
+            process.start()
+            process_id = process.ident
 
-                # Salva o ID no "banco de dados"
-                add_thread = ThreadBots(pid=pid, processID=process_id)
-                db.session.add(add_thread)
-                db.session.commit()
-                return 200
+            if has_app_context():
+                with app.app_context():
+
+                    # Salva o ID no "banco de dados"
+                    add_thread = ThreadBots(pid=pid, processID=process_id)
+                    db.session.add(add_thread)
+                    db.session.commit()
+                    return 200
 
         except Exception as e:
             print(e)
