@@ -37,6 +37,11 @@ def checkout_release_tag(tag_: str, debug: bool) -> str:
 
         if tag_ != repo.active_branch.name:
             # Abre o repositório local
+
+            global LOCAL_REPO_PATH
+            if LOCAL_REPO_PATH == "" or LOCAL_REPO_PATH:
+                LOCAL_REPO_PATH = format_path(REPO_NAME)
+
             if not os.path.exists(LOCAL_REPO_PATH):
                 git.Repo.clone_from(repo_url, LOCAL_REPO_PATH)
 
