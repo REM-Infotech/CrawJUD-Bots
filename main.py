@@ -1,11 +1,17 @@
-from app import app, io
-from dotenv import dotenv_values
 import os
-from time import sleep, time
+from app import io
+from app import app
+
+
+from time import time
+from time import sleep
 from clear import clear
+from dotenv import dotenv_values
 from multiprocessing import Process
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+
+from app.misc.checkout import checkout_release_tag
 
 values = dotenv_values()
 

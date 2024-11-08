@@ -44,6 +44,8 @@ watchdog = "^6.0.0"
 gevent = "^24.10.3"
 gevent-websocket = "^0.10.1"
 debugpy = "^1.8.7"
+gitpython = "^3.1.43"
+pygithub = "^2.5.0"
 
 
 [build-system]

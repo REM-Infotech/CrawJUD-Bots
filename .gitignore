@@ -29,7 +29,6 @@ MANIFEST
 .vscode/
 pybind11/
 /*.json
-/.version
 MODIFIED.MOD
 # PyInstaller
 #  Usually these files are written by a python script from a template
