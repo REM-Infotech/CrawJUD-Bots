@@ -9,7 +9,6 @@ config_vals = dotenv_values()
 
 GITHUB_API_TOKEN = config_vals.get("GITHUB_API_TOKEN", "")
 REPO_NAME = config_vals.get("REPO_NAME", "")
-LOCAL_REPO_PATH = config_vals.get("LOCAL_REPO_PATH", "")
 USER_GITHUB = config_vals.get("USER_GITHUB", "")
 
 repo_url = f"https://{USER_GITHUB}:{GITHUB_API_TOKEN}@github.com/{REPO_NAME}.git"
@@ -32,15 +31,12 @@ def format_path(REPO_NAME: str):
 
 def checkout_release_tag(tag_: str, debug: bool) -> str:
 
+    LOCAL_REPO_PATH = config_vals.get("LOCAL_REPO_PATH", format_path(REPO_NAME))
     repo = git.Repo(LOCAL_REPO_PATH)
     try:
 
         if tag_ != repo.active_branch.name:
             # Abre o repositório local
-
-            global LOCAL_REPO_PATH
-            if LOCAL_REPO_PATH == "" or LOCAL_REPO_PATH:
-                LOCAL_REPO_PATH = format_path(REPO_NAME)
 
             if not os.path.exists(LOCAL_REPO_PATH):
                 git.Repo.clone_from(repo_url, LOCAL_REPO_PATH)
@@ -61,6 +57,5 @@ def checkout_release_tag(tag_: str, debug: bool) -> str:
 
 if __name__ == "__main__":
 
-    if LOCAL_REPO_PATH == "":
-        LOCAL_REPO_PATH = format_path(REPO_NAME)
-        git.Repo.clone_from(repo_url, LOCAL_REPO_PATH)
+    LOCAL_REPO_PATH = config_vals.get("LOCAL_REPO_PATH", format_path(REPO_NAME))
+    git.Repo.clone_from(repo_url, LOCAL_REPO_PATH)
