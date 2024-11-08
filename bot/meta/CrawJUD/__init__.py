@@ -242,7 +242,7 @@ class CrawJUD:
     def elements(self):
         from ..Utils.elements import ElementsBot
 
-        return ElementsBot().elements
+        return ElementsBot().Elements
 
     def setup(self):
 
