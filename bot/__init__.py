@@ -1,10 +1,11 @@
 import os
-import multiprocessing
+
 from app import db, app
 from app.models import ThreadBots
 
 import psutil
 from typing import Union
+import multiprocessing as mp
 
 # Bots
 
@@ -45,12 +46,12 @@ class WorkerThread:
             with app.app_context():
 
                 bot = self.BotStarter
+                mp.set_start_method("spawn")
                 pid = os.path.basename(self.path_args.replace(".json", ""))
-                process = multiprocessing.Process(
+                process = mp.Process(
                     target=bot,
                     kwargs=self.kwrgs,
                     name=f"{self.display_name} - {pid}",
-                    daemon=True,
                 )
                 process.start()
                 process_id = process.ident
