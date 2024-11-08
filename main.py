@@ -41,10 +41,9 @@ class ChangeHandler(FileSystemEventHandler):
 
 
 def start_flask():
-    port = int(values.get("PORT", 5000))
-    debug = values.get("DEBUG", "False").lower() in ("true", "1", "t", "y", "yes")
 
-    io.run(app, "0.0.0.0", port=int(port), debug=debug)
+    port = int(values.get("PORT", 5000))
+    io.run(app, port=int(port))
 
 
 def flask_Process():
@@ -90,6 +89,14 @@ def monitor_changes():
 
 if __name__ == "__main__":
     print("Iniciando monitoramento de mudanças e servidor Flask...")
+
+    with open(".version", "r") as f:
+        version = f.read()
+
+    # checkout antes de inicializar
+
+    debug = values.get("DEBUG", "False").lower() in ("true", "1", "t", "y", "yes")
+    checkout_release_tag(version, debug)
 
     # Inicia o servidor Flask
     flask_server_Process = flask_Process()

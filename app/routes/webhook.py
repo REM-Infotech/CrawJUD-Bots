@@ -4,6 +4,7 @@ import json
 
 from ..misc.checkout import checkout_release_tag
 
+
 # Endpoint para o webhook
 @app.route("/webhook", methods=["POST"])
 def github_webhook():
@@ -16,12 +17,13 @@ def github_webhook():
 
     # Verifica se é uma nova release
     action = data.get("action")
-
+    ref = data["release"]["tag_name"]
+    version_file = None
     try:
         if request_type == "release" and action == "published":
             ref = data["release"]["tag_name"]
             # Alterna para a tag da nova release
-            checkout_release_tag(f"refs/tags/{ref}")
+            version_file = str(checkout_release_tag(f"refs/tags/{ref}"))
 
         return jsonify({"message": "Release processada e atualizada"}), 200
 
@@ -29,3 +31,9 @@ def github_webhook():
 
         app.logger.error(str(e))
         return jsonify({"message": "Evento ignorado"}), 500
+
+    finally:
+
+        if version_file:
+            with open(version_file, "w") as f:
+                f.write(ref)
